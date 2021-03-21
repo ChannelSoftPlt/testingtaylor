@@ -2,21 +2,22 @@
   <v-app>
     <AppBar />
     <v-main>
-      <HelloWorld />
+        <Content/>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld";
+
 import AppBar from "./components/AppBar";
+import Content from "./components/Content";
 
 export default {
   name: "App",
 
   components: {
-    HelloWorld,
     AppBar,
+    Content
   },
 
   data: () => ({
