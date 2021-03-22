@@ -35,9 +35,7 @@
       >
         Continue
       </v-btn>
-      <v-btn text>
-        Cancel
-      </v-btn>
+      
     </v-stepper-content>
 
     <v-stepper-step
@@ -48,6 +46,8 @@
     </v-stepper-step>
 
     <v-stepper-content step="2">
+     <v-row>
+        <v-col align="start">
       <v-btn
         icon
         class="ma-2"
@@ -55,8 +55,13 @@
       >
         <v-icon>mdi-chevron-left</v-icon>
       </v-btn>
-      {{today}}
-
+        </v-col>
+       <v-col align="center">
+         <v-toolbar-title v-if="$refs.calendar">
+            {{ $refs.calendar.title }}
+          </v-toolbar-title>
+       </v-col>
+        <v-col align="end">
       <v-btn
         icon
         class="ma-2"
@@ -64,27 +69,25 @@
       >
         <v-icon>mdi-chevron-right</v-icon>
       </v-btn>
+      </v-col>
+     </v-row>
       <v-sheet height="200">
       <v-calendar
         ref="calendar"
         v-model="value"
-        :weekdays="weekday"
         :type="type"
-        :events="events"
-        :event-overlap-mode="mode"
-        :event-overlap-threshold="30"
-        :event-color="getEventColor"
-        @change="getEvents"
+        color="primary"
       ></v-calendar>
     </v-sheet>
+    <br>
       <v-btn
         color="primary"
         @click="e6 = 3"
       >
         Continue
       </v-btn>
-      <v-btn text>
-        Cancel
+      <v-btn text @click="e6 = 1">
+        Back
       </v-btn>
     </v-stepper-content>
 
@@ -92,43 +95,59 @@
       :complete="e6 > 3"
       step="3"
     >
-      Select an ad format and name ad unit
+      Choose a time
     </v-stepper-step>
 
     <v-stepper-content step="3">
-      <v-card
-        color="grey lighten-1"
-        class="mb-12"
-        height="200px"
-      ></v-card>
+      <v-row>
+      <v-col
+        cols="12"
+        sm="6"
+        align="left"
+      >
+        <v-btn
+      class="mb-2 mt-1 mr-1"
+      outlined
+      color="indigo"
+      small
+      v-for="(time, i) in time"
+          :key="i"
+      
+    >
+      {{time.text}}
+    </v-btn>
+      </v-col>
+      </v-row>
       <v-btn
         color="primary"
         @click="e6 = 4"
       >
         Continue
       </v-btn>
-      <v-btn text>
-        Cancel
+      <v-btn text @click="e6 = 2">
+        Back
       </v-btn>
     </v-stepper-content>
 
     <v-stepper-step step="4">
-      View setup instructions
+      Total person
     </v-stepper-step>
     <v-stepper-content step="4">
-      <v-card
-        color="grey lighten-1"
-        class="mb-12"
-        height="200px"
-      ></v-card>
+    <v-checkbox
+      v-model="selected"
+      :label="pax.text+' pax'" 
+      :value="pax.text"
+      v-for="(pax, i) in pax"
+          :key="i"
+    ></v-checkbox>
       <v-btn
         color="primary"
         @click="e6 = 1"
       >
-        Continue
+        Submit
       </v-btn>
-      <v-btn text>
-        Cancel
+      <v-btn text @click="e6 = 3">
+        Back
       </v-btn>
     </v-stepper-content>
   </v-stepper>
@@ -145,22 +164,46 @@
         { text: 'Taman Molek'},
         { text: 'Taman Nusa Bestari'},
         { text: 'Taman Bukit Indah'},
+      ],  
+      type: 'month',
+      value: '',
+       time: [
+        { text: '08:00'},
+        { text: '08:30'},
+        { text: '09:00'},
+        { text: '09:30'},
+        { text: '10:00'},
+        { text: '10:30'},
+        { text: '11:00'},
+        { text: '11:30'},
+        { text: '12:00'},
+        { text: '12:30'},
+        { text: '01:00'},
+        { text: '01:30'},
+        { text: '02:00'},
+        { text: '02:30'},
+        { text: '03:00'},
+        { text: '03:30'},
+        { text: '04:00'},
+        { text: '04:30'},
+        { text: '05:00'},
+        { text: '05:30'},
+        { text: '06:00'},
       ],
-      today: '2019-01-10',
-      tracked: {
-        '2019-01-09': [23, 45, 10],
-        '2019-01-08': [10],
-        '2019-01-07': [0, 78, 5],
-        '2019-01-06': [0, 0, 50],
-        '2019-01-05': [0, 10, 23],
-        '2019-01-04': [2, 90],
-        '2019-01-03': [10, 32],
-        '2019-01-02': [80, 10, 10],
-        '2019-01-01': [20, 25, 10],
-      },
-      colors: ['#1867c0', '#fb8c00', '#000000'],
-      category: ['Development', 'Meetings', 'Slacking'],
-
+      selected: [],
+      pax: [
+        { text: '1-2'},
+        { text: '3-4'},
+        { text: '5-6'},
+        { text: '7-8'},
+        { text: '9-10'},
+       
+      ],
+    
   }),
+  
+   methods: {
+      
+    },
   }
 </script>
