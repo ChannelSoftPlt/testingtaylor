@@ -26,7 +26,7 @@
       </v-row>
         <!-- <span>selectedBranch: {{ selectedBranch }}</span>
         <br>
-        <span>value: {{ value }}</span>
+        <span>selectedDate: {{ selectedDate }}</span>
         <br>
         <span>selectedTime: {{ selectedTime }}</span>
         <br>
@@ -44,6 +44,8 @@
     </v-stepper-step>
 
     <v-stepper-content step="1" >
+  
+      
 
         <v-select
           :items="items"
@@ -85,40 +87,9 @@
     </v-stepper-step>
 
     <v-stepper-content step="2">
-     <v-row>
-        <v-col align="start">
-      <v-btn
-        icon
-        class="ma-2"
-        @click="$refs.calendar.prev()"
-      >
-        <v-icon>mdi-chevron-left</v-icon>
-      </v-btn>
-        </v-col>
-       <v-col align="center">
-         <v-toolbar-title v-if="$refs.calendar">
-            {{ $refs.calendar.title }}
-          </v-toolbar-title>
-       </v-col>
-        <v-col align="end">
-      <v-btn
-        icon
-        class="ma-2"
-        @click="$refs.calendar.next()"
-      >
-        <v-icon>mdi-chevron-right</v-icon>
-      </v-btn>
-      </v-col>
-     </v-row>
-      <v-sheet height="200">
-      <v-calendar
-        ref="calendar"
-        v-model="value"
-        :type="type"
-        color="primary"
-      ></v-calendar>
-    </v-sheet>
+        <vc-date-picker v-model='selectedDate' color="blue  " is-expanded  />
     <br>
+    <br> 
       <v-btn
         color="primary"
         @click="e6 = 3"
@@ -342,19 +313,21 @@
 </template>
 
 <script>
+  import Vue from 'vue';
+  import VCalendar from 'v-calendar';
+  Vue.use(VCalendar, {
+  componentPrefix: 'vc',  // Use <vc-calendar /> instead of <v-calendar />
+                  // ...other defaults
+});
   export default {
     data: () => ({
      e6:1,
-    //  selectedItem: 0,
       items: [
         { text: 'Taman Rinting'},
         { text: 'Taman Molek'},
         { text: 'Taman Nusa Bestari'},
         { text: 'Taman Bukit Indah'},
       ], 
-      showScheduleForm: false, 
-      type: 'month',
-      value: '',
        time: [
         { text: '08:00'},
         { text: '08:30'},
@@ -378,7 +351,6 @@
         { text: '17:30'},
         { text: '18:00'},
       ],
-      
       pax: [
         { text: '1-2'},
         { text: '3-4'},
@@ -388,7 +360,6 @@
        
       ],
       dialog: false,
-      selected: [],
       email:'',
       firstname:'',
       lastname:'',
@@ -397,6 +368,7 @@
       selectedTime:true,
       selectedBranch:'Taman Rinting',
       selectedPerson:'',
+      selectedDate:'',
     
   }),
   computed: {
@@ -404,7 +376,7 @@
 
      
      
-    },
+  },
   
   
    methods: {
