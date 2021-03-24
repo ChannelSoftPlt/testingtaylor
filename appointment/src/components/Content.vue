@@ -24,7 +24,13 @@
         <v-col cols="12" md="4"></v-col>
 
       </v-row>
-        
+        <!-- <span>selectedBranch: {{ selectedBranch }}</span>
+        <br>
+        <span>value: {{ value }}</span>
+        <br>
+        <span>selectedTime: {{ selectedTime }}</span>
+        <br>
+        <span>selectedPerson: {{ selectedPerson }}</span> -->
         <v-row>
           <v-col cols="12" md="4" ></v-col>
         <v-col cols="12" md="4">
@@ -38,8 +44,14 @@
     </v-stepper-step>
 
     <v-stepper-content step="1" >
+
+        <v-select
+          :items="items"
+          label="Branch"
+          v-model="selectedBranch"
+        ></v-select>
       
-        <v-list rounded>
+        <!-- <v-list rounded>
       <v-list-item-group
         v-model="selectedItem"
         color="primary"
@@ -53,7 +65,7 @@
           </v-list-item-content>
         </v-list-item>
       </v-list-item-group>
-    </v-list>
+    </v-list> -->
      
       <v-btn
         color="primary"
@@ -128,29 +140,80 @@
     <v-stepper-content step="3">
       <v-row>
       <v-col
-        cols="12"
-        sm="12"
-        align="left"
+        cols="4"
+        sm="4"
+        
+        
       >
+      <p >Morning</p>
+      <div v-for="(time, i) in time"
+          :key="i" >
+        
         <v-btn
       class="mb-2 mt-1 mr-1"
       outlined
       color="indigo"
       small
-      v-for="(time, i) in time"
-          :key="i"
-      
+      v-model="selectedTime"
+        @click="selectedTime=time.text
+              e6 = 4"
+      v-if="parseFloat(time.text.substring(0,2))<12"
     >
       {{time.text}}
     </v-btn>
+  
+
+      </div>
+      </v-col>
+      <v-col
+        cols="4"
+        sm="4"
+  
+      >
+      <p>Noon</p>
+        <div v-for="(time, i) in time"
+          :key="i">
+        <v-btn
+      class="mb-2 mt-1 mr-1"
+      outlined
+      color="indigo"
+      small
+      v-model="selectedTime"
+        @click="selectedTime=time.text
+              e6 = 4"
+      v-if="parseFloat(time.text.substring(0,2))>12"
+    >
+      {{time.text}}
+    </v-btn>
+
+      </div>
+    
+      </v-col>
+      <v-col
+        cols="4"
+        sm="4"
+  
+      >
+      <p>Night</p>
+        <div v-for="(time, i) in time"
+          :key="i">
+        <v-btn
+      class="mb-2 mt-1 mr-1"
+      outlined
+      color="indigo"
+      small
+      v-model="selectedTime"
+        @click="selectedTime=time.text
+              e6 = 4"
+      v-if="parseFloat(time.text.substring(0,2))>18"
+    >
+      {{time.text}}
+    </v-btn>
+
+      </div>
+    
       </v-col>
       </v-row>
-      <v-btn
-        color="primary"
-        @click="e6 = 4"
-      >
-        Continue
-      </v-btn>
       <v-btn text @click="e6 = 2">
         Back
       </v-btn>
@@ -161,7 +224,7 @@
     </v-stepper-step>
     <v-stepper-content step="4">
     <v-checkbox
-      v-model="selected" @change="setOptions"
+      v-model="selectedPerson"
       :label="pax.text+' pax'" 
       :value="pax.text"
       v-for="(pax, i) in pax"
@@ -282,7 +345,7 @@
   export default {
     data: () => ({
      e6:1,
-     selectedItem: 0,
+    //  selectedItem: 0,
       items: [
         { text: 'Taman Rinting'},
         { text: 'Taman Molek'},
@@ -303,17 +366,17 @@
         { text: '11:30'},
         { text: '12:00'},
         { text: '12:30'},
-        { text: '01:00'},
-        { text: '01:30'},
-        { text: '02:00'},
-        { text: '02:30'},
-        { text: '03:00'},
-        { text: '03:30'},
-        { text: '04:00'},
-        { text: '04:30'},
-        { text: '05:00'},
-        { text: '05:30'},
-        { text: '06:00'},
+        { text: '13:00'},
+        { text: '13:30'},
+        { text: '14:00'},
+        { text: '14:30'},
+        { text: '15:00'},
+        { text: '15:30'},
+        { text: '16:00'},
+        { text: '16:30'},
+        { text: '17:00'},
+        { text: '17:30'},
+        { text: '18:00'},
       ],
       
       pax: [
@@ -331,7 +394,9 @@
       lastname:'',
       phoneNumber:'',
       errors:'',
-      setOptions:'',
+      selectedTime:true,
+      selectedBranch:'Taman Rinting',
+      selectedPerson:'',
     
   }),
   computed: {
