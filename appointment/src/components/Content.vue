@@ -1,17 +1,43 @@
 <template>
-   
-       <v-stepper
-    v-model="e6"
-    vertical
-  >
+  <div>
+
+      <v-row class="mt-5">
+         <v-col cols="12" md="6" align="center">
+            <h3>Company Name</h3>
+         </v-col>
+         <v-col  cols="12" md="6" align="center">
+            
+            <h3 class="hidden-sm-and-down"><v-icon
+      medium
+      color="green darken-2"
+    >
+      mdi-phone
+    </v-icon>Contact Us</h3>
+         </v-col>
+      </v-row>
+      <v-row class="my-12">
+        <v-col cols="12" md="4"></v-col>
+        <v-col cols="12" md="4" align="center">
+          <h2>Book Appointment Now!</h2>
+          <p>Make an appointment with us now to save your time </p>
+        </v-col>
+        <v-col cols="12" md="4"></v-col>
+
+      </v-row>
+        
+        <v-row>
+          <v-col cols="12" md="4" ></v-col>
+        <v-col cols="12" md="4">
+       <v-stepper v-model="e6" vertical>
     <v-stepper-step
       :complete="e6 > 1"
       step="1"
+      
     >  
       Choose a Branch
     </v-stepper-step>
 
-    <v-stepper-content step="1">
+    <v-stepper-content step="1" >
       
         <v-list rounded>
       <v-list-item-group
@@ -41,6 +67,7 @@
     <v-stepper-step
       :complete="e6 > 2"
       step="2"
+      
     >
       Pick a date
     </v-stepper-step>
@@ -102,7 +129,7 @@
       <v-row>
       <v-col
         cols="12"
-        sm="6"
+        sm="12"
         align="left"
       >
         <v-btn
@@ -134,37 +161,135 @@
     </v-stepper-step>
     <v-stepper-content step="4">
     <v-checkbox
-      v-model="selected"
+      v-model="selected" @change="setOptions"
       :label="pax.text+' pax'" 
       :value="pax.text"
       v-for="(pax, i) in pax"
           :key="i"
-    ></v-checkbox>
-      <v-btn
-        color="primary"
-        @click="e6 = 1"
-      >
-        Submit
-      </v-btn>
+   ></v-checkbox>
+
+    
+        <v-dialog
+      v-model="dialog"
+      persistent
+      max-width="600px"
+    >
+    <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          color="primary"
+          dark
+          v-bind="attrs"
+          v-on="on"
+        >
+          Continue
+        </v-btn>
+     </template>
+      
+      <v-card>
+        <v-card-title>
+          <span class="headline">Customer Information</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col
+                cols="12"
+                sm="5"
+                md="6"
+              >
+                <v-text-field
+                  label="First name"
+                  v-model="firstname"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col
+                cols="12"
+                sm="6"
+                md="6"
+              >
+                <v-text-field
+                v-model="lastname"
+                  label="Last name"
+                ></v-text-field>
+              </v-col>
+              
+              <v-col cols="12">
+                <v-text-field
+                  v-model="email"
+                  label="Email*"
+                  hint="example@hotmail.com"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col
+                cols="12"
+                sm="6"
+              >
+                <v-text-field
+                    v-model="phoneNumber"
+                    :counter="7"
+                    :error-messages="errors"
+                    label="Phone Number"
+                    required
+                    ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="blue darken-1"
+            text
+            @click="dialog = false"
+          >
+            Close
+          </v-btn>
+          <v-btn
+            color="blue darken-1"
+            text
+            @click="dialog = false"
+          >
+            submit
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+      
+      
       <v-btn text @click="e6 = 3">
         Back
       </v-btn>
+       
     </v-stepper-content>
   </v-stepper>
-   
+  </v-col>
+
+    <v-col cols="12" md="4"></v-col>
+        </v-row>
+
+    <v-row class="mt-16  mb-n16">
+        <v-col cols="12" md="6" align="center" >
+               <p>@2021 | <a href="https://channelsoft.com.my/" style="text-decoration: none; color: black;"> Channel Soft PLT. </a></p>
+              
+        </v-col>
+    </v-row>
+    </div>
 </template>
 
 <script>
   export default {
     data: () => ({
      e6:1,
-     selectedItem: 1,
+     selectedItem: 0,
       items: [
         { text: 'Taman Rinting'},
         { text: 'Taman Molek'},
         { text: 'Taman Nusa Bestari'},
         { text: 'Taman Bukit Indah'},
-      ],  
+      ], 
+      showScheduleForm: false, 
       type: 'month',
       value: '',
        time: [
@@ -190,7 +315,7 @@
         { text: '05:30'},
         { text: '06:00'},
       ],
-      selected: [],
+      
       pax: [
         { text: '1-2'},
         { text: '3-4'},
@@ -199,11 +324,28 @@
         { text: '9-10'},
        
       ],
+      dialog: false,
+      selected: [],
+      email:'',
+      firstname:'',
+      lastname:'',
+      phoneNumber:'',
+      errors:'',
+      setOptions:'',
     
   }),
+  computed: {
+
+
+     
+     
+    },
+  
   
    methods: {
-      
+     
+    
     },
+    
   }
 </script>

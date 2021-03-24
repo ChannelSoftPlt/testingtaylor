@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <AppBar />
+    <!-- <AppBar /> -->
     <v-main>
         <Content/>
     </v-main>
@@ -9,14 +9,14 @@
 
 <script>
 
-import AppBar from "./components/AppBar";
+// import AppBar from "./components/AppBar";
 import Content from "./components/Content";
 
 export default {
   name: "App",
 
   components: {
-    AppBar,
+    // AppBar,
     Content
   },
 
