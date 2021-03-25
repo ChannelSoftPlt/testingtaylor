@@ -24,17 +24,12 @@
         <v-col cols="12" md="4"></v-col>
 
       </v-row>
-        <!-- <span>selectedBranch: {{ selectedBranch }}</span>
-        <br>
-        <span>selectedDate: {{ selectedDate }}</span>
-        <br>
-        <span>selectedTime: {{ selectedTime }}</span>
-        <br>
-        <span>selectedPerson: {{ selectedPerson }}</span> -->
+        
         <v-row>
           <v-col cols="12" md="4" ></v-col>
+
         <v-col cols="12" md="4">
-       <v-stepper v-model="e6" vertical>
+       <v-stepper v-model="e6" vertical class="mx-3">
     <v-stepper-step
       :complete="e6 > 1"
       step="1"
@@ -53,22 +48,7 @@
           v-model="selectedBranch"
         ></v-select>
       
-        <!-- <v-list rounded>
-      <v-list-item-group
-        v-model="selectedItem"
-        color="primary"
-      >
-        <v-list-item
-          v-for="(item, i) in items"
-          :key="i"
-        >
-          <v-list-item-content>
-            <v-list-item-title v-text="item.text"></v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list-item-group>
-    </v-list> -->
-     
+      
       <v-btn
         color="primary"
         @click="e6 = 2"
@@ -87,7 +67,7 @@
     </v-stepper-step>
 
     <v-stepper-content step="2">
-        <vc-date-picker v-model='selectedDate' color="blue  " is-expanded  />
+        <vc-date-picker v-model='selectedDate' color="blue" is-expanded  />
     <br>
     <br> 
       <v-btn
@@ -189,8 +169,10 @@
         Back
       </v-btn>
     </v-stepper-content>
-
-    <v-stepper-step step="4">
+    <v-stepper-step
+      :complete="e6 > 4"
+      step="4"
+    >
       Total person
     </v-stepper-step>
     <v-stepper-content step="4">
@@ -202,39 +184,42 @@
           :key="i"
    ></v-checkbox>
 
-    
-        <v-dialog
-      v-model="dialog"
-      persistent
-      max-width="600px"
-    >
-    <template v-slot:activator="{ on, attrs }">
-        <v-btn
-          color="primary"
-          dark
-          v-bind="attrs"
-          v-on="on"
-        >
-          Continue
-        </v-btn>
-     </template>
-      
-      <v-card>
+   <v-btn
+        color="primary"
+        @click="e6 = 5"
+      >
+        Continue
+      </v-btn>
+      <v-btn text @click="e6 = 3">
+        Back
+      </v-btn>
+</v-stepper-content>
+<v-stepper-step
+      step="5"
+    >  
+      Your Info 
+    </v-stepper-step>
+
+    <v-stepper-content step="5" >
+       
         <v-card-title>
-          <span class="headline">Customer Information</span>
+          <v-icon>mdi-account</v-icon><span>Customer Information</span>
         </v-card-title>
-        <v-card-text>
-          <v-container>
+        <v-form
+        ref="form"
+    v-model="valid"
+    lazy-validation>
             <v-row>
               <v-col
                 cols="12"
-                sm="5"
+                sm="4"
                 md="6"
               >
                 <v-text-field
                   label="First name"
-                  v-model="firstname"
-                  required
+                  v-model="firstname" 
+                  :rules="firstnameRules"
+                   required
                 ></v-text-field>
               </v-col>
               <v-col
@@ -245,33 +230,106 @@
                 <v-text-field
                 v-model="lastname"
                   label="Last name"
+                  :rules="lastnameRules"
+                   required
                 ></v-text-field>
               </v-col>
-              
-              <v-col cols="12">
+               <v-col 
+              cols="12"
+              sm="8">
                 <v-text-field
                   v-model="email"
-                  label="Email*"
+                  label="Email"
+                  :rules="emailRules"
                   hint="example@hotmail.com"
                   required
                 ></v-text-field>
               </v-col>
+              
               <v-col
                 cols="12"
-                sm="6"
+                sm="4"
               >
                 <v-text-field
                     v-model="phoneNumber"
                     :counter="7"
+                    :rules="phoneRules"
                     :error-messages="errors"
                     label="Phone Number"
                     required
                     ></v-text-field>
               </v-col>
+             
+              <v-col>
+                <v-textarea
+                  clearable
+                  counter
+                  v-model="remark"
+                  clear-icon="mdi-close-circle"
+                  label="Remark"
+                  :rules="remarkRules"
+                  value="Remind me earlier"
+                ></v-textarea>
+              </v-col>
             </v-row>
+        </v-form>
+      
+
+        
+      <v-btn
+        color="primary"
+        @click="validate"
+        @click.stop="dialog = true"
+       
+      >
+        Continue
+      </v-btn>
+      <v-btn text @click="e6 = 4">
+        Back
+      </v-btn>
+      
+    </v-stepper-content>
+    
+
+    <v-dialog
+      v-model="dialog"
+      persistent
+      max-width="600px"
+    >
+    <v-card>
+        <v-card-title>
+          <v-container>
+           Comfirm your booking
           </v-container>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            
+           
+
+
+            Branch : {{selectedBranch}}
+            <br>
+            Date and Time : {{selectedDate}}{{selectedTime}}
+            <br>
+            Total person : {{selectedPerson}}
+            <br>
+            Your info : {{firstname}}{{lastname}}
+                        <br>
+                        {{email}}
+                        <br>
+                        {{address}}
+                        <br>
+                        {{phoneNumber}}
+                        <br>
+                        {{remark}}
+
+
+          
+          </v-container>
+  
         </v-card-text>
-        <v-card-actions>
+          <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
             color="blue darken-1"
@@ -285,18 +343,17 @@
             text
             @click="dialog = false"
           >
-            submit
+            Submit
           </v-btn>
         </v-card-actions>
-      </v-card>
+    </v-card>
+      
     </v-dialog>
       
       
-      <v-btn text @click="e6 = 3">
-        Back
-      </v-btn>
+      
        
-    </v-stepper-content>
+    
   </v-stepper>
   </v-col>
 
@@ -369,6 +426,15 @@
       selectedBranch:'Taman Rinting',
       selectedPerson:'',
       selectedDate:'',
+      remarkRules: [v => !!v || 'Remark is required', v => v.length <= 200 || 'Max 200 characters'],
+      firstnameRules: [v => !!v || 'Firstname is required'],
+      lastnameRules: [v => !!v || 'Lastname is required'],
+      emailRules: [
+        v => !!v || 'E-mail is required',
+        v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
+      ], 
+      phoneRules: [v => !!v || 'Phone is required'],
+      valid:true,
     
   }),
   computed: {
@@ -380,6 +446,10 @@
   
   
    methods: {
+     validate () {
+        this.$refs.form.validate();
+        
+      },
      
     
     },
