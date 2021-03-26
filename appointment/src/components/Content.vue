@@ -1,4 +1,4 @@
-<template>
+<template >
   <div>
 
       <v-row class="mt-5">
@@ -7,12 +7,12 @@
          </v-col>
          <v-col  cols="12" md="6" align="center">
             
-            <h3 class="hidden-sm-and-down"><v-icon
+            <a><h3 class="hidden-sm-and-down black--text"><v-icon
       medium
       color="green darken-2"
     >
       mdi-phone
-    </v-icon>Contact Us</h3>
+    </v-icon>Contact Us</h3></a>
          </v-col>
       </v-row>
       <v-row class="my-12">
@@ -89,19 +89,20 @@
     </v-stepper-step>
 
     <v-stepper-content step="3">
-      <v-row>
+      <v-row class="mb-2"> 
       <v-col
         cols="4"
-        sm="4"
+        sm="12"
         
         
       >
       <p >Morning</p>
+      <v-row>
       <div v-for="(time, i) in time"
           :key="i" >
         
         <v-btn
-      class="mb-2 mt-1 mr-1"
+      class="mb-2 mt-1 mr-1 ml-3"
       outlined
       color="indigo"
       small
@@ -112,20 +113,20 @@
     >
       {{time.text}}
     </v-btn>
-  
-
       </div>
+      </v-row>
       </v-col>
       <v-col
         cols="4"
-        sm="4"
+        sm="12"
   
       >
       <p>Noon</p>
+      <v-row>
         <div v-for="(time, i) in time"
           :key="i">
         <v-btn
-      class="mb-2 mt-1 mr-1"
+      class="mb-2 mt-1 mr-1 ml-3"
       outlined
       color="indigo"
       small
@@ -138,18 +139,19 @@
     </v-btn>
 
       </div>
-    
+      </v-row>
       </v-col>
       <v-col
         cols="4"
-        sm="4"
+        sm="12"
   
       >
       <p>Night</p>
+      <v-row>
         <div v-for="(time, i) in time"
           :key="i">
         <v-btn
-      class="mb-2 mt-1 mr-1"
+      class="mb-2 mt-1 mr-1 ml-3"
       outlined
       color="indigo"
       small
@@ -162,6 +164,7 @@
     </v-btn>
 
       </div>
+      </v-row>
     
       </v-col>
       </v-row>
@@ -206,10 +209,11 @@
           <v-icon>mdi-account</v-icon><span>Customer Information</span>
         </v-card-title>
         <v-form
+        class="mb-2"
         ref="form"
     v-model="valid"
     lazy-validation>
-            <v-row>
+            <v-row >
               <v-col
                 cols="12"
                 sm="4"
@@ -264,11 +268,12 @@
                 <v-textarea
                   clearable
                   counter
+                  value="Remind me earlier"
                   v-model="remark"
                   clear-icon="mdi-close-circle"
                   label="Remark"
                   :rules="remarkRules"
-                  value="Remind me earlier"
+                  
                 ></v-textarea>
               </v-col>
             </v-row>
@@ -299,33 +304,33 @@
     <v-card>
         <v-card-title>
           <v-container>
-           Comfirm your booking
+           <v-icon class="light-green--text">mdi-check-circle-outline</v-icon>Comfirm your booking
           </v-container>
         </v-card-title>
         <v-card-text>
           <v-container>
-            
-           
-
-
-            Branch : {{selectedBranch}}
-            <br>
-            Date and Time : {{selectedDate}}{{selectedTime}}
-            <br>
-            Total person : {{selectedPerson}}
-            <br>
-            Your info : {{firstname}}{{lastname}}
+            <v-row>
+              <v-col sm="3"> Branch : </v-col>
+              <v-col sm="3">{{selectedBranch}} </v-col>
+            </v-row>
+            <v-row>
+              <v-col sm="3"> Date and Time : </v-col>
+              <v-col sm="9">{{selectedDate}}{{selectedTime}}</v-col>
+            </v-row>
+            <v-row>
+              <v-col sm="3"> Total person : </v-col>
+              <v-col sm="3"> {{selectedPerson}} </v-col>
+            </v-row>
+            <v-row>
+              <v-col sm="3"> Your info : </v-col>
+              <v-col sm="9"> {{firstname}}{{lastname}} 
                         <br>
                         {{email}}
                         <br>
-                        {{address}}
-                        <br>
                         {{phoneNumber}}
                         <br>
-                        {{remark}}
-
-
-          
+                        {{remark}}</v-col>
+            </v-row>     
           </v-container>
   
         </v-card-text>
@@ -341,7 +346,7 @@
           <v-btn
             color="blue darken-1"
             text
-            @click="dialog = false"
+            @click="dialog = false , submit_data"
           >
             Submit
           </v-btn>
@@ -407,6 +412,9 @@
         { text: '17:00'},
         { text: '17:30'},
         { text: '18:00'},
+        { text: '18:30'},
+        { text: '19:00'},
+        { text: '19:30'},
       ],
       pax: [
         { text: '1-2'},
@@ -426,7 +434,10 @@
       selectedBranch:'Taman Rinting',
       selectedPerson:'',
       selectedDate:'',
-      remarkRules: [v => !!v || 'Remark is required', v => v.length <= 200 || 'Max 200 characters'],
+      remarkRules: [
+        v => !!v || 'Remark is required',
+        v => v.length <= 200 || 'Max 200 characters'
+       ],
       firstnameRules: [v => !!v || 'Firstname is required'],
       lastnameRules: [v => !!v || 'Lastname is required'],
       emailRules: [
@@ -435,6 +446,7 @@
       ], 
       phoneRules: [v => !!v || 'Phone is required'],
       valid:true,
+      remark:'',
     
   }),
   computed: {
@@ -450,6 +462,9 @@
         this.$refs.form.validate();
         
       },
+      submit_data(){
+        
+      }
      
     
     },
