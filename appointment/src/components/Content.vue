@@ -1,15 +1,14 @@
 <template >
-  <div>
-
-      <v-row class="mt-5">
+  <div :style="{ backgroundImage: createBackgroundString ,height: backgroundHeight}" >
+      <v-row class="pt-5">
          <v-col cols="12" md="6" align="center">
-            <h3>Company Name</h3>
+            <h3 :class="headerTextColor">Company Name</h3>
          </v-col>
          <v-col  cols="12" md="6" align="center">
             
-            <a><h3 class="hidden-sm-and-down black--text"><v-icon
+            <a :class="headerTextColor"><h3 class="hidden-sm-and-down"><v-icon
       medium
-      color="green darken-2"
+      color="green lighten-2"
     >
       mdi-phone
     </v-icon>Contact Us</h3></a>
@@ -18,8 +17,8 @@
       <v-row class="my-12">
         <v-col cols="12" md="4"></v-col>
         <v-col cols="12" md="4" align="center">
-          <h2>Book Appointment Now!</h2>
-          <p>Make an appointment with us now to save your time </p>
+          <h2 :class="headerTextColor">Book Appointment Now!</h2>
+          <p class="px-9"><span :class=" descriptionTextColor ">Make an appointment with us now to save your time </span> </p>
         </v-col>
         <v-col cols="12" md="4"></v-col>
 
@@ -28,11 +27,12 @@
         <v-row>
           <v-col cols="12" md="4" ></v-col>
 
-        <v-col cols="12" md="4">
-       <v-stepper v-model="e6" vertical class="mx-3">
+        <v-col cols="12" md="4" class="mb-16">
+       <v-stepper v-model="e6" vertical class="mx-3 grey lighten-5" >
     <v-stepper-step
       :complete="e6 > 1"
       step="1"
+      :color="stepButtonColor"
       
     >  
       Choose a Branch
@@ -50,7 +50,8 @@
       
       
       <v-btn
-        color="primary"
+        :color="continueButtonColor"
+        outlined
         @click="e6 = 2"
       >
         Continue
@@ -61,17 +62,18 @@
     <v-stepper-step
       :complete="e6 > 2"
       step="2"
-      
+      :color="stepButtonColor"
     >
       Pick a date
     </v-stepper-step>
 
     <v-stepper-content step="2">
-        <vc-date-picker v-model='selectedDate' color="blue" is-expanded  />
+        <vc-date-picker v-model='selectedDate' color="purple" is-expanded  />
     <br>
     <br> 
       <v-btn
-        color="primary"
+        :color="continueButtonColor"
+        outlined
         @click="e6 = 3"
       >
         Continue
@@ -84,6 +86,7 @@
     <v-stepper-step
       :complete="e6 > 3"
       step="3"
+      :color="stepButtonColor"
     >
       Choose a time
     </v-stepper-step>
@@ -93,7 +96,7 @@
       <v-col
         cols="4"
         sm="12"
-        
+      
         
       >
       <p >Morning</p>
@@ -175,12 +178,14 @@
     <v-stepper-step
       :complete="e6 > 4"
       step="4"
+      :color="stepButtonColor"
     >
       Total person
     </v-stepper-step>
     <v-stepper-content step="4">
     <v-checkbox
       v-model="selectedPerson"
+      :color="stepButtonColor"
       :label="pax.text+' pax'" 
       :value="pax.text"
       v-for="(pax, i) in pax"
@@ -188,7 +193,8 @@
    ></v-checkbox>
 
    <v-btn
-        color="primary"
+        :color="continueButtonColor"
+        outlined
         @click="e6 = 5"
       >
         Continue
@@ -199,6 +205,7 @@
 </v-stepper-content>
 <v-stepper-step
       step="5"
+      :color="stepButtonColor"
     >  
       Your Info 
     </v-stepper-step>
@@ -282,7 +289,8 @@
 
         
       <v-btn
-        color="primary"
+        :color="continueButtonColor"
+        outlined
         @click="validate"
         @click.stop="dialog = true"
        
@@ -365,9 +373,9 @@
     <v-col cols="12" md="4"></v-col>
         </v-row>
 
-    <v-row class="mt-16  mb-n16">
+    <v-row class="pt-16  pb-2 ">
         <v-col cols="12" md="6" align="center" >
-               <p>@2021 | <a href="https://channelsoft.com.my/" style="text-decoration: none; color: black;"> Channel Soft PLT. </a></p>
+               <p :class="headerTextColor">@2021 | <a href="https://channelsoft.com.my/" style="text-decoration: none;" :class="headerTextColor"> Channel Soft PLT. </a></p>
               
         </v-col>
     </v-row>
@@ -447,10 +455,23 @@
       phoneRules: [v => !!v || 'Phone is required'],
       valid:true,
       remark:'',
+      angle: '120',
+      color1: '#F9A0FA',
+      color2: '#558AE9  ',
+      backgroundHeight : '102%',
+      stepButtonColor: 'deep-purple lighten-1',
+      continueButtonColor:'purple lighten-4',
+      headerTextColor:'white--text',
+      descriptionTextColor:'grey--text text--lighten-2',
+      
+     
     
   }),
   computed: {
-
+      createBackgroundString() {
+      return `linear-gradient(${this.angle}deg, ${this.color1}, ${this.color2})`;
+    },
+     
 
      
      
