@@ -1,4 +1,5 @@
-<template >
+<template>
+
   <div :style="{ backgroundImage: createBackgroundString ,height: backgroundHeight}" >
       <v-row class="pt-5">
          <v-col cols="12" md="6" align="center">
