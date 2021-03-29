@@ -1,6 +1,7 @@
 <template>
-
+  
   <div :style="{ backgroundImage: createBackgroundString ,height: backgroundHeight}" >
+ <meta name="viewport" content="width=device-width, user-scalable=no" />
       <v-row class="pt-5">
          <v-col cols="12" md="6" align="center">
             <h3 :class="headerTextColor">Company Name</h3>
@@ -14,19 +15,19 @@
       mdi-phone
     </v-icon>Contact Us</h3></a>
          </v-col>
-      </v-row>
-      <v-row class="my-12">
-        <v-col cols="12" md="4"></v-col>
+      </v-row >
+      <v-row class="my-4">  
+        <v-col cols="12" md="4" class="d-none d-lg-block"></v-col>
         <v-col cols="12" md="4" align="center">
           <h2 :class="headerTextColor">Book Appointment Now!</h2>
-          <p class="px-9"><span :class=" descriptionTextColor ">Make an appointment with us now to save your time </span> </p>
+          <p class="px-7"><span :class=" descriptionTextColor ">Make an appointment with us now to save your time </span> </p>
         </v-col>
-        <v-col cols="12" md="4"></v-col>
+        <v-col cols="12" md="4" class="d-none d-lg-block"></v-col>
 
       </v-row>
         
         <v-row>
-          <v-col cols="12" md="4" ></v-col>
+          <v-col cols="12" md="4"  ></v-col>
 
         <v-col cols="12" md="4" class="mb-16">
        <v-stepper v-model="e6" vertical class="mx-3 grey lighten-5" >
@@ -47,16 +48,11 @@
           :items="items"
           label="Branch"
           v-model="selectedBranch"
+          @change="e6 = 2"
         ></v-select>
       
       
-      <v-btn
-        :color="continueButtonColor"
-        outlined
-        @click="e6 = 2"
-      >
-        Continue
-      </v-btn>
+      
       
     </v-stepper-content>
 
@@ -69,17 +65,13 @@
     </v-stepper-step>
 
     <v-stepper-content step="2">
-        <vc-date-picker v-model='selectedDate' color="purple" is-expanded  />
+      
+        <vc-date-picker @dayclick="e6=3 " v-model='selectedDate' :model-config="modelConfig" color="purple" is-expanded  :min-date='new Date()'/>
     <br>
     <br> 
-      <v-btn
-        :color="continueButtonColor"
-        outlined
-        @click="e6 = 3"
-      >
-        Continue
-      </v-btn>
-      <v-btn text @click="e6 = 1">
+      
+      <v-btn text  :color="continueButtonColor"
+        outlined @click="e6 = 1">
         Back
       </v-btn>
     </v-stepper-content>
@@ -137,7 +129,7 @@
       v-model="selectedTime"
         @click="selectedTime=time.text
               e6 = 4"
-      v-if="parseFloat(time.text.substring(0,2))>12"
+      v-if="parseFloat(time.text.substring(0,2))>12&&parseFloat(time.text.substring(0,2))<=18"
     >
       {{time.text}}
     </v-btn>
@@ -172,7 +164,8 @@
     
       </v-col>
       </v-row>
-      <v-btn text @click="e6 = 2">
+      <v-btn text  :color="continueButtonColor"
+        outlined @click="e6 = 2">
         Back
       </v-btn>
     </v-stepper-content>
@@ -185,6 +178,7 @@
     </v-stepper-step>
     <v-stepper-content step="4">
     <v-checkbox
+      @click="e6 = 5"
       v-model="selectedPerson"
       :color="stepButtonColor"
       :label="pax.text+' pax'" 
@@ -193,14 +187,16 @@
           :key="i"
    ></v-checkbox>
 
-   <v-btn
+   <!-- <v-btn
         :color="continueButtonColor"
         outlined
         @click="e6 = 5"
       >
         Continue
-      </v-btn>
-      <v-btn text @click="e6 = 3">
+      </v-btn> -->
+      <v-btn text @click="e6 = 3"
+      :color="continueButtonColor"
+        outlined>
         Back
       </v-btn>
 </v-stepper-content>
@@ -276,10 +272,10 @@
                 <v-textarea
                   clearable
                   counter
-                  value="Remind me earlier"
+                  remark="Remind me earlier"
                   v-model="remark"
                   clear-icon="mdi-close-circle"
-                  label="Remark"
+                  label="Remark(Optional)"
                   :rules="remarkRules"
                   
                 ></v-textarea>
@@ -320,26 +316,30 @@
           <v-container>
             <v-row>
               <v-col sm="3"> Branch : </v-col>
-              <v-col sm="3">{{selectedBranch}} </v-col>
+              <v-col sm="4">{{selectedBranch}} </v-col>
             </v-row>
             <v-row>
               <v-col sm="3"> Date and Time : </v-col>
-              <v-col sm="9">{{selectedDate}}{{selectedTime}}</v-col>
+              <v-col sm="4">{{selectedDate}} {{selectedTime}}</v-col>
             </v-row>
             <v-row>
               <v-col sm="3"> Total person : </v-col>
-              <v-col sm="3"> {{selectedPerson}} </v-col>
+              <v-col sm="4"> {{selectedPerson}} </v-col>
             </v-row>
             <v-row>
               <v-col sm="3"> Your info : </v-col>
-              <v-col sm="9"> {{firstname}}{{lastname}} 
-                        <br>
-                        {{email}}
-                        <br>
-                        {{phoneNumber}}
-                        <br>
-                        {{remark}}</v-col>
-            </v-row>     
+              <v-col sm="4"> {{firstname}}{{lastname}} 
+                            <br>
+                             {{email}}
+                            <br>
+                             {{phoneNumber}}
+                            <br>
+                             </v-col>
+            </v-row>
+            <v-row>
+              <v-col sm="3"> Remark : </v-col>
+              <v-col sm="4"> {{remark}}</v-col>
+            </v-row>      
           </v-container>
   
         </v-card-text>
@@ -371,10 +371,10 @@
   </v-stepper>
   </v-col>
 
-    <v-col cols="12" md="4"></v-col>
+    <v-col cols="12" md="4" class="d-none d-lg-block"></v-col>
         </v-row>
 
-    <v-row class="pt-16  pb-2 ">
+    <v-row class="pt-16" >
         <v-col cols="12" md="6" align="center" >
                <p :class="headerTextColor">@2021 | <a href="https://channelsoft.com.my/" style="text-decoration: none;" :class="headerTextColor"> Channel Soft PLT. </a></p>
               
@@ -444,8 +444,7 @@
       selectedPerson:'',
       selectedDate:'',
       remarkRules: [
-        v => !!v || 'Remark is required',
-        v => v.length <= 200 || 'Max 200 characters'
+        v => v.length <= 200 || 'Max 30  characters'
        ],
       firstnameRules: [v => !!v || 'Firstname is required'],
       lastnameRules: [v => !!v || 'Lastname is required'],
@@ -459,11 +458,15 @@
       angle: '120',
       color1: '#F9A0FA',
       color2: '#558AE9  ',
-      backgroundHeight : '102%',
+      backgroundHeight : '103%',
       stepButtonColor: 'deep-purple lighten-1',
-      continueButtonColor:'purple lighten-4',
+      continueButtonColor:'deep-purple lighten-3',
       headerTextColor:'white--text',
       descriptionTextColor:'grey--text text--lighten-2',
+      modelConfig: {
+        type: 'string',
+        mask: 'WWW, MMM D,YYYY', // Uses 'iso' if missing
+      },
       
      
     
