@@ -210,7 +210,10 @@
     <v-stepper-content step="5" >
        
         <v-card-title>
-          <v-icon>mdi-account</v-icon><span>Customer Information</span>
+          <v-row>
+              <v-icon>mdi-account</v-icon> 
+            <span>Customer Information</span>       
+          </v-row>
         </v-card-title>
         <v-form
         class="mb-2"
@@ -307,39 +310,105 @@
       max-width="600px"
     >
     <v-card>
-        <v-card-title>
+        <v-card-title class="grey lighten-4">
           <v-container>
            <v-icon class="light-green--text">mdi-check-circle-outline</v-icon>Comfirm your booking
           </v-container>
         </v-card-title>
         <v-card-text>
           <v-container>
-            <v-row>
-              <v-col sm="3"> Branch : </v-col>
-              <v-col sm="4">{{selectedBranch}} </v-col>
+            <v-row no-gutters>
+              <v-col
+                cols="6"
+                md="4"
+              >
+              <h5>Branch: </h5> 
+              </v-col>
+              <v-col
+                cols="12"
+                sm="6"
+                md="8"
+              >
+              <p>{{selectedBranch}}</p>  
+              </v-col>
             </v-row>
-            <v-row>
-              <v-col sm="3"> Date and Time : </v-col>
-              <v-col sm="4">{{selectedDate}} {{selectedTime}}</v-col>
+
+            <v-row no-gutters>
+              <v-col
+                cols="6"
+                md="4"
+              >
+              <h5>Date and Time: </h5>
+              </v-col>
+              <v-col
+                cols="12"
+                sm="6"
+                md="8"
+              >
+              <p>{{selectedDate}} {{selectedTime}}</p>  
+              </v-col>
             </v-row>
-            <v-row>
-              <v-col sm="3"> Total person : </v-col>
-              <v-col sm="4"> {{selectedPerson}} </v-col>
+
+            <v-row no-gutters>
+              <v-col
+                cols="6"
+                md="4"
+              >
+              <h5>Total Person: </h5>
+              </v-col>
+              <v-col
+                cols="12"
+                sm="6"
+                md="8"
+              >
+              <p>{{selectedPerson}}</p> 
+              </v-col>
             </v-row>
-            <v-row>
-              <v-col sm="3"> Your info : </v-col>
-              <v-col sm="4"> {{firstname}}{{lastname}} 
-                            <br>
-                             {{email}}
-                            <br>
-                             {{phoneNumber}}
-                            <br>
-                             </v-col>
+            
+            <v-row no-gutters>
+              <v-col
+                cols="6"
+                md="4"
+              >
+              <h5>Your Info: </h5>
+              </v-col>
+              <v-col
+                cols="12"
+                sm="6"
+                md="8"
+              >
+              <p>{{firstname}}{{lastname}}<br>{{email}}<br>{{phoneNumber}}</p> 
+              </v-col>
             </v-row>
-            <v-row>
-              <v-col sm="3"> Remark : </v-col>
-              <v-col sm="4"> {{remark}}</v-col>
-            </v-row>      
+
+            <v-row no-gutters>
+              <v-col
+                cols="6"
+                md="4"
+              >
+              <h5>Remark: </h5>
+              </v-col>
+              <v-col
+                cols="12"
+                sm="6"
+                md="8"
+              >
+              <p>{{remark}}</p> 
+              </v-col>
+            </v-row>
+
+            
+            
+            
+            
+            
+            
+            
+            
+            
+
+            
+            
           </v-container>
   
         </v-card-text>
