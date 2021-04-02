@@ -19,12 +19,12 @@
       </v-col>
     </v-row>
     <v-row class="my-4">
-      <v-col cols="12" md="4" class="d-none d-lg-block"></v-col>
+      <v-col cols="12" md="4" class="d-none d-md-block"></v-col>
       <v-col cols="12" md="4" align="center">
         <h2 :style="{ color: headerTextColor }">Book Appointment Now!</h2>
         <p class="px-7">
           <span :style="{ color: descriptionTextColor }"
-            >Make an appointment with us now to save your time {{offday}}
+            >Make an appointment with us now to save your time {{start}} {{timeSession}}
           </span>
         </p>
       </v-col>
@@ -46,57 +46,63 @@
               item-text="name"
               item-value="branch_id"
               label="Branch"
-
+              :loading = "branchLoading"
               v-model="selectedBranch"
               @change="
-                (selectedDate = ''),
-                  (e6 = 2),
-                  
-                  getBranchDateAndTime(),                 
-                  getBranchHoliday()
- 
+                branchLoading=true,
+                  getBranchDateAndTime(),                       
+                  getService()
+              
                   
               "
               return-object
-            ></v-select>
+            > 
+            </v-select>
           </v-stepper-content>
 
           <v-stepper-step :complete="e6 > 2" step="2" :color="stepButtonColor">
-            Pick a date
+            Booking details
           </v-stepper-step>
 
           <v-stepper-content step="2">
-            <vc-date-picker
+            <!-- <vc-date-picker
               @dayclick="selectedDate? (e6 = 3) : (e6 = 2)"
               v-model="selectedDate"
               :model-config="modelConfig"
               color="purple"
               is-expanded
-              :disabled-dates='[{weekdays:weekdays},offday ]' 
-              
+              :disabled-dates='[{weekdays:weekdays},offday]'
               :min-date='new Date()'
-              
-              
-              
-
-              
-              
-            />
-            <br />
-            <br />
-
-            <v-btn text :color="continueButtonColor" outlined @click="e6 = 1">
-              Back
-            </v-btn>
-          </v-stepper-content>
-
-          <v-stepper-step :complete="e6 > 3" step="3" :color="stepButtonColor">
-            Choose a time
-          </v-stepper-step>
-
-          <v-stepper-content step="3">
-            <v-row class="mb-2">
-              <v-col cols="4" sm="12">
+              v-if="e6==2"
+            /> -->
+            <v-row class="mt-2">
+              <v-col cols="6">
+            <v-text-field
+            class="rounded-lg"
+            dense
+            outlined
+            label="Total Person"
+            prepend-inner-icon="mdi-account"
+            v-model="selectedPerson"
+          ></v-text-field>
+            </v-col>
+            <v-col cols="6" v-if="selectedPerson">
+            <FunctionalCalendar
+                
+                v-model="selectedDated"
+                :disabled-day-names="weekdays"
+                :disabledDates="offday"
+                :limits="{min: today, max: '01/01/2200'}"
+                :date-format="'dd/mm/yyyy'" 
+                v-if="check"
+                :hidden-elements="['leftAndRightDays']"
+                :is-date-picker="true"
+                 :is-modal='true' 
+          ></FunctionalCalendar>
+              </v-col>
+            </v-row>
+            <v-row class="mb-2" v-if="selectedPerson">
+              <v-col cols="4" sm="12" >
                 <p>Morning</p>
                 <v-row>
                   <div v-for="(time, i) in time" :key="i">
@@ -108,7 +114,7 @@
                       v-model="selectedTime"
                       @click="
                         selectedTime = time.text;
-                        e6 = 4;
+                        e6 = 3;
                       "
                       v-if="parseFloat(time.text.substring(0, 2)) < 12"
                     >
@@ -129,7 +135,7 @@
                       v-model="selectedTime"
                       @click="
                         selectedTime = time.text;
-                        e6 = 4;
+                        e6 = 3  ;
                       "
                       v-if="
                         parseFloat(time.text.substring(0, 2)) > 12 &&
@@ -153,7 +159,7 @@
                       v-model="selectedTime"
                       @click="
                         selectedTime = time.text;
-                        e6 = 4;
+                        e6 = 3;
                       "
                       v-if="parseFloat(time.text.substring(0, 2)) > 18"
                     >
@@ -163,38 +169,22 @@
                 </v-row>
               </v-col>
             </v-row>
-            <v-btn
-              text
-              :color="continueButtonColor"
-              outlined
-              @click="(selectedDate = ''), (e6 = 2)"
-            >
+          
+            <br />
+            <br />
+
+            <v-btn text :color="continueButtonColor" outlined @click="e6 = 1">
               Back
             </v-btn>
           </v-stepper-content>
-          <v-stepper-step :complete="e6 > 4" step="4" :color="stepButtonColor">
-            Total person
-          </v-stepper-step>
-          <v-stepper-content step="4">
-            <v-checkbox
-              @click="e6 = 5"
-              v-model="selectedPerson"
-              :color="stepButtonColor"
-              :label="pax.text + ' pax'"
-              :value="pax.text"
-              v-for="(pax, i) in pax"
-              :key="i"
-            ></v-checkbox>
-            <v-btn text @click="e6 = 3" :color="continueButtonColor" outlined>
-              Back
-            </v-btn>
-          </v-stepper-content>
-          <v-stepper-step step="5" :color="stepButtonColor">
-            Your Info
+          
+
+          <v-stepper-step :complete="e6 > 3" step="3" :color="stepButtonColor">
+            Your info
           </v-stepper-step>
 
-          <v-stepper-content step="5">
-            <v-card-title>
+          <v-stepper-content step="3">
+              <v-card-title>
               <v-row>
                 <v-icon>mdi-account</v-icon>
                 <span>Customer Information</span>
@@ -261,8 +251,34 @@
             >
               Continue
             </v-btn>
-            <v-btn text @click="e6 = 4"> Back </v-btn>
+            <v-btn text @click="e6 = 2"> Back </v-btn>
+
           </v-stepper-content>
+          <!-- <v-stepper-step :complete="e6 > 4" step="4" :color="stepButtonColor">
+            Total person
+          </v-stepper-step>
+          <v-stepper-content step="4">
+            <v-checkbox
+              @click="e6 = 5"
+              v-model="selectedPerson"
+              :color="stepButtonColor"
+              v-for="item in pax"    :key="item.title.length"
+              :label="item.title"
+              :value="item.title"
+              
+             
+            ></v-checkbox>
+            <v-btn text @click="e6 = 3" :color="continueButtonColor" outlined>
+              Back
+            </v-btn>
+          </v-stepper-content>
+          <v-stepper-step step="5" :color="stepButtonColor">
+            Your Info
+          </v-stepper-step> -->
+
+          <!-- <v-stepper-content step="5">
+            
+          </v-stepper-content> -->
 
           <v-dialog v-model="dialog" persistent max-width="600px">
             <v-card>
@@ -289,7 +305,7 @@
                       <h5>Date and Time:</h5>
                     </v-col>
                     <v-col cols="12" sm="6" md="8">
-                      <p>{{ selectedDate }} {{ selectedTime }}</p>
+                      <p>{{ selectedDated.selectedDate}},{{ selectedTime }}</p>
                     </v-col>
                   </v-row>
 
@@ -365,13 +381,22 @@
 
 <script>
 import Vue from "vue";
-import VCalendar from "v-calendar";
 import { BASEURL } from "@/api/baseurl";
 import axios from "axios";
-Vue.use(VCalendar, {
-  componentPrefix: "vc", // Use <vc-calendar /> instead of <v-calendar />
-  // ...other defaults
+import FunctionalCalendar from 'vue-functional-calendar';
+// import VCalendar from "v-calendar";
+
+Vue.use(FunctionalCalendar, {
+    dayNames: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
+    isAutoCloseable: true,
+    
+    
+
 });
+// Vue.use(VCalendar, {
+//   componentPrefix: "vc", // Use <vc-calendar /> instead of <v-calendar />
+//   // ...other defaults
+// });
 export default {
   data: () => ({
     domain: BASEURL,
@@ -403,13 +428,6 @@ export default {
       { text: "19:00" },
       { text: "19:30" },
     ],
-    pax: [
-      { text: "1-2" },
-      { text: "3-4" },
-      { text: "5-6" },
-      { text: "7-8" },
-      { text: "9-10" },
-    ],
     dialog: false,
     email: "",
     firstname: "",
@@ -419,7 +437,7 @@ export default {
     selectedTime: true,
     selectedBranch: "",
     selectedPerson: "",
-    selectedDate: "",
+    selectedDated: "",
     remarkRules: [(v) => v.length <= 200 || "Max 30  characters"],
     firstnameRules: [(v) => !!v || "Firstname is required"],
     lastnameRules: [(v) => !!v || "Lastname is required"],
@@ -438,19 +456,16 @@ export default {
     continueButtonColor: "#B39DDB",
     headerTextColor: "#FFFFFF",
     descriptionTextColor: "#E0E0E0",
-    modelConfig: {
-      type: "string",
-      mask: "WWW, MMM D,YYYY", // Uses 'iso' if missing
-    },
     company_id: "",
     company_name: "",
     branch_id: "",
     workingDays: '',
-    startTime :'',
-    endTime :[],
     holiday: [],
     workingTime:'',
-    duration:'',
+    branchLoading:false,
+    table:[],
+    check:false,
+    
     
     
    
@@ -460,29 +475,62 @@ export default {
       return `linear-gradient(${this.angle}deg, ${this.color1}, ${this.color2})`;
     },
 
+    // weekdays() {
+    //   var value = [];
+
+    //   if (this.workingDays[0] == 1) {
+    //     value.push(1);
+    //   }
+    //   if (this.workingDays[1] == 1) {
+    //     value.push(2);
+    //   }
+    //   if (this.workingDays[2] == 1) {
+    //     value.push(3);
+    //   }
+    //   if (this.workingDays[3] == 1) {
+    //     value.push(4);
+    //   }
+    //   if (this.workingDays[4] == 1) {
+    //     value.push(5);
+    //   }
+    //   if (this.workingDays[5] == 1) {
+    //     value.push(6);
+    //   }
+    //   if (this.workingDays[6] == 1) {
+    //     value.push(7);
+    //   }
+
+    //   return value;
+    // },
+    progress () {
+        return Math.min(100, this.value.length * 10)
+      },
+      color () {
+        return ['error', 'warning', 'success'][Math.floor(this.progress / 40)]
+      },
     weekdays() {
       var value = [];
 
       if (this.workingDays[0] == 1) {
-        value.push(1);
+        value.push('Su');
       }
       if (this.workingDays[1] == 1) {
-        value.push(2);
+        value.push('Mo');
       }
       if (this.workingDays[2] == 1) {
-        value.push(3);
+        value.push('Tu');
       }
       if (this.workingDays[3] == 1) {
-        value.push(4);
+        value.push('We');
       }
       if (this.workingDays[4] == 1) {
-        value.push(5);
+        value.push('Th');
       }
       if (this.workingDays[5] == 1) {
-        value.push(6);
+        value.push('Fr');
       }
       if (this.workingDays[6] == 1) {
-        value.push(7);
+        value.push('Sa');
       }
 
       return value;
@@ -490,18 +538,22 @@ export default {
     offday(){
       var value=[];
         for (var i = 0; i < this.holiday.length; i++) {
-            value.push(' new Date('+(this.holiday[i])+') ');
-
-        }
-        
-      
-        var v = JSON.stringify(value).replaceAll('"', '');
-        v=v.replaceAll('[','');
-        v=v.replaceAll(']','');
-        
-      return v;
+            value.push(this.holiday[i]);
+        }   
+      return value;
 
     },
+    start(){
+      var start = JSON.stringify(this.workingTime[0]);
+
+      return start;
+    },
+    end(){
+      var end = this.workingTime[1];
+
+        return end;
+      },
+
     // workTime(){
       
         
@@ -511,7 +563,60 @@ export default {
       
     //   return this.startTime + ' '+this.endTime;
     // }
+    today() {
+
+      var d = new Date();
+      var datestring = ("0" + d.getDate()).slice(-1) + "/" + ("0"+(d.getMonth()+1)).slice(-2) + "/" +
+        d.getFullYear();
+
+
+
+      return datestring;
+    },
+    timeSession(){
+      var moment = require('moment'); // require
+      moment().format(); 
+      var startTime = this.start;
+      var interval = 15;
+      var times=[];
+      var period = 'm';
+      var periodsInADay = moment.duration(1, 'day').as(period);
+      var startTimeMoment = moment(startTime, 'HH:mm');
+      var endTime = this.end;
+      var endTimeMoment = moment(endTime, 'HH:mm');
+      for (let i = 0; i <= periodsInADay; i += interval) {
+        var time = startTimeMoment.add(i === 0 ? 0 : interval, period);
+
+        if(time<=endTimeMoment){
+          times.push(time.format('HH:mm'));
+          }
+      }
+      
+
+
+      return times;
+    }
     
+
+      // var x = 15; //minutes interval
+      // var times = []; // time array
+      
+      // console.log(this.start);
+      // var finalStartTime = startTime[0]*60 + startTime[1];
+      
+
+     
+
+    //   // //loop to increment the time and push results in array
+    //   // for (var i=0;finalStartTime<24*60; i++) {
+    //   //   var hh = Math.floor(finalStartTime/60); // getting hours of day in 0-24 format
+    //   //   var mm = (finalStartTime%60); // getting minutes of the hour in 0-55 format
+    //   //   times[i] = ("0" + (hh)).slice(-2) + ':' + ("0" + mm).slice(-2); // pushing data in array in [00:00 - 12:00 AM/PM format]
+    //   //   finalStartTime = finalStartTime + x;
+    //   // }
+
+      
+   
     
   },
   created() {
@@ -525,6 +630,12 @@ export default {
       this.getCompanyName();
       this.getBranchName();
     }
+  },
+  watch:{
+    selectedPerson(){
+
+    }
+
   },
   methods: {
     validate() {
@@ -590,6 +701,7 @@ export default {
     },
 
     getBranchDateAndTime() {
+      this.check=false;
       for (var i = 0; i < this.items.length; i++) {
         if (this.items[i].branch_id == this.selectedBranch.branch_id) {
           this.workingDays = JSON.parse(this.items[i].working_day);
@@ -597,6 +709,7 @@ export default {
          
         }
       }
+      this.getBranchHoliday();
     },
     getBranchHoliday() {
       const params = new URLSearchParams();
@@ -611,7 +724,9 @@ export default {
           console.log(response);
           if (response.data.status == "1") {
             this.holiday = JSON.parse(response.data.holiday[0].date);
-            
+            this.check = true;
+            this.e6=2;
+            this.branchLoading=false
     
           } else {
             console.log("no holiday");
@@ -621,7 +736,7 @@ export default {
           console.log(error);
         });
     },
-    getServiceDuration() {
+    getService() {
       const params = new URLSearchParams();
       params.append("read", "done");
       params.append("branch_id", this.selectedBranch.branch_id);
@@ -633,8 +748,9 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.data.status == "1") {
-            this.duration = JSON.parse(response.data.duration[0]);
-            console.log(this.duration);
+            this.table = response.data.service;
+            
+            
     
           } else {
             console.log("no service");
@@ -644,8 +760,35 @@ export default {
           console.log(error);
         });
     },
-    
-    
+    // assginSeat(){
+    //   if(this.selectedPerson!=''){
+    //     for(var i=0; i<table.length;i++){
+            
+    //       }
+          
+    //     }
+    //   }
+    // },
   },
 };
 </script>
+<style lang="postcss">
+
+.vfc-week .vfc-day span.vfc-span-day.vfc-cursor-not-allowed {
+    pointer-events: none !important;
+}
+.vfc-single-input {
+    font-size: inherit;
+    -webkit-transition: width 200ms;
+    transition: width 200ms;
+    padding: 7px  !important;
+    width: 100% !important;
+    margin: 0px,0px,8px;
+    color: #9b9b9b !important;
+    border: 1px solid #9b9b9b;
+    text-align: center;
+    outline: none;
+}
+
+
+</style>
