@@ -23,10 +23,10 @@ class service_function
     /**
      * read function
      * */
-    public function read($branch_id)
+    public function read($branch_id,$seat)
     {
         $stmt = $this->conn->prepare("SELECT updated_at, created_at, status, slot, duration, price, description, seat, title, branch_id, service_id
-         FROM tb_service WHERE branch_id = '".$branch_id."'");
+         FROM tb_service WHERE branch_id = '".$branch_id."' AND seat >= $seat AND slot != 0 LIMIT 1");
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));

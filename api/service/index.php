@@ -11,8 +11,8 @@ $created_at = $updated_at = $soft_delete = (new DateTime('NOW', new DateTimeZone
 /**
  * read
  */
-if (isset($_POST['read']) && isset($_POST['branch_id'])) {
-    $read     = $db->read($_POST['branch_id']);
+if (isset($_POST['read']) && isset($_POST['branch_id'])&& isset($_POST['seat'])) {
+    $read     = $db->read($_POST['branch_id'],$_POST['seat']);
     $response['status']   = ($read ? '1' : '2');
     $response['service'] = $read;
     echo json_encode($response);

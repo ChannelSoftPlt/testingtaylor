@@ -25,8 +25,8 @@ class branch_function
      * */
     public function read($company_id)
     {
-        $stmt = $this->conn->prepare("SELECT soft_delete, updated_at, created_at, user_id, working_time, working_day, address, name, company_id, branch_id 
-        FROM tb_branch WHERE soft_delete = '' && company_id = '". $company_id ."' ");
+        $stmt = $this->conn->prepare("SELECT soft_delete, updated_at, created_at, user_id, working_time, working_day, address, gap, name, company_id, branch_id 
+        FROM tb_branch WHERE soft_delete = '' AND company_id = '". $company_id ."' ");
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));

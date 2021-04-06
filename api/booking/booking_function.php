@@ -7,7 +7,7 @@ class booking_function
     // constructor
     public function __construct()
     {
-        require_once 'DB_Connect.php';
+        require_once '../DB_Connect.php';
         // connecting to database
         $db              = new Db_Connect();
         $this->conn      = $db->connect();
@@ -23,9 +23,11 @@ class booking_function
     /**
      * read function
      * */
-    public function read()
+    public function read($selected_date,$service_id)
     {
-        $stmt = $this->conn->prepare("SELECT updated_at, created_at, status, customer_id, selected_date, end_time, selected_time, service_id, booking_id FROM tb_booking WHERE soft_delete = '' ");
+        $stmt = $this->conn->prepare("SELECT updated_at, created_at, status, customer_id, selected_date, duration, selected_time, service_id, booking_id
+        
+         FROM tb_booking WHERE soft_delete = '' AND selected_date= '$selected_date' AND service_id = $service_id");
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
@@ -50,7 +52,7 @@ class booking_function
     public function create($params)
     {
         $return_arr = array();
-        $stmt       = $this->conn->prepare('INSERT INTO tb_booking(created_at, status, customer_id, selected_date, end_time, selected_time, service_id) VALUES (?, ?, ?, ?, ?, ?, ?)');
+        $stmt       = $this->conn->prepare('INSERT INTO tb_booking(created_at, status, customer_id, selected_date, duration, selected_time, service_id) VALUES (?, ?, ?, ?, ?, ?, ?)');
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
@@ -64,7 +66,7 @@ class booking_function
      * */
     public function update($params)
     {
-        $stmt = $this->conn->prepare('UPDATE tb_booking SET updated_at = ?, status = ?, customer_id = ?, selected_date = ?, end_time = ?, selected_time = ?, service_id = ? WHERE booking_id = ?');
+        $stmt = $this->conn->prepare('UPDATE tb_booking SET updated_at = ?, status = ?, customer_id = ?, selected_date = ?, duration = ?, selected_time = ?, service_id = ? WHERE booking_id = ?');
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));

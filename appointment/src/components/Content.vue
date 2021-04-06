@@ -19,12 +19,12 @@
       </v-col>
     </v-row>
     <v-row class="my-4">
-      <v-col cols="12" md="4" class="d-none d-md-block"></v-col>
+      <v-col cols="12" md="4" class="d-none d-md-block"></v-col> 
       <v-col cols="12" md="4" align="center">
         <h2 :style="{ color: headerTextColor }">Book Appointment Now!</h2>
         <p class="px-7">
           <span :style="{ color: descriptionTextColor }"
-            >Make an appointment with us now to save your time {{start}} {{timeSession}}
+            >Make an appointment with us now to save your time  {{concatTime}}
           </span>
         </p>
       </v-col>
@@ -50,8 +50,8 @@
               v-model="selectedBranch"
               @change="
                 branchLoading=true,
-                  getBranchDateAndTime(),                       
-                  getService()
+                  getBranchDateAndTime()                       
+                  
               
                   
               "
@@ -90,22 +90,24 @@
             <FunctionalCalendar
                 
                 v-model="selectedDated"
-                :disabled-day-names="weekdays"
-                :disabledDates="offday"
+                :disabled-day-names='weekdays'
+                :disabledDates='offday'
                 :limits="{min: today, max: '01/01/2200'}"
                 :date-format="'dd/mm/yyyy'" 
                 v-if="check"
                 :hidden-elements="['leftAndRightDays']"
                 :is-date-picker="true"
-                 :is-modal='true' 
+                :is-modal='true' 
+                 v-on:choseDay="this.getBooking"
+                 
           ></FunctionalCalendar>
               </v-col>
             </v-row>
-            <v-row class="mb-2" v-if="selectedPerson">
+            <v-row class="mb-2" v-if="selectedPerson&&selectedDated" >
               <v-col cols="4" sm="12" >
                 <p>Morning</p>
                 <v-row>
-                  <div v-for="(time, i) in time" :key="i">
+                  <div v-for="(time, i) in timeSession" :key="i">
                     <v-btn
                       class="mb-2 mt-1 mr-1 ml-3"
                       outlined
@@ -113,12 +115,12 @@
                       small
                       v-model="selectedTime"
                       @click="
-                        selectedTime = time.text;
+                        selectedTime = time;
                         e6 = 3;
                       "
-                      v-if="parseFloat(time.text.substring(0, 2)) < 12"
+                      v-if="parseFloat(time.substring(0, 2)) < 12"
                     >
-                      {{ time.text }}
+                      {{ time}}
                     </v-btn>
                   </div>
                 </v-row>
@@ -126,7 +128,7 @@
               <v-col cols="4" sm="12">
                 <p>Noon</p>
                 <v-row>
-                  <div v-for="(time, i) in time" :key="i">
+                  <div v-for="(time, i) in timeSession" :key="i">
                     <v-btn
                       class="mb-2 mt-1 mr-1 ml-3"
                       outlined
@@ -134,15 +136,15 @@
                       small
                       v-model="selectedTime"
                       @click="
-                        selectedTime = time.text;
+                        selectedTime = time;
                         e6 = 3  ;
                       "
                       v-if="
-                        parseFloat(time.text.substring(0, 2)) > 12 &&
-                        parseFloat(time.text.substring(0, 2)) <= 18
+                        parseFloat(time.substring(0, 2)) >= 12 &&
+                        parseFloat(time.substring(0, 2)) <= 18
                       "
                     >
-                      {{ time.text }}
+                      {{ time }}
                     </v-btn>
                   </div>
                 </v-row>
@@ -150,7 +152,7 @@
               <v-col cols="4" sm="12">
                 <p>Night</p>
                 <v-row>
-                  <div v-for="(time, i) in time" :key="i">
+                  <div v-for="(time, i) in timeSession" :key="i">
                     <v-btn
                       class="mb-2 mt-1 mr-1 ml-3"
                       outlined
@@ -158,12 +160,12 @@
                       small
                       v-model="selectedTime"
                       @click="
-                        selectedTime = time.text;
+                        selectedTime = time;
                         e6 = 3;
                       "
-                      v-if="parseFloat(time.text.substring(0, 2)) > 18"
+                      v-if="parseFloat(time.substring(0, 2)) > 18"
                     >
-                      {{ time.text }}
+                      {{time}}
                     </v-btn>
                   </div>
                 </v-row>
@@ -384,7 +386,7 @@ import Vue from "vue";
 import { BASEURL } from "@/api/baseurl";
 import axios from "axios";
 import FunctionalCalendar from 'vue-functional-calendar';
-// import VCalendar from "v-calendar";
+
 
 Vue.use(FunctionalCalendar, {
     dayNames: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
@@ -393,10 +395,7 @@ Vue.use(FunctionalCalendar, {
     
 
 });
-// Vue.use(VCalendar, {
-//   componentPrefix: "vc", // Use <vc-calendar /> instead of <v-calendar />
-//   // ...other defaults
-// });
+
 export default {
   data: () => ({
     domain: BASEURL,
@@ -465,7 +464,11 @@ export default {
     branchLoading:false,
     table:[],
     check:false,
-    
+    serviceID:'',
+    booking:[],
+    duration:'',
+    slot:'',
+ 
     
     
    
@@ -474,34 +477,6 @@ export default {
     createBackgroundString() {
       return `linear-gradient(${this.angle}deg, ${this.color1}, ${this.color2})`;
     },
-
-    // weekdays() {
-    //   var value = [];
-
-    //   if (this.workingDays[0] == 1) {
-    //     value.push(1);
-    //   }
-    //   if (this.workingDays[1] == 1) {
-    //     value.push(2);
-    //   }
-    //   if (this.workingDays[2] == 1) {
-    //     value.push(3);
-    //   }
-    //   if (this.workingDays[3] == 1) {
-    //     value.push(4);
-    //   }
-    //   if (this.workingDays[4] == 1) {
-    //     value.push(5);
-    //   }
-    //   if (this.workingDays[5] == 1) {
-    //     value.push(6);
-    //   }
-    //   if (this.workingDays[6] == 1) {
-    //     value.push(7);
-    //   }
-
-    //   return value;
-    // },
     progress () {
         return Math.min(100, this.value.length * 10)
       },
@@ -553,70 +528,80 @@ export default {
 
         return end;
       },
-
-    // workTime(){
-      
-        
-    //       this.startTime = this.workingTime[0];
-    //       this.endTime = this.workingTime[1];
-        
-      
-    //   return this.startTime + ' '+this.endTime;
-    // }
     today() {
 
       var d = new Date();
       var datestring = ("0" + d.getDate()).slice(-1) + "/" + ("0"+(d.getMonth()+1)).slice(-2) + "/" +
         d.getFullYear();
-
-
-
       return datestring;
     },
     timeSession(){
       var moment = require('moment'); // require
       moment().format(); 
+      var currentTime = moment(new Date(),"hmm").format("HH:mm");
+      var currentDay = moment(new Date(),"ddmmyy").format("D/M/YYYY");
       var startTime = this.start;
-      var interval = 15;
+      var interval = this.gap;
       var times=[];
       var period = 'm';
       var periodsInADay = moment.duration(1, 'day').as(period);
       var startTimeMoment = moment(startTime, 'HH:mm');
       var endTime = this.end;
       var endTimeMoment = moment(endTime, 'HH:mm');
+      
       for (let i = 0; i <= periodsInADay; i += interval) {
         var time = startTimeMoment.add(i === 0 ? 0 : interval, period);
-
-        if(time<=endTimeMoment){
+        
+        
+        if(this.selectedDated.selectedDate==currentDay){
+          
+          if(time.format('HH:mm')>currentTime && time <= endTimeMoment){
           times.push(time.format('HH:mm'));
           }
-      }
-      
+        }
+        else{
+          
+          if(time<=endTimeMoment){
+          times.push(time.format('HH:mm'));
+          
+          }
+        }
 
+      }
 
       return times;
+    },
+    timesPlusDuration(){
+      var moment = require('moment'); // require
+      moment().format(); 
+      
+      var plus = this.duration;
+      var compare = this.timeSession;
+      var period = 'm';
+      var compares = [];
+      
+
+      for (let i = 0; i < compare.length; i++) {
+        var time = moment(compare[i],'HH:mm');
+        time.add(plus,period);
+        compares.push(time.format('HH:mm'));
+         
+      }
+       return compares;
+      
+    },
+    concatTime(){
+      var joint = [];
+      var first = this.timeSession;
+      var second = this.timesPlusDuration;
+      for (let i = 0; i < this.timeSession.length; i++) {
+         joint.push(first[i]);
+         joint.push(second[i]);
+         
+      }
+      return joint;
     }
-    
 
-      // var x = 15; //minutes interval
-      // var times = []; // time array
-      
-      // console.log(this.start);
-      // var finalStartTime = startTime[0]*60 + startTime[1];
-      
-
-     
-
-    //   // //loop to increment the time and push results in array
-    //   // for (var i=0;finalStartTime<24*60; i++) {
-    //   //   var hh = Math.floor(finalStartTime/60); // getting hours of day in 0-24 format
-    //   //   var mm = (finalStartTime%60); // getting minutes of the hour in 0-55 format
-    //   //   times[i] = ("0" + (hh)).slice(-2) + ':' + ("0" + mm).slice(-2); // pushing data in array in [00:00 - 12:00 AM/PM format]
-    //   //   finalStartTime = finalStartTime + x;
-    //   // }
-
-      
-   
     
   },
   created() {
@@ -633,8 +618,13 @@ export default {
   },
   watch:{
     selectedPerson(){
+        this.getService();
 
-    }
+
+    },
+    // selectedDated(){
+    //   this.getBooking();
+    // }
 
   },
   methods: {
@@ -706,6 +696,7 @@ export default {
         if (this.items[i].branch_id == this.selectedBranch.branch_id) {
           this.workingDays = JSON.parse(this.items[i].working_day);
           this.workingTime = JSON.parse(this.items[i].working_time);
+          this.gap = JSON.parse(this.items[i].gap)
          
         }
       }
@@ -740,6 +731,7 @@ export default {
       const params = new URLSearchParams();
       params.append("read", "done");
       params.append("branch_id", this.selectedBranch.branch_id);
+      params.append("seat", this.selectedPerson);
       axios({
         method: "post",
         url: this.domain + "/service/index.php",
@@ -748,10 +740,11 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.data.status == "1") {
-            this.table = response.data.service;
+            this.table = response.data.service[0];
+            this.serviceID = this.table.service_id;
+            this.duration = this.table.duration;
+            this.slot = this.table.slot;
             
-            
-    
           } else {
             console.log("no service");
           }
@@ -760,15 +753,37 @@ export default {
           console.log(error);
         });
     },
-    // assginSeat(){
-    //   if(this.selectedPerson!=''){
-    //     for(var i=0; i<table.length;i++){
+
+    getBooking() {
+
+      const params = new URLSearchParams();
+      params.append("read", "done");
+      params.append("selected_date", this.selectedDated.selectedDate);
+      params.append("service_id", this.serviceID);
+      
+      axios({
+        method: "post",
+        url: this.domain + "/booking/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+            this.booking = response.data.booking;
+            console.log(this.booking);
             
-    //       }
-          
-    //     }
-    //   }
-    // },
+
+    
+          } else {
+            console.log("no booking");
+            this.booking =[];
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+  
   },
 };
 </script>
