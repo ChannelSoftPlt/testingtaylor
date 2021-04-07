@@ -21,8 +21,8 @@ if (isset($_POST['read'])&&isset($_POST['selected_date'])&&isset($_POST['service
 /**
  * create
  * */
-else if (isset($_POST['create']) && isset($_POST['status']) && isset($_POST['customer_id']) && isset($_POST['selected_date']) && isset($_POST['duration']) && isset($_POST['selected_time']) && isset($_POST['service_id'])) {
-    $create = $db->create(array($created_at, $_POST['status'], $_POST['customer_id'], $_POST['selected_date'], $_POST['duration'], $_POST['selected_time'], $_POST['service_id']));
+else if (isset($_POST['create'])&& isset($_POST['person']) && isset($_POST['customer_id']) && isset($_POST['selected_date']) && isset($_POST['duration']) && isset($_POST['selected_time']) && isset($_POST['service_id'])) {
+    $create = $db->create(array($_POST['service_id'], $_POST['selected_time'], $_POST['duration'], $_POST['selected_date'],$_POST['person'], $_POST['customer_id'], $created_at));
     $response['status'] = ($create ? '1' : '2');
     echo json_encode($response);
 }

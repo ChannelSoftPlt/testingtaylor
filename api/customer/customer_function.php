@@ -1,6 +1,6 @@
 <?php
 include '../structure/structure.php';
-class service_function
+class customer_function
 {
     private $conn;
     private $structure;
@@ -23,10 +23,9 @@ class service_function
     /**
      * read function
      * */
-    public function read($branch_id,$seat)
+    public function read()
     {
-        $stmt = $this->conn->prepare("SELECT updated_at, created_at, status, slot, duration, price, description, seat, title, branch_id, service_id
-         FROM tb_service WHERE branch_id = $branch_id AND seat >= $seat AND slot != 0 ORDER BY seat ASC LIMIT 1");
+        $stmt = $this->conn->prepare("SELECT soft_delete, updated_at, created_at, email, contact, name, customer_id FROM tb_customer WHERE soft_delete = '' ");
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
@@ -51,21 +50,25 @@ class service_function
     public function create($params)
     {
         $return_arr = array();
-        $stmt       = $this->conn->prepare('INSERT INTO tb_service(created_at, status, slot, duration, price, description, title, branch_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+        $stmt       = $this->conn->prepare('INSERT INTO tb_customer(name, contact, email, remark, created_at) VALUES (?, ?, ?, ?, ?)');
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
         }
         //bind param
-        return $this->structure->bindParam($stmt, $params);
+        $result  = $this->structure->bindParam($stmt, $params);
+        $last_id = $stmt->insert_id;
+        $stmt->close();
+        return ($result ? $last_id : false);
     }
+    
 
     /**
      * update function
      * */
     public function update($params)
     {
-        $stmt = $this->conn->prepare('UPDATE tb_service SET updated_at = ?, status = ?, slot = ?, duration = ?, price = ?, description = ?, title = ?, branch_id = ? WHERE service_id = ?');
+        $stmt = $this->conn->prepare('UPDATE tb_customer SET updated_at = ?, email = ?, contact = ?, name = ? WHERE customer_id = ?');
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
@@ -79,7 +82,7 @@ class service_function
      * */
     public function delete($params)
     {
-        $stmt = $this->conn->prepare('UPDATE tb_service SET  WHERE service_id = ?');
+        $stmt = $this->conn->prepare('UPDATE tb_customer SET soft_delete = ? WHERE customer_id = ?');
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
