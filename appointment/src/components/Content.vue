@@ -462,6 +462,7 @@ export default {
     showTime:false,
     timeout: 2000,
     snackbar: false,
+    timesPlusDuration:[],
    
   }),
   computed: {
@@ -560,47 +561,7 @@ export default {
       
       return times;
     },
-    timesPlusDuration() {
-      var moment = require("moment"); // require
-      moment().format();
-      var duration = this.serviceDuration;
-      var first = this.timeSession;
-      var period = "m";
-      var second = [];
-      for (let i = 0; i < first.length; i++) {
-        var start = moment(first[i], "HH:mm");
-        var s = moment(first[i], "HH:mm");
-        var end = s.add(duration, period);
-        var slot = 0;
-        for (let j = 0; j < this.booking.length; j++) {
-          var bookingStart = moment(this.booking[j].selected_time, "HH:mm");
-          var bookings = moment(this.booking[j].selected_time, "HH:mm");
-          var bookingEnd = bookings.add(this.booking[j].duration, period);
-          
-          if (bookingStart >= start && bookingStart < end) {
-            slot += 1;
-            continue;
-            
-          }
-          if (bookingEnd > start && bookingEnd <= end) {
-            slot += 1;
-            continue;
-          }
-          if (bookingStart < start && bookingEnd > end) {
-            slot += 1;
-            continue;
-          }
-          
-        }
-        this.setShowTimeToFalse();
-        if (slot < this.slot) {
-          second.push(start.format("HH:mm"));
-      
-        }
-      }
-      return second ;
-      
-    },
+    
     person(){
       var people = [];
       for (let i = 1; i <= this.maxPerson; i++) {
@@ -795,10 +756,12 @@ export default {
           console.log(response);
           if (response.data.status == "1") {
             this.booking = response.data.booking;
+            this.finalTime();
              
           } else {
             console.log("no booking");
             this.booking = [];
+            this.finalTime(); 
           }
         })
         .catch((error) => {
@@ -897,9 +860,53 @@ export default {
     },
     setShowTimeToFalse(){
       this.showTime=false;
+    },
+    finalTime(){
+      var moment = require("moment"); // require
+      moment().format();
+      var duration = this.serviceDuration;
+      this.timesPlusDuration=[];
+      var first = this.timeSession;
+      var period = "m";
+      // var second = [];
+      for (let i = 0; i < first.length; i++) {
+        var start = moment(first[i], "HH:mm");
+        var s = moment(first[i], "HH:mm");
+        var end = s.add(duration, period);
+        var slot = 0;
+        for (let j = 0; j < this.booking.length; j++) {
+          var bookingStart = moment(this.booking[j].selected_time, "HH:mm");
+          var bookings = moment(this.booking[j].selected_time, "HH:mm");
+          var bookingEnd = bookings.add(this.booking[j].duration, period);
+          
+          if (bookingStart >= start && bookingStart < end) {
+            slot += 1;
+            continue;
+            
+          }
+          if (bookingEnd > start && bookingEnd <= end) {
+            slot += 1;
+            continue;
+          }
+          if (bookingStart < start && bookingEnd > end) {
+            slot += 1;
+            continue;
+          }
+          
+        }
+        
+        if (slot < this.slot) {
+          this.timesPlusDuration.push(start.format("HH:mm"));
+      
+        }
+      }
+      
+      console.log(JSON.stringify(this.timesPlusDuration));
+      this.setShowTimeToFalse();
     }
 
   },
+   
 };
 
 
