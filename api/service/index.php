@@ -18,6 +18,14 @@ if (isset($_POST['read']) && isset($_POST['branch_id'])&& isset($_POST['seat']))
     echo json_encode($response);
 
 }
+
+else if (isset($_POST['findMaxPerson']) && isset($_POST['branch_id'])) {
+    $read     = $db->findMaxPerson($_POST['branch_id']);
+    $response['status']   = ($read ? '1' : '2');
+    $response['service'] = $read;
+    echo json_encode($response);
+
+}
 /**
  * create
  * */

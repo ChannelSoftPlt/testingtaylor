@@ -30,7 +30,28 @@
       </v-col>
       <v-col cols="12" md="4" class="d-none d-lg-block"></v-col>
     </v-row>
-
+    <v-snackbar
+      :timeout="timeout"
+      :value="snackbar"
+      fixed
+      center
+      shaped
+      :color="stepButtonColor"
+     
+    >
+      Booked successfully!
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="blue"
+          text
+          v-bind="attrs"
+          @click="snackbar = false"
+          
+        >
+        <v-icon> mdi-close </v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
     <v-row>
       <v-col cols="12" md="4"></v-col>
 
@@ -49,7 +70,7 @@
               :loading="branchLoading"
               v-model="selectedBranch"
               @change="
-                (branchLoading = true), getBranchDateAndTime(), getService()
+                (branchLoading = true), getBranchDateAndTime(),findMaxPerson(), getService()
               "
               return-object
             >
@@ -65,12 +86,26 @@
               <v-col cols="12">
                 <v-text-field
                   class="rounded-lg"
+                  type="number"
+                  min=1
+                  :max="this.maxPerson"
                   dense
                   outlined
+                  oninput="if(Number(this.value) > Number(this.max)) this.value = this.max;"
                   label="Total Person"
                   prepend-inner-icon="mdi-account"
                   v-model="selectedPerson"
                 ></v-text-field>
+                <!-- <v-select
+                  :menu-props="{ top: true, offsetY: true }"
+                  :items="person"
+                  label="Total Person"
+                  prepend-inner-icon="mdi-account"
+                  v-model="selectedPerson"
+                  
+      
+                ></v-select> -->
+
               </v-col>
               <v-col cols="12" v-if="selectedPerson">
                 <FunctionalCalendar
@@ -82,12 +117,20 @@
                   v-if="check"
                   :hidden-elements="['leftAndRightDays']"
                   :is-date-picker="true"
-                  
+                  class="elevation-0"
                   v-on:choseDay="this.getBooking"
                 ></FunctionalCalendar>
               </v-col>
             </v-row>
-            <v-row class="mb-2" v-if="selectedPerson && selectedDated">
+            <div class="d-flex justify-center mt-16">
+            <v-progress-circular
+              :size="50"
+              :color ="stepButtonColor"
+              indeterminate
+              v-if="showTime"
+            ></v-progress-circular>
+            </div>
+            <v-row class="mb-2" v-if="selectedPerson && selectedDated && this.showTime==false">
               <v-col cols="4" sm="12">
                 <p>Morning</p>
                 <v-row>
@@ -175,6 +218,7 @@
                 <span>Customer Information</span>
               </v-row>
             </v-card-title>
+            
             <v-form class="mb-2" ref="form" v-model="valid" lazy-validation>
               <v-row>
                 <v-col cols="12" sm="4" md="6">
@@ -182,6 +226,7 @@
                     label="First name"
                     v-model="firstname"
                     :rules="firstnameRules"
+
                     required
                   ></v-text-field>
                 </v-col>
@@ -193,7 +238,7 @@
                     required
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12" sm="8">
+                <v-col cols="12" sm="12">
                   <v-text-field
                     v-model="email"
                     label="Email"
@@ -203,15 +248,19 @@
                   ></v-text-field>
                 </v-col>
 
-                <v-col cols="12" sm="4">
-                  <v-text-field
+                <v-col cols="12" sm="12">
+                  <!-- <v-text-field
                     v-model="phoneNumber"
                     :counter="10"
                     :rules="phoneRules"
                     :error-messages="errors"
                     label="Phone Number"
                     required
-                  ></v-text-field>
+                  ></v-text-field> -->
+                  
+                  <vue-phone-number-input size="sm" default-country-code="MY" v-model="phoneNumber" :rules="phoneRules"
+                   :error="checkTelInput" valid-color="#919191" @update="results = $event"  ></vue-phone-number-input>
+                  
                 </v-col>
 
                 <v-col>
@@ -238,32 +287,7 @@
             </v-btn>
             <v-btn text @click="e6 = 2"> Back </v-btn>
           </v-stepper-content>
-          <!-- <v-stepper-step :complete="e6 > 4" step="4" :color="stepButtonColor">
-            Total person
-          </v-stepper-step>
-          <v-stepper-content step="4">
-            <v-checkbox
-              @click="e6 = 5"
-              v-model="selectedPerson"
-              :color="stepButtonColor"
-              v-for="item in pax"    :key="item.title.length"
-              :label="item.title"
-              :value="item.title"
-              
-             
-            ></v-checkbox>
-            <v-btn text @click="e6 = 3" :color="continueButtonColor" outlined>
-              Back
-            </v-btn>
-          </v-stepper-content>
-          <v-stepper-step step="5" :color="stepButtonColor">
-            Your Info
-          </v-stepper-step> -->
-
-          <!-- <v-stepper-content step="5">
-            
-          </v-stepper-content> -->
-
+    
           <v-dialog v-model="dialog" persistent max-width="600px">
             <v-card>
               <v-card-title class="grey lighten-4">
@@ -308,7 +332,7 @@
                     </v-col>
                     <v-col cols="12" sm="6" md="8">
                       <p>
-                        {{ firstname }}{{ lastname }}<br />{{ email }}<br />{{
+                        {{ firstname }} {{ lastname }}<br />{{ email }}<br />{{
                           phoneNumber
                         }}
                       </p>
@@ -333,7 +357,7 @@
                 <v-btn
                   color="blue darken-1"
                   text
-                  @click="(dialog = false), createCustomer()"
+                  @click="(dialog = false), createCustomer(), snackbar=true"
                 >
                   Submit
                 </v-btn>
@@ -368,6 +392,14 @@ import Vue from "vue";
 import { BASEURL } from "@/api/baseurl";
 import axios from "axios";
 import FunctionalCalendar from "vue-functional-calendar";
+import VuePhoneNumberInput from 'vue-phone-number-input';
+import 'vue-phone-number-input/dist/vue-phone-number-input.css';
+
+
+
+  
+ 
+Vue.component('vue-phone-number-input', VuePhoneNumberInput);
 
 Vue.use(FunctionalCalendar, {
   dayNames: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
@@ -375,6 +407,8 @@ Vue.use(FunctionalCalendar, {
 });
 
 export default {
+
+
   data: () => ({
     domain: BASEURL,
     e6: 1,
@@ -421,6 +455,14 @@ export default {
     serviceDuration: "",
     slot: "",
     customerID:'',
+    contact:"",
+    results:"",
+    checkTelInput:false,
+    maxPerson:"",
+    showTime:false,
+    timeout: 2000,
+    snackbar: false,
+   
   }),
   computed: {
     createBackgroundString() {
@@ -487,6 +529,7 @@ export default {
       return datestring;
     },
     timeSession() {
+      this.setShowTimeToTrue();
       var moment = require("moment"); // require
       moment().format();
       var currentTime = moment(new Date(), "hmm").format("HH:mm");
@@ -513,7 +556,8 @@ export default {
           }
         }
       }
-
+      
+      
       return times;
     },
     timesPlusDuration() {
@@ -523,23 +567,20 @@ export default {
       var first = this.timeSession;
       var period = "m";
       var second = [];
-      // var joint = [];
-
       for (let i = 0; i < first.length; i++) {
         var start = moment(first[i], "HH:mm");
         var s = moment(first[i], "HH:mm");
         var end = s.add(duration, period);
         var slot = 0;
-        // second.push(start.format('HH:mm'));
-        // second.push(end.format('HH:mm'));
         for (let j = 0; j < this.booking.length; j++) {
           var bookingStart = moment(this.booking[j].selected_time, "HH:mm");
           var bookings = moment(this.booking[j].selected_time, "HH:mm");
           var bookingEnd = bookings.add(this.booking[j].duration, period);
-
+          
           if (bookingStart >= start && bookingStart < end) {
             slot += 1;
             continue;
+            
           }
           if (bookingEnd > start && bookingEnd <= end) {
             slot += 1;
@@ -549,15 +590,26 @@ export default {
             slot += 1;
             continue;
           }
+          
         }
-
+        this.setShowTimeToFalse();
         if (slot < this.slot) {
           second.push(start.format("HH:mm"));
+      
         }
       }
-
-      return second;
+      return second ;
+      
     },
+    person(){
+      var people = [];
+      for (let i = 1; i <= this.maxPerson; i++) {
+        people.push(i);
+        
+      }
+      return people;
+    }
+
   },
   created() {
     //check form availble
@@ -575,15 +627,31 @@ export default {
     selectedPerson() {
       this.getService();
     },
+    phoneNumber(){
+      if(this.results.isValid==true){
+        this.checkTelInput=false;
+      }
+      else if(this.results.isValid==false){
+        this.checkTelInput=true;
+      }
+    }
   },
   methods: {
-    validate() { 
-      if(this.firstname==''&& this.lastname=='' && this.phoneNumber=='' && this.email==''){
-        this.$refs.form.validate();
+    validate() {
+      var mailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+      if(this.firstname!=''&& this.lastname!='' && this.phoneNumber!='' && this.email!='' && this.results.isValid==true && this.email.match(mailformat) ){
+        this.dialog = true;
       }
+      else if(this.results.isValid==true){
+        this.checkTelInput=false;
+      }
+    
       else{
       
-      this.dialog = true;
+     
+      this.$refs.form.validate();
+      this.checkTelInput = true;
+      
       
       }
     },
@@ -699,6 +767,7 @@ export default {
             this.serviceDuration = this.table.duration;
             this.slot = this.table.slot;
             this.getBooking();
+            
           } else {
             console.log("no service");
           }
@@ -726,6 +795,7 @@ export default {
           console.log(response);
           if (response.data.status == "1") {
             this.booking = response.data.booking;
+             
           } else {
             console.log("no booking");
             this.booking = [];
@@ -738,8 +808,8 @@ export default {
     createCustomer(){
       const params = new URLSearchParams();
       params.append("create", "done");
-      params.append("name", this.firstname+this.lastname);
-      params.append("contact", this.phoneNumber);
+      params.append("name", this.firstname+' '+this.lastname);
+      params.append("contact", this.results.formattedNumber);
       params.append("email", this.email);
       params.append("remark", this.remark);
 
@@ -796,9 +866,44 @@ export default {
           console.log(error);
         });
       
+    },
+    findMaxPerson(){
+      const params = new URLSearchParams();
+      params.append("findMaxPerson", "done");
+      params.append("branch_id", this.selectedBranch.branch_id);
+
+      axios({
+        method: "post",
+        url: this.domain + "/service/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+             this.maxPerson = response.data.service[0].seat;
+            
+          } else {
+            console.log("Booking failed");
+            
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      
+    },
+    setShowTimeToTrue(){
+      this.showTime=true;
+    },
+    setShowTimeToFalse(){
+      this.showTime=false;
     }
+
   },
 };
+
+
+
 </script>
 <style lang="postcss">
 .vfc-week .vfc-day span.vfc-span-day.vfc-cursor-not-allowed {
@@ -816,5 +921,9 @@ export default {
   text-align: center;
   outline: none;
 }
+
+
+
+
 
 </style>

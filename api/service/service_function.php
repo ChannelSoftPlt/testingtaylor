@@ -45,6 +45,29 @@ class service_function
         return (sizeof($return_arr) > 0 ? $return_arr : false);
     }
 
+
+    public function findMaxPerson($branch_id)
+    {
+        $stmt = $this->conn->prepare("SELECT seat, branch_id, service_id
+         FROM tb_service WHERE branch_id = $branch_id AND slot!= 0 ORDER BY seat DESC LIMIT 1");
+        //error reporting
+        if (!$stmt) {
+            die('prepare() failed: ' . htmlspecialchars($this->conn->error));
+        }
+        $result = $stmt->execute();
+
+        if ($result) {
+            //set up bind result
+            $meta = $stmt->result_metadata();
+            while ($field = $meta->fetch_field()) {
+                $params[] = &$row[$field->name];
+            }
+            $return_arr = $this->structure->bindResult($stmt, $params, $row);
+        }
+
+        return (sizeof($return_arr) > 0 ? $return_arr : false);
+    }
+
     /**
      * create function
      * */
