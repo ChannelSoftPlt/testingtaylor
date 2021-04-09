@@ -900,8 +900,6 @@ export default {
       
         }
       }
-      
-      console.log(JSON.stringify(this.timesPlusDuration));
       this.setShowTimeToFalse();
     }
 
