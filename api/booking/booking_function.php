@@ -52,7 +52,7 @@ class booking_function
     public function create($params)
     {
         $return_arr = array();
-        $stmt       = $this->conn->prepare('INSERT INTO tb_booking(service_id, selected_time, duration, service_title, service_description, selected_date, person, customer_id ,created_at ) VALUES (?, ?, ?, ?, ?, ?, ?)');
+        $stmt       = $this->conn->prepare('INSERT INTO tb_booking(service_id, selected_time, duration, service_title, service_description, selected_date, person, customer_id ,created_at ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
