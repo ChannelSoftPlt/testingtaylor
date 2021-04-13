@@ -70,7 +70,7 @@
               :loading="branchLoading"
               v-model="selectedBranch"
               @change="
-                (branchLoading = true), getBranchDateAndTime(),findMaxPerson(), getService()
+                (branchLoading = true), getBranchDateAndTime(),findAllService()
               "
               return-object
             >
@@ -78,36 +78,46 @@
           </v-stepper-content>
 
           <v-stepper-step :complete="e6 > 2" step="2" :color="stepButtonColor">
-            Booking details
+            Choose Your Service
           </v-stepper-step>
 
           <v-stepper-content step="2">
-            <v-row class="mt-2">
-              <v-col cols="12">
-                <v-text-field
-                  class="rounded-lg"
-                  type="number"
-                  min=1
-                  :max="this.maxPerson"
-                  dense
-                  outlined
-                  oninput="if(Number(this.value) > Number(this.max)) this.value = this.max;"
-                  label="Total Person"
-                  prepend-inner-icon="mdi-account"
-                  v-model="selectedPerson"
-                ></v-text-field>
-                <!-- <v-select
-                  :menu-props="{ top: true, offsetY: true }"
-                  :items="person"
-                  label="Total Person"
-                  prepend-inner-icon="mdi-account"
-                  v-model="selectedPerson"
-                  
-      
-                ></v-select> -->
+            
+        
+    <v-list shaped >
+      <v-list-item-group
+        v-model="selectedService"
+        color="primary" 
+      >
+        <v-list-item
+          v-for="(item, i) in allService"
+          :key="i"
+          :value="item.service_id"
+          @click="selectedService='value', e6=3"
 
-              </v-col>
-              <v-col cols="12" v-if="selectedPerson">
+        >
+          <v-list-item-content>
+            <v-list-item-title v-text="item.title"></v-list-item-title>
+            <v-list-item-subtitle v-text="item.description"></v-list-item-subtitle>
+            <v-list-item-subtitle v-text="item.duration+' minit'"></v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list-item-group>
+    </v-list>
+ 
+
+            <v-btn :color="continueButtonColor"
+              outlined text @click="e6 = 1"> Back </v-btn>
+          </v-stepper-content>
+
+          <v-stepper-step :complete="e6 > 3" step="3" :color="stepButtonColor">
+            Choose Date and time
+          </v-stepper-step>
+
+          <v-stepper-content step="3">
+            <v-row class="mt-2">
+              
+              <v-col cols="12">
                 <FunctionalCalendar
                   v-model="selectedDated"
                   :disabled-day-names="weekdays"
@@ -130,7 +140,7 @@
               v-if="showTime"
             ></v-progress-circular>
             </div>
-            <v-row class="mb-2" v-if="selectedPerson && selectedDated && this.showTime==false">
+            <v-row class="mb-2" v-if="selectedService && selectedDated && this.showTime==false">
               <v-col cols="4" sm="12">
                 <p>Morning</p>
                 <v-row>
@@ -143,7 +153,8 @@
                       v-model="selectedTime"
                       @click="
                         selectedTime = time;
-                        e6 = 3;
+                        personInput=true;
+                        e6=4
                       "
                       v-if="parseFloat(time.substring(0, 2)) < 12"
                     >
@@ -164,7 +175,9 @@
                       v-model="selectedTime"
                       @click="
                         selectedTime = time;
-                        e6 = 3;
+                        personInput=true;
+                        e6=4
+                        
                       "
                       v-if="
                         parseFloat(time.substring(0, 2)) >= 12 &&
@@ -188,7 +201,8 @@
                       v-model="selectedTime"
                       @click="
                         selectedTime = time;
-                        e6 = 3;
+                        personInput=true;
+                        e6=4
                       "
                       v-if="parseFloat(time.substring(0, 2)) > 18"
                     >
@@ -196,22 +210,40 @@
                     </v-btn>
                   </div>
                 </v-row>
-              </v-col>
+              </v-col >
+
+              <!-- <v-col cols="12" v-if="personInput">
+                <v-checkbox
+                v-model="checkbox"
+                label="Add Person (Default 1)"
+                color="indigo"
+                ></v-checkbox>
+               
+                <v-select
+                  v-if="checkbox"
+                  :items="person"
+                  label="Total Person"
+                  prepend-inner-icon="mdi-account"
+                  v-model="selectedPerson"
+                  
+      
+                ></v-select>
+              </v-col> -->
             </v-row>
 
             <br />
             <br />
 
-            <v-btn text :color="continueButtonColor" outlined @click="e6 = 1">
+            <v-btn text :color="continueButtonColor" outlined @click="e6 = 2, clear()">
               Back
             </v-btn>
           </v-stepper-content>
 
-          <v-stepper-step :complete="e6 > 3" step="3" :color="stepButtonColor">
+          <v-stepper-step :complete="e6 > 4" step="4" :color="stepButtonColor">
             Your info
           </v-stepper-step>
 
-          <v-stepper-content step="3">
+          <v-stepper-content step="4">
             <v-card-title>
               <v-row>
                 <v-icon>mdi-account</v-icon>
@@ -248,16 +280,7 @@
                   ></v-text-field>
                 </v-col>
 
-                <v-col cols="12" sm="12">
-                  <!-- <v-text-field
-                    v-model="phoneNumber"
-                    :counter="10"
-                    :rules="phoneRules"
-                    :error-messages="errors"
-                    label="Phone Number"
-                    required
-                  ></v-text-field> -->
-                  
+                <v-col cols="12" sm="12">        
                   <vue-phone-number-input size="sm" default-country-code="MY" v-model="phoneNumber" :rules="phoneRules"
                    :error="checkTelInput" valid-color="#919191" @update="results = $event"  ></vue-phone-number-input>
                   
@@ -285,7 +308,7 @@
             >
               Continue
             </v-btn>
-            <v-btn text @click="e6 = 2"> Back </v-btn>
+            <v-btn text @click="e6 = 3"> Back </v-btn>
           </v-stepper-content>
     
           <v-dialog v-model="dialog" persistent max-width="600px">
@@ -319,10 +342,10 @@
 
                   <v-row no-gutters>
                     <v-col cols="6" md="4">
-                      <h5>Total Person:</h5>
+                      <h5>Service:</h5>
                     </v-col>
                     <v-col cols="12" sm="6" md="8">
-                      <p>{{ selectedPerson }}</p>
+                      <p>{{ serviceName }}</p>
                     </v-col>
                   </v-row>
 
@@ -351,26 +374,26 @@
                   <!-- <v-row no-gutters>
                     <v-col cols="12" sm="6" md="8">
                      <v-checkbox v-model="checkbox">
-                    <template v-slot:label>
-                      <div>
-                        I agree that
-                        <v-tooltip bottom>
-                          <template v-slot:activator="{ on }">
-                            <a
-                              target="_blank"
-                              href="https://vuetifyjs.com"
-                              @click.stop
-                              v-on="on"
-                            >
-                              Vuetify
-                            </a>
-                          </template>
-                          Opens in new window
-                        </v-tooltip>
-                        is awesome
-                      </div>
-                    </template>
-                  </v-checkbox>
+                      <template v-slot:label>
+                        <div>
+                          I agree that
+                          <v-tooltip bottom>
+                            <template v-slot:activator="{ on }">
+                              <a
+                                target="_blank"
+                                href="https://vuetifyjs.com"
+                                @click.stop
+                                v-on="on"
+                              >
+                                Vuetify
+                              </a>
+                            </template>
+                            Opens in new window
+                          </v-tooltip>
+                          is awesome
+                        </div>
+                      </template>
+                    </v-checkbox>
                     </v-col>
                   </v-row> -->
                 </v-container>
@@ -489,8 +512,13 @@ export default {
     timeout: 2000,
     snackbar: false,
     timesPlusDuration:[],
-    serviceTitle:'',
+    allService:[],
+    selectedService:'',
+    checkbox: false,
+    serviceName:"",
+    personInput:false,
     serviceDescription:'',
+    
    
   }),
   computed: {
@@ -558,7 +586,7 @@ export default {
       return datestring;
     },
     timeSession() {
-      this.setShowTimeToTrue();
+        this.setShowTimeToTrue();
       var moment = require("moment"); // require
       moment().format();
       var currentTime = moment(new Date(), "hmm").format("HH:mm");
@@ -589,15 +617,30 @@ export default {
       
       return times;
     },
-    
-    person(){
-      var people = [];
-      for (let i = 1; i <= this.maxPerson; i++) {
-        people.push(i);
+    // person(){
         
-      }
-      return people;
-    }
+    //     var hello = this.slot;
+    //     var personList = [];
+    //     for (let j = 0; j < this.booking.length; j++) {
+    //       var bookingStart = this.booking[j].selected_time;
+    //       var bookingDate = this.booking[j].selected_date;
+    //       if (bookingStart == this.selectedTime && bookingDate == this.selectedDated.selectedDate) {
+    //          hello = hello - this.booking[j].person;
+    //       }
+
+    //     for (let i = 1; i <= hello.lenth; i++) {
+    //         personList.push(i);
+            
+    //     }
+          
+        
+        
+    //   }
+    //   return personList;  
+    // }
+    
+    
+    
 
   },
   created() {
@@ -613,8 +656,8 @@ export default {
     }
   },
   watch: {
-    selectedPerson() {
-      this.getService();
+    selectedService() {
+      this.getSelectedService();
     },
     phoneNumber(){
       if(this.results.isValid==true){
@@ -738,42 +781,12 @@ export default {
           console.log(error);
         });
     },
-    getService() {
-      const params = new URLSearchParams();
-      params.append("read", "done");
-      params.append("branch_id", this.selectedBranch.branch_id);
-      params.append("seat", this.selectedPerson);
-      axios({
-        method: "post",
-        url: this.domain + "/service/index.php",
-        data: params,
-      })
-        .then((response) => {
-          console.log(response);
-          if (response.data.status == "1") {
-            this.table = response.data.service[0];
-            this.serviceID = this.table.service_id;
-            this.serviceDuration = this.table.duration;
-            this.slot = this.table.slot;
-            this.getBooking();
-            
-          } else {
-            console.log("no service");
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-
+    
     getBooking() {
-      if (this.selectedPerson == "" || this.selectedDated == "") {
-        return;
-      }
       const params = new URLSearchParams();
       params.append("read", "done");
       params.append("selected_date", this.selectedDated.selectedDate);
-      params.append("service_id", this.serviceID);
+      params.append("service_id", this.selectedService);
 
       axios({
         method: "post",
@@ -830,10 +843,10 @@ export default {
     createBooking(){
       const params = new URLSearchParams();
       params.append("create", "done");
-      params.append("service_id", this.serviceID);
+      params.append("service_id", this.selectedService);
       params.append("selected_time", this.selectedTime);
       params.append("duration", this.serviceDuration);
-      params.append("service_title", this.serviceTitle);
+      params.append("service_title", this.serviceName);
       params.append("service_description", this.serviceDescription);
       params.append("selected_date", this.selectedDated.selectedDate);
       params.append("person", this.selectedPerson);
@@ -850,31 +863,6 @@ export default {
             console.log("Booking successfully");
            
 
-          } else {
-            console.log("Booking failed");
-            
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-      
-    },
-    findMaxPerson(){
-      const params = new URLSearchParams();
-      params.append("findMaxPerson", "done");
-      params.append("branch_id", this.selectedBranch.branch_id);
-
-      axios({
-        method: "post",
-        url: this.domain + "/service/index.php",
-        data: params,
-      })
-        .then((response) => {
-          console.log(response);
-          if (response.data.status == "1") {
-             this.maxPerson = response.data.service[0].seat;
-            
           } else {
             console.log("Booking failed");
             
@@ -910,16 +898,19 @@ export default {
           var bookingEnd = bookings.add(this.booking[j].duration, period);
           
           if (bookingStart >= start && bookingStart < end) {
-            slot += 1;
+
+                slot += 1;
             continue;
-            
+  
           }
           if (bookingEnd > start && bookingEnd <= end) {
             slot += 1;
+            
             continue;
           }
           if (bookingStart < start && bookingEnd > end) {
             slot += 1;
+            
             continue;
           }
           
@@ -931,8 +922,68 @@ export default {
         }
       }
       this.setShowTimeToFalse();
-    }
+    },
+    findAllService(){
+      const params = new URLSearchParams();
+      params.append("findAllService", "done");
+      params.append("branch_id", this.selectedBranch.branch_id);
 
+      axios({
+        method: "post",
+        url: this.domain + "/service/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+             this.allService = response.data.service;
+             
+            
+          } else {
+            console.log("no service found");
+            
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      
+    },
+    getSelectedService(){
+      const params = new URLSearchParams();
+      params.append("getSelectedService", "done");
+      params.append("service_id", this.selectedService);
+
+      axios({
+        method: "post",
+        url: this.domain + "/service/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+             
+             this.serviceDuration =JSON.parse(response.data.service[0].duration);
+             this.slot = JSON.parse(response.data.service[0].slot);
+             this.serviceName = response.data.service[0].title;
+             this.serviceDescription = response.data.service[0].description;
+             
+             this.getBooking();
+             
+            
+          } else {
+            console.log("something went wrong");
+            
+            
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      
+    },
+    clear(){ this.selectedService = null }
+    
   },
    
 };
@@ -945,18 +996,14 @@ export default {
   pointer-events: none !important;
 }
 .vfc-single-input {
-  font-size: inherit;
-  -webkit-transition: width 200ms;
-  transition: width 200ms;
   padding: 7px !important;
   width: 100% !important;
-  margin: 0px, 0px, 8px;
   color: #9b9b9b !important;
-  border: 1px solid #9b9b9b;
-  text-align: center;
-  outline: none;
 }
 
+.v-application--is-ltr .v-list.v-sheet--shaped {
+    background-color: transparent!important;
+}
 
 
 

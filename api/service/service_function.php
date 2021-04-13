@@ -68,6 +68,49 @@ class service_function
         return (sizeof($return_arr) > 0 ? $return_arr : false);
     }
 
+    public function findAllService($branch_id)
+    {
+        $stmt = $this->conn->prepare("SELECT updated_at, created_at, status, slot, duration, price, description, seat, title, branch_id, service_id
+        FROM tb_service WHERE branch_id = $branch_id");
+        //error reporting
+        if (!$stmt) {
+            die('prepare() failed: ' . htmlspecialchars($this->conn->error));
+        }
+        $result = $stmt->execute();
+
+        if ($result) {
+            //set up bind result
+            $meta = $stmt->result_metadata();
+            while ($field = $meta->fetch_field()) {
+                $params[] = &$row[$field->name];
+            }
+            $return_arr = $this->structure->bindResult($stmt, $params, $row);
+        }
+
+        return (sizeof($return_arr) > 0 ? $return_arr : false);
+    }
+    
+    public function getSelectedService($service_id)
+    {
+        $stmt = $this->conn->prepare("SELECT updated_at, created_at, status, slot, duration, price, description, seat, title, branch_id, service_id
+        FROM tb_service WHERE service_id = '" .$service_id."' ");
+        //error reporting
+        if (!$stmt) {
+            die('prepare() failed: ' . htmlspecialchars($this->conn->error));
+        }
+        $result = $stmt->execute();
+
+        if ($result) {
+            //set up bind result
+            $meta = $stmt->result_metadata();
+            while ($field = $meta->fetch_field()) {
+                $params[] = &$row[$field->name];
+            }
+            $return_arr = $this->structure->bindResult($stmt, $params, $row);
+        }
+
+        return (sizeof($return_arr) > 0 ? $return_arr : false);
+    }
     /**
      * create function
      * */

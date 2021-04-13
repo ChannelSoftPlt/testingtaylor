@@ -26,6 +26,20 @@ else if (isset($_POST['findMaxPerson']) && isset($_POST['branch_id'])) {
     echo json_encode($response);
 
 }
+else if (isset($_POST['findAllService']) && isset($_POST['branch_id'])) {
+    $read     = $db->findAllService($_POST['branch_id']);
+    $response['status']   = ($read ? '1' : '2');
+    $response['service'] = $read;
+    echo json_encode($response);
+
+}
+else if (isset($_POST['getSelectedService']) && isset($_POST['service_id'])) {
+    $read     = $db->getSelectedService($_POST['service_id']);
+    $response['status']   = ($read ? '1' : '2');
+    $response['service'] = $read;
+    echo json_encode($response);
+
+}
 /**
  * create
  * */
