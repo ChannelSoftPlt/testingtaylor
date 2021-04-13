@@ -491,6 +491,8 @@ export default {
     timesPlusDuration:[],
     serviceTitle:'',
     serviceDescription:'',
+    merchantPhone:'',
+    whatsappRedirect:0,
    
   }),
   computed: {
@@ -710,6 +712,8 @@ export default {
           this.workingDays = JSON.parse(this.items[i].working_day);
           this.workingTime = JSON.parse(this.items[i].working_time);
           this.gap = JSON.parse(this.items[i].gap);
+          this.merchantPhone = this.items[i].phone_number;
+          this.whatsappRedirect = this.items[i].redirect;
         }
       }
       this.getBranchHoliday();
@@ -931,8 +935,21 @@ export default {
         }
       }
       this.setShowTimeToFalse();
-    }
+    },
+     whatsappMerchant() {
+      if(this.whatsappRedirect==1){
+         window.location.href =
+        "https://api.whatsapp.com/send?phone=" +
+        this.merchantPhone +
+        "&text=Thanks%20for%20Choosing%20Us";
+      }
+      else if(this.whatsappRedirect==0){
+         this.snackbar = true;
+         this.e6=1;
+      }
 
+      
+    },
   },
    
 };

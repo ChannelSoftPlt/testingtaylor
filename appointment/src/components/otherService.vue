@@ -24,7 +24,7 @@
         <h2 :style="{ color: headerTextColor }">Book Appointment Now!</h2>
         <p class="px-7">
           <span :style="{ color: descriptionTextColor }"
-            >Make an appointment with us now to save your time
+            >Make an appointment with us now to save your time 
           </span>
         </p>
       </v-col>
@@ -37,18 +37,11 @@
       center
       shaped
       :color="stepButtonColor"
-     
     >
       Booked successfully!
       <template v-slot:action="{ attrs }">
-        <v-btn
-          color="blue"
-          text
-          v-bind="attrs"
-          @click="snackbar = false"
-          
-        >
-        <v-icon> mdi-close </v-icon>
+        <v-btn color="blue" text v-bind="attrs" @click="snackbar = false">
+          <v-icon> mdi-close </v-icon>
         </v-btn>
       </template>
     </v-snackbar>
@@ -70,7 +63,7 @@
               :loading="branchLoading"
               v-model="selectedBranch"
               @change="
-                (branchLoading = true), getBranchDateAndTime(),findAllService()
+                (branchLoading = true), getBranchDateAndTime(), findAllService()
               "
               return-object
             >
@@ -82,32 +75,30 @@
           </v-stepper-step>
 
           <v-stepper-content step="2">
-            
-        
-    <v-list shaped >
-      <v-list-item-group
-        v-model="selectedService"
-        color="primary" 
-      >
-        <v-list-item
-          v-for="(item, i) in allService"
-          :key="i"
-          :value="item.service_id"
-          @click="selectedService='value', e6=3"
+            <v-list shaped>
+              <v-list-item-group v-model="selectedService" color="primary">
+                <v-list-item
+                  v-for="(item, i) in allService"
+                  :key="i"
+                  :value="item.service_id"
+                  @click="(selectedService = 'value'), (e6 = 3)"
+                >
+                  <v-list-item-content>
+                    <v-list-item-title v-text="item.title"></v-list-item-title>
+                    <v-list-item-subtitle
+                      v-text="item.description"
+                    ></v-list-item-subtitle>
+                    <v-list-item-subtitle
+                      v-text="item.duration + ' minit'"
+                    ></v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
 
-        >
-          <v-list-item-content>
-            <v-list-item-title v-text="item.title"></v-list-item-title>
-            <v-list-item-subtitle v-text="item.description"></v-list-item-subtitle>
-            <v-list-item-subtitle v-text="item.duration+' minit'"></v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list-item-group>
-    </v-list>
- 
-
-            <v-btn :color="continueButtonColor"
-              outlined text @click="e6 = 1"> Back </v-btn>
+            <v-btn :color="continueButtonColor" outlined text @click="e6 = 1">
+              Back
+            </v-btn>
           </v-stepper-content>
 
           <v-stepper-step :complete="e6 > 3" step="3" :color="stepButtonColor">
@@ -116,7 +107,6 @@
 
           <v-stepper-content step="3">
             <v-row class="mt-2">
-              
               <v-col cols="12">
                 <FunctionalCalendar
                   v-model="selectedDated"
@@ -133,14 +123,17 @@
               </v-col>
             </v-row>
             <div class="d-flex justify-center mt-16">
-            <v-progress-circular
-              :size="50"
-              :color ="stepButtonColor"
-              indeterminate
-              v-if="showTime"
-            ></v-progress-circular>
+              <v-progress-circular
+                :size="50"
+                :color="stepButtonColor"
+                indeterminate
+                v-if="showTime"
+              ></v-progress-circular>
             </div>
-            <v-row class="mb-2" v-if="selectedService && selectedDated && this.showTime==false">
+            <v-row
+              class="mb-2"
+              v-if="selectedService && selectedDated && this.showTime == false"
+            >
               <v-col cols="4" sm="12">
                 <p>Morning</p>
                 <v-row>
@@ -153,8 +146,8 @@
                       v-model="selectedTime"
                       @click="
                         selectedTime = time;
-                        personInput=true;
-                        e6=4
+                        personInput = true;
+                        e6 = 4;
                       "
                       v-if="parseFloat(time.substring(0, 2)) < 12"
                     >
@@ -175,9 +168,8 @@
                       v-model="selectedTime"
                       @click="
                         selectedTime = time;
-                        personInput=true;
-                        e6=4
-                        
+                        personInput = true;
+                        e6 = 4;
                       "
                       v-if="
                         parseFloat(time.substring(0, 2)) >= 12 &&
@@ -201,8 +193,8 @@
                       v-model="selectedTime"
                       @click="
                         selectedTime = time;
-                        personInput=true;
-                        e6=4
+                        personInput = true;
+                        e6 = 4;
                       "
                       v-if="parseFloat(time.substring(0, 2)) > 18"
                     >
@@ -210,7 +202,7 @@
                     </v-btn>
                   </div>
                 </v-row>
-              </v-col >
+              </v-col>
 
               <!-- <v-col cols="12" v-if="personInput">
                 <v-checkbox
@@ -234,7 +226,12 @@
             <br />
             <br />
 
-            <v-btn text :color="continueButtonColor" outlined @click="e6 = 2, clear()">
+            <v-btn
+              text
+              :color="continueButtonColor"
+              outlined
+              @click="(e6 = 2), clear()"
+            >
               Back
             </v-btn>
           </v-stepper-content>
@@ -250,7 +247,7 @@
                 <span>Customer Information</span>
               </v-row>
             </v-card-title>
-            
+
             <v-form class="mb-2" ref="form" v-model="valid" lazy-validation>
               <v-row>
                 <v-col cols="12" sm="4" md="6">
@@ -258,7 +255,6 @@
                     label="First name"
                     v-model="firstname"
                     :rules="firstnameRules"
-
                     required
                   ></v-text-field>
                 </v-col>
@@ -280,10 +276,16 @@
                   ></v-text-field>
                 </v-col>
 
-                <v-col cols="12" sm="12">        
-                  <vue-phone-number-input size="sm" default-country-code="MY" v-model="phoneNumber" :rules="phoneRules"
-                   :error="checkTelInput" valid-color="#919191" @update="results = $event"  ></vue-phone-number-input>
-                  
+                <v-col cols="12" sm="12">
+                  <vue-phone-number-input
+                    size="sm"
+                    default-country-code="MY"
+                    v-model="phoneNumber"
+                    :rules="phoneRules"
+                    :error="checkTelInput"
+                    valid-color="#919191"
+                    @update="results = $event"
+                  ></vue-phone-number-input>
                 </v-col>
 
                 <v-col>
@@ -300,17 +302,12 @@
               </v-row>
             </v-form>
 
-            <v-btn
-              :color="continueButtonColor"
-              outlined
-              
-              @click="validate()"
-            >
+            <v-btn :color="continueButtonColor" outlined @click="validate()">
               Continue
             </v-btn>
             <v-btn text @click="e6 = 3"> Back </v-btn>
           </v-stepper-content>
-    
+
           <v-dialog v-model="dialog" persistent max-width="600px">
             <v-card>
               <v-card-title class="grey lighten-4">
@@ -362,7 +359,10 @@
                     </v-col>
                   </v-row>
 
-                  <v-row no-gutters v-if="remark==''?remark='none': remark">
+                  <v-row
+                    no-gutters
+                    v-if="remark == '' ? (remark = 'none') : remark"
+                  >
                     <v-col cols="6" md="4">
                       <h5>Remark:</h5>
                     </v-col>
@@ -406,7 +406,7 @@
                 <v-btn
                   color="blue darken-1"
                   text
-                  @click="(dialog = false), createCustomer(), snackbar=true"
+                  @click="(dialog = false), createCustomer(), whatsappMerchant()"
                 >
                   Submit
                 </v-btn>
@@ -441,14 +441,10 @@ import Vue from "vue";
 import { BASEURL } from "@/api/baseurl";
 import axios from "axios";
 import FunctionalCalendar from "vue-functional-calendar";
-import VuePhoneNumberInput from 'vue-phone-number-input';
-import 'vue-phone-number-input/dist/vue-phone-number-input.css';
+import VuePhoneNumberInput from "vue-phone-number-input";
+import "vue-phone-number-input/dist/vue-phone-number-input.css";
 
-
-
-  
- 
-Vue.component('vue-phone-number-input', VuePhoneNumberInput);
+Vue.component("vue-phone-number-input", VuePhoneNumberInput);
 
 Vue.use(FunctionalCalendar, {
   dayNames: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
@@ -456,8 +452,6 @@ Vue.use(FunctionalCalendar, {
 });
 
 export default {
-
-
   data: () => ({
     domain: BASEURL,
     e6: 1,
@@ -503,23 +497,24 @@ export default {
     booking: [],
     serviceDuration: "",
     slot: "",
-    customerID:'',
-    contact:"",
-    results:"",
-    checkTelInput:false,
-    maxPerson:"",
-    showTime:false,
+    customerID: "",
+    contact: "",
+    results: "",
+    checkTelInput: false,
+    maxPerson: "",
+    showTime: false,
     timeout: 2000,
     snackbar: false,
-    timesPlusDuration:[],
-    allService:[],
-    selectedService:'',
+    timesPlusDuration: [],
+    allService: [],
+    selectedService: "",
     checkbox: false,
-    serviceName:"",
-    personInput:false,
-    serviceDescription:'',
-    
-   
+    serviceName: "",
+    personInput: false,
+    serviceDescription: "",
+    merchantPhone:'',
+    whatsappRedirect:0,
+    bookingID:'',
   }),
   computed: {
     createBackgroundString() {
@@ -586,7 +581,7 @@ export default {
       return datestring;
     },
     timeSession() {
-        this.setShowTimeToTrue();
+      this.setShowTimeToTrue();
       var moment = require("moment"); // require
       moment().format();
       var currentTime = moment(new Date(), "hmm").format("HH:mm");
@@ -613,12 +608,11 @@ export default {
           }
         }
       }
-      
-      
+
       return times;
     },
     // person(){
-        
+
     //     var hello = this.slot;
     //     var personList = [];
     //     for (let j = 0; j < this.booking.length; j++) {
@@ -630,18 +624,12 @@ export default {
 
     //     for (let i = 1; i <= hello.lenth; i++) {
     //         personList.push(i);
-            
-    //     }
-          
-        
-        
-    //   }
-    //   return personList;  
-    // }
-    
-    
-    
 
+    //     }
+
+    //   }
+    //   return personList;
+    // }
   },
   created() {
     //check form availble
@@ -659,32 +647,31 @@ export default {
     selectedService() {
       this.getSelectedService();
     },
-    phoneNumber(){
-      if(this.results.isValid==true){
-        this.checkTelInput=false;
+    phoneNumber() {
+      if (this.results.isValid == true) {
+        this.checkTelInput = false;
+      } else if (this.results.isValid == false) {
+        this.checkTelInput = true;
       }
-      else if(this.results.isValid==false){
-        this.checkTelInput=true;
-      }
-    }
+    },
   },
   methods: {
     validate() {
       var mailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-      if(this.firstname!=''&& this.lastname!='' && this.phoneNumber!='' && this.email!='' && this.results.isValid==true && this.email.match(mailformat) ){
+      if (
+        this.firstname != "" &&
+        this.lastname != "" &&
+        this.phoneNumber != "" &&
+        this.email != "" &&
+        this.results.isValid == true &&
+        this.email.match(mailformat)
+      ) {
         this.dialog = true;
-      }
-      else if(this.results.isValid==true){
-        this.checkTelInput=false;
-      }
-    
-      else{
-      
-     
-      this.$refs.form.validate();
-      this.checkTelInput = true;
-      
-      
+      } else if (this.results.isValid == true) {
+        this.checkTelInput = false;
+      } else {
+        this.$refs.form.validate();
+        this.checkTelInput = true;
       }
     },
     getCompanyName() {
@@ -753,6 +740,8 @@ export default {
           this.workingDays = JSON.parse(this.items[i].working_day);
           this.workingTime = JSON.parse(this.items[i].working_time);
           this.gap = JSON.parse(this.items[i].gap);
+          this.merchantPhone = this.items[i].phone_number;
+          this.whatsappRedirect = 1;
         }
       }
       this.getBranchHoliday();
@@ -781,7 +770,7 @@ export default {
           console.log(error);
         });
     },
-    
+
     getBooking() {
       const params = new URLSearchParams();
       params.append("read", "done");
@@ -798,21 +787,20 @@ export default {
           if (response.data.status == "1") {
             this.booking = response.data.booking;
             this.finalTime();
-             
           } else {
             console.log("no booking");
             this.booking = [];
-            this.finalTime(); 
+            this.finalTime();
           }
         })
         .catch((error) => {
           console.log(error);
         });
     },
-    createCustomer(){
+    createCustomer() {
       const params = new URLSearchParams();
       params.append("create", "done");
-      params.append("name", this.firstname+' '+this.lastname);
+      params.append("name", this.firstname + " " + this.lastname);
       params.append("contact", this.results.formattedNumber);
       params.append("email", this.email);
       params.append("remark", this.remark);
@@ -828,19 +816,15 @@ export default {
             console.log("Add customer successfully");
             this.customerID = response.data.customer;
             this.createBooking();
-
           } else {
             console.log("Please check again your info");
-            
           }
         })
         .catch((error) => {
           console.log(error);
         });
-
-       
     },
-    createBooking(){
+    createBooking() {
       const params = new URLSearchParams();
       params.append("create", "done");
       params.append("service_id", this.selectedService);
@@ -861,29 +845,26 @@ export default {
           console.log(response);
           if (response.data.status == "1") {
             console.log("Booking successfully");
-           
-
+            this.bookingID = response.data.booking;
           } else {
             console.log("Booking failed");
-            
           }
         })
         .catch((error) => {
           console.log(error);
         });
-      
     },
-    setShowTimeToTrue(){
-      this.showTime=true;
+    setShowTimeToTrue() {
+      this.showTime = true;
     },
-    setShowTimeToFalse(){
-      this.showTime=false;
+    setShowTimeToFalse() {
+      this.showTime = false;
     },
-    finalTime(){
+    finalTime() {
       var moment = require("moment"); // require
       moment().format();
       var duration = this.serviceDuration;
-      this.timesPlusDuration=[];
+      this.timesPlusDuration = [];
       var first = this.timeSession;
       var period = "m";
       // var second = [];
@@ -896,34 +877,30 @@ export default {
           var bookingStart = moment(this.booking[j].selected_time, "HH:mm");
           var bookings = moment(this.booking[j].selected_time, "HH:mm");
           var bookingEnd = bookings.add(this.booking[j].duration, period);
-          
-          if (bookingStart >= start && bookingStart < end) {
 
-                slot += 1;
+          if (bookingStart >= start && bookingStart < end) {
+            slot += 1;
             continue;
-  
           }
           if (bookingEnd > start && bookingEnd <= end) {
             slot += 1;
-            
+
             continue;
           }
           if (bookingStart < start && bookingEnd > end) {
             slot += 1;
-            
+
             continue;
           }
-          
         }
-        
+
         if (slot < this.slot) {
           this.timesPlusDuration.push(start.format("HH:mm"));
-      
         }
       }
       this.setShowTimeToFalse();
     },
-    findAllService(){
+    findAllService() {
       const params = new URLSearchParams();
       params.append("findAllService", "done");
       params.append("branch_id", this.selectedBranch.branch_id);
@@ -936,20 +913,16 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.data.status == "1") {
-             this.allService = response.data.service;
-             
-            
+            this.allService = response.data.service;
           } else {
             console.log("no service found");
-            
           }
         })
         .catch((error) => {
           console.log(error);
         });
-      
     },
-    getSelectedService(){
+    getSelectedService() {
       const params = new URLSearchParams();
       params.append("getSelectedService", "done");
       params.append("service_id", this.selectedService);
@@ -962,34 +935,46 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.data.status == "1") {
-             
-             this.serviceDuration =JSON.parse(response.data.service[0].duration);
-             this.slot = JSON.parse(response.data.service[0].slot);
-             this.serviceName = response.data.service[0].title;
-             this.serviceDescription = response.data.service[0].description;
-             
-             this.getBooking();
-             
-            
+            this.serviceDuration = JSON.parse(
+              response.data.service[0].duration
+            );
+            this.slot = JSON.parse(response.data.service[0].slot);
+            this.serviceName = response.data.service[0].title;
+            this.serviceDescription = response.data.service[0].description;
+
+            this.getBooking();
           } else {
             console.log("something went wrong");
-            
-            
           }
         })
         .catch((error) => {
           console.log(error);
         });
+    },
+    clear() {
+      this.selectedService = null;
+    },
+    whatsappMerchant() {
+      if(this.whatsappRedirect==1){
+         window.location.href =
+        "https://api.whatsapp.com/send?phone=" +
+        this.merchantPhone +
+        "&text=My%20Appointment%20ID:%20"+
+        this.bookingID +
+        "%0AName:%20" +this.firstname + " " + this.lastname+
+        "%0ADate:%20" +this.selectedDated.selectedDate+
+        "%0ATime:%20" +this.selectedTime+
+        "%0A" +this.domain;
+      }
+      else if(this.whatsappRedirect==0){
+         this.snackbar = true;
+         this.e6=1;
+      }
+
       
     },
-    clear(){ this.selectedService = null }
-    
   },
-   
 };
-
-
-
 </script>
 <style lang="postcss">
 .vfc-week .vfc-day span.vfc-span-day.vfc-cursor-not-allowed {
@@ -1002,10 +987,6 @@ export default {
 }
 
 .v-application--is-ltr .v-list.v-sheet--shaped {
-    background-color: transparent!important;
+  background-color: transparent !important;
 }
-
-
-
-
 </style>

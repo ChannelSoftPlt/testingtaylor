@@ -58,7 +58,10 @@ class booking_function
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
         }
         //bind param
-        return $this->structure->bindParam($stmt, $params);
+        $result  = $this->structure->bindParam($stmt, $params);
+        $last_id = $stmt->insert_id;
+        $stmt->close();
+        return ($result ? $last_id : false);
     }
 
     /**

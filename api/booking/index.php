@@ -27,6 +27,7 @@ else if (isset($_POST['create'])&& isset($_POST['person']) && isset($_POST['cust
     $create = $db->create(array($_POST['service_id'], $_POST['selected_time'], $_POST['duration'], $_POST['service_title'], $_POST['service_description'],
                                 $_POST['selected_date'],$_POST['person'], $_POST['customer_id'], $created_at));
     $response['status'] = ($create ? '1' : '2');
+    $response['booking'] = $create;
     echo json_encode($response);
 }
 /**
