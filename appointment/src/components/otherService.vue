@@ -24,7 +24,7 @@
         <h2 :style="{ color: headerTextColor }">Book Appointment Now!</h2>
         <p class="px-7">
           <span :style="{ color: descriptionTextColor }"
-            >Make an appointment with us now to save your time  {{selectedDated.selectedDate}}
+            >Make an appointment with us now to save your time 
           </span>
         </p>
       </v-col>
