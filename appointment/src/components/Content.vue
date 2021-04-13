@@ -130,7 +130,7 @@
               v-if="showTime"
             ></v-progress-circular>
             </div>
-            <v-row class="mb-2" v-if="selectedPerson && selectedDated && this.showTime==false">
+            <v-row class="mb-2" v-if="selectedPerson && selectedDated.selectedDate && this.showTime==false">
               <v-col cols="4" sm="12">
                 <p>Morning</p>
                 <v-row>
@@ -383,7 +383,7 @@
                 <v-btn
                   color="blue darken-1"
                   text
-                  @click="(dialog = false), createCustomer(), snackbar=true"
+                  @click="(dialog = false), createCustomer()"
                 >
                   Submit
                 </v-btn>
@@ -493,6 +493,7 @@ export default {
     serviceDescription:'',
     merchantPhone:'',
     whatsappRedirect:0,
+    branchID:'',
    
   }),
   computed: {
@@ -713,7 +714,7 @@ export default {
           this.workingTime = JSON.parse(this.items[i].working_time);
           this.gap = JSON.parse(this.items[i].gap);
           this.merchantPhone = this.items[i].phone_number;
-          this.whatsappRedirect = this.items[i].redirect;
+          this.whatsappRedirect = 1;
         }
       }
       this.getBranchHoliday();
@@ -852,6 +853,8 @@ export default {
           console.log(response);
           if (response.data.status == "1") {
             console.log("Booking successfully");
+            this.bookingID = response.data.booking;
+            this.whatsappMerchant();
            
 
           } else {
@@ -941,7 +944,13 @@ export default {
          window.location.href =
         "https://api.whatsapp.com/send?phone=" +
         this.merchantPhone +
-        "&text=Thanks%20for%20Choosing%20Us";
+        "&text=My%20Appointment%20ID:%20"+
+        this.bookingID +
+        "%0AName:%20" +this.firstname +"%20"+ this.lastname+
+        "%0ADate:%20" +this.selectedDated.selectedDate+
+        "%0ATime:%20" +this.selectedTime +
+        "%0ARemark:%20" +this.remark +
+        "%0A"+this.domain;
       }
       else if(this.whatsappRedirect==0){
          this.snackbar = true;

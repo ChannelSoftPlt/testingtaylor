@@ -24,7 +24,7 @@
         <h2 :style="{ color: headerTextColor }">Book Appointment Now!</h2>
         <p class="px-7">
           <span :style="{ color: descriptionTextColor }"
-            >Make an appointment with us now to save your time 
+            >Make an appointment with us now to save your time  {{selectedDated.selectedDate}}
           </span>
         </p>
       </v-col>
@@ -132,7 +132,7 @@
             </div>
             <v-row
               class="mb-2"
-              v-if="selectedService && selectedDated && this.showTime == false"
+              v-if="selectedService && selectedDated.selectedDate && this.showTime == false"
             >
               <v-col cols="4" sm="12">
                 <p>Morning</p>
@@ -406,7 +406,7 @@
                 <v-btn
                   color="blue darken-1"
                   text
-                  @click="(dialog = false), createCustomer(), whatsappMerchant()"
+                  @click="(dialog = false), createCustomer()"
                 >
                   Submit
                 </v-btn>
@@ -741,7 +741,7 @@ export default {
           this.workingTime = JSON.parse(this.items[i].working_time);
           this.gap = JSON.parse(this.items[i].gap);
           this.merchantPhone = this.items[i].phone_number;
-          this.whatsappRedirect = 1;
+          this.whatsappRedirect = this.items[i].redirect;
         }
       }
       this.getBranchHoliday();
@@ -846,6 +846,7 @@ export default {
           if (response.data.status == "1") {
             console.log("Booking successfully");
             this.bookingID = response.data.booking;
+            this.whatsappMerchant();
           } else {
             console.log("Booking failed");
           }
@@ -961,10 +962,11 @@ export default {
         this.merchantPhone +
         "&text=My%20Appointment%20ID:%20"+
         this.bookingID +
-        "%0AName:%20" +this.firstname + " " + this.lastname+
+        "%0AName:%20" +this.firstname +"%20"+ this.lastname+
         "%0ADate:%20" +this.selectedDated.selectedDate+
-        "%0ATime:%20" +this.selectedTime+
-        "%0A" +this.domain;
+        "%0ATime:%20" +this.selectedTime +
+        "%0ARemark:%20" +this.remark +
+        "%0A"+this.domain;
       }
       else if(this.whatsappRedirect==0){
          this.snackbar = true;
