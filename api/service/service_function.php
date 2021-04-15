@@ -70,7 +70,7 @@ class service_function
 
     public function findAllService($branch_id)
     {
-        $stmt = $this->conn->prepare("SELECT updated_at, created_at, status, slot, duration, price, description, seat, title, branch_id, service_id
+        $stmt = $this->conn->prepare("SELECT updated_at, created_at, provider_id, status, slot, duration, price, description, seat, title, branch_id, service_id
         FROM tb_service WHERE branch_id = $branch_id");
         //error reporting
         if (!$stmt) {
@@ -92,7 +92,7 @@ class service_function
     
     public function getSelectedService($service_id)
     {
-        $stmt = $this->conn->prepare("SELECT updated_at, created_at, status, slot, duration, price, description, seat, title, branch_id, service_id
+        $stmt = $this->conn->prepare("SELECT updated_at, created_at, provider_id, status, slot, duration, price, description, seat, title, branch_id, service_id
         FROM tb_service WHERE service_id = '" .$service_id."' ");
         //error reporting
         if (!$stmt) {
