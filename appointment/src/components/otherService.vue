@@ -24,7 +24,7 @@
         <h2 :style="{ color: headerTextColor }">Book Appointment Now!</h2>
         <p class="px-7">
           <span :style="{ color: descriptionTextColor }"
-            >Make an appointment with us now to save your time 
+            >Make an appointment with us now to save your time {{providerID}}
           </span>
         </p>
       </v-col>
@@ -81,7 +81,7 @@
                   v-for="(item, i) in allService"
                   :key="i"
                   :value="item.service_id"
-                  @click="(selectedService = 'value'), (e6 = 3)"
+                  @click="(selectedService = 'value'),getAllProvider(),(e6 = 3)"
                 >
                   <v-list-item-content>
                     <v-list-item-title v-text="item.title"></v-list-item-title>
@@ -102,10 +102,23 @@
           </v-stepper-content>
 
           <v-stepper-step :complete="e6 > 3" step="3" :color="stepButtonColor">
-            Choose Date and time
+            Choose Your Service Provider
           </v-stepper-step>
 
           <v-stepper-content step="3">
+
+
+
+            <v-btn :color="continueButtonColor" outlined text @click="e6 = 2">
+              Back
+            </v-btn>
+          </v-stepper-content>
+
+          <v-stepper-step :complete="e6 > 4" step="4" :color="stepButtonColor">
+            Choose Date and time
+          </v-stepper-step>
+
+          <v-stepper-content step="4">
             <v-row class="mt-2">
               <v-col cols="12">
                 <FunctionalCalendar
@@ -147,7 +160,7 @@
                       @click="
                         selectedTime = time;
                         personInput = true;
-                        e6 = 4;
+                        e6 = 45
                       "
                       v-if="parseFloat(time.substring(0, 2)) < 12"
                     >
@@ -169,7 +182,7 @@
                       @click="
                         selectedTime = time;
                         personInput = true;
-                        e6 = 4;
+                        e6 = 5;
                       "
                       v-if="
                         parseFloat(time.substring(0, 2)) >= 12 &&
@@ -194,7 +207,7 @@
                       @click="
                         selectedTime = time;
                         personInput = true;
-                        e6 = 4;
+                        e6 = 5;
                       "
                       v-if="parseFloat(time.substring(0, 2)) > 18"
                     >
@@ -203,24 +216,6 @@
                   </div>
                 </v-row>
               </v-col>
-
-              <!-- <v-col cols="12" v-if="personInput">
-                <v-checkbox
-                v-model="checkbox"
-                label="Add Person (Default 1)"
-                color="indigo"
-                ></v-checkbox>
-               
-                <v-select
-                  v-if="checkbox"
-                  :items="person"
-                  label="Total Person"
-                  prepend-inner-icon="mdi-account"
-                  v-model="selectedPerson"
-                  
-      
-                ></v-select>
-              </v-col> -->
             </v-row>
 
             <br />
@@ -230,17 +225,17 @@
               text
               :color="continueButtonColor"
               outlined
-              @click="(e6 = 2), clear()"
+              @click="(e6 = 3), clear()"
             >
               Back
             </v-btn>
           </v-stepper-content>
 
-          <v-stepper-step :complete="e6 > 4" step="4" :color="stepButtonColor">
+          <v-stepper-step :complete="e6 > 5" step="5" :color="stepButtonColor">
             Your info
           </v-stepper-step>
 
-          <v-stepper-content step="4">
+          <v-stepper-content step="5">
             <v-card-title>
               <v-row>
                 <v-icon>mdi-account</v-icon>
@@ -305,7 +300,7 @@
             <v-btn :color="continueButtonColor" outlined @click="validate()">
               Continue
             </v-btn>
-            <v-btn text @click="e6 = 3"> Back </v-btn>
+            <v-btn text @click="e6 = 4"> Back </v-btn>
           </v-stepper-content>
 
           <v-dialog v-model="dialog" persistent max-width="600px">
@@ -515,6 +510,8 @@ export default {
     merchantPhone:'',
     whatsappRedirect:0,
     bookingID:'',
+    providerID:[],
+    allProvider:[],
   }),
   computed: {
     createBackgroundString() {
@@ -942,6 +939,7 @@ export default {
             this.slot = JSON.parse(response.data.service[0].slot);
             this.serviceName = response.data.service[0].title;
             this.serviceDescription = response.data.service[0].description;
+            this.providerID = JSON.parse(response.data.service[0].provider_id);
 
             this.getBooking();
           } else {
@@ -971,10 +969,35 @@ export default {
       else if(this.whatsappRedirect==0){
          this.snackbar = true;
          this.e6=1;
-      }
-
-      
+      } 
     },
+    getAllProvider() {
+      for (let i = 0; i < this.providerID.length; i++) {
+      const params = new URLSearchParams();
+      params.append("getAllProvider", "done");
+      params.append("provider_id", this.providerID[i]);
+
+      axios({
+        method: "post",
+        url: this.domain + "/provider/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+             
+             this.allProvider = response.data.provider;
+             console.log(this.allProvider);
+          } else {
+            console.log("no provider found");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      }
+    }
   },
 };
 </script>

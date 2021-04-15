@@ -43,6 +43,29 @@ class provider_function
 
         return (sizeof($return_arr) > 0 ? $return_arr : false);
     }
+    
+
+    public function getAllProvider($provider_id)
+    {
+        $stmt = $this->conn->prepare("SELECT break_time, slot, work_time, work_day, email, phone, staff_description, name, provider_id 
+        FROM tb_provider WHERE soft_delete = '' AND provider_id = $provider_id ");
+        //error reporting
+        if (!$stmt) {
+            die('prepare() failed: ' . htmlspecialchars($this->conn->error));
+        }
+        $result = $stmt->execute();
+
+        if ($result) {
+            //set up bind result
+            $meta = $stmt->result_metadata();
+            while ($field = $meta->fetch_field()) {
+                $params[] = &$row[$field->name];
+            }
+            $return_arr = $this->structure->bindResult($stmt, $params, $row);
+        }
+
+        return (sizeof($return_arr) > 0 ? $return_arr : false);
+    }
 
     /**
      * create function
