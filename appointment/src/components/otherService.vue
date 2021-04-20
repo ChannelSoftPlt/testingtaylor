@@ -24,7 +24,7 @@
         <h2 :style="{ color: headerTextColor }">Book Appointment Now!</h2>
         <p class="px-7">
           <span :style="{ color: descriptionTextColor }"
-            >Make an appointment with us now to save your time {{providerID}}
+            >Make an appointment with us now to save your time
           </span>
         </p>
       </v-col>
@@ -81,7 +81,7 @@
                   v-for="(item, i) in allService"
                   :key="i"
                   :value="item.service_id"
-                  @click="(selectedService = 'value'),getAllProvider(),(e6 = 3)"
+                  @click="(selectedService = 'value'), (e6 = 3)"
                 >
                   <v-list-item-content>
                     <v-list-item-title v-text="item.title"></v-list-item-title>
@@ -102,12 +102,27 @@
           </v-stepper-content>
 
           <v-stepper-step :complete="e6 > 3" step="3" :color="stepButtonColor">
-            Choose Your Service Provider
+            Choose Provider
           </v-stepper-step>
 
           <v-stepper-content step="3">
-
-
+            <v-list shaped>
+              <v-list-item-group v-model="selectedProvider" color="primary">
+                <v-list-item
+                  v-for="(item, i) in allProvider"
+                  :key="i"
+                  :value="item.provider_id"
+                  @click="e6 = 4"
+                >
+                  <v-list-item-content>
+                    <v-list-item-title v-text="item.name"></v-list-item-title>
+                    <v-list-item-subtitle
+                      v-text="item.staff_description"
+                    ></v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
 
             <v-btn :color="continueButtonColor" outlined text @click="e6 = 2">
               Back
@@ -117,17 +132,24 @@
           <v-stepper-step :complete="e6 > 4" step="4" :color="stepButtonColor">
             Choose Date and time
           </v-stepper-step>
-
           <v-stepper-content step="4">
             <v-row class="mt-2">
               <v-col cols="12">
+                <div class="text-center">
+                  <v-progress-circular
+                    :size="50"
+                    color="primary"
+                    indeterminate
+                    v-if="calendarCheck"
+                  ></v-progress-circular>
+                </div>
                 <FunctionalCalendar
                   v-model="selectedDated"
                   :disabled-day-names="weekdays"
                   :disabledDates="offday"
                   :limits="{ min: today, max: '01/01/2200' }"
                   :date-format="'dd/mm/yyyy'"
-                  v-if="check"
+                  v-if="check && selectedProvider"
                   :hidden-elements="['leftAndRightDays']"
                   :is-date-picker="true"
                   class="elevation-0"
@@ -145,7 +167,12 @@
             </div>
             <v-row
               class="mb-2"
-              v-if="selectedService && selectedDated.selectedDate && this.showTime == false"
+              v-if="
+                selectedService &&
+                selectedProvider &&
+                selectedDated.selectedDate &&
+                this.showTime == false
+              "
             >
               <v-col cols="4" sm="12">
                 <p>Morning</p>
@@ -160,7 +187,7 @@
                       @click="
                         selectedTime = time;
                         personInput = true;
-                        e6 = 45
+                        e6 = 5;
                       "
                       v-if="parseFloat(time.substring(0, 2)) < 12"
                     >
@@ -225,7 +252,7 @@
               text
               :color="continueButtonColor"
               outlined
-              @click="(e6 = 3), clear()"
+              @click="(selectedProvider =''),selectedDated ='', (e6 = 3)"
             >
               Back
             </v-btn>
@@ -341,6 +368,15 @@
                     </v-col>
                   </v-row>
 
+                   <v-row no-gutters>
+                    <v-col cols="6" md="4">
+                      <h5>Service Provider:</h5>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="8">
+                      <p>{{ providerName }}</p>
+                    </v-col>
+                  </v-row>
+
                   <v-row no-gutters>
                     <v-col cols="6" md="4">
                       <h5>Your Info:</h5>
@@ -365,32 +401,6 @@
                       <p>{{ remark }}</p>
                     </v-col>
                   </v-row>
-
-                  <!-- <v-row no-gutters>
-                    <v-col cols="12" sm="6" md="8">
-                     <v-checkbox v-model="checkbox">
-                      <template v-slot:label>
-                        <div>
-                          I agree that
-                          <v-tooltip bottom>
-                            <template v-slot:activator="{ on }">
-                              <a
-                                target="_blank"
-                                href="https://vuetifyjs.com"
-                                @click.stop
-                                v-on="on"
-                              >
-                                Vuetify
-                              </a>
-                            </template>
-                            Opens in new window
-                          </v-tooltip>
-                          is awesome
-                        </div>
-                      </template>
-                    </v-checkbox>
-                    </v-col>
-                  </v-row> -->
                 </v-container>
               </v-card-text>
               <v-card-actions>
@@ -507,11 +517,16 @@ export default {
     serviceName: "",
     personInput: false,
     serviceDescription: "",
-    merchantPhone:'',
-    whatsappRedirect:0,
-    bookingID:'',
-    providerID:[],
-    allProvider:[],
+    merchantPhone: "",
+    whatsappRedirect: 0,
+    bookingID: "",
+    allProvider: [],
+    selectedProvider: "",
+    providerWorkDay: [],
+    providerWorkTime: [],
+    providerBreakTime: [],
+    calendarCheck: false,
+    providerName:'',
   }),
   computed: {
     createBackgroundString() {
@@ -525,28 +540,29 @@ export default {
     },
     weekdays() {
       var value = [];
-
-      if (this.workingDays[0] == 1) {
+      if (this.workingDays[0] == 1 || this.providerWorkDay[0] == 1) {
         value.push("Su");
       }
-      if (this.workingDays[1] == 1) {
+      if (this.workingDays[1] == 1 || this.providerWorkDay[1] == 1) {
         value.push("Mo");
       }
-      if (this.workingDays[2] == 1) {
+      if (this.workingDays[2] == 1 || this.providerWorkDay[2] == 1) {
         value.push("Tu");
       }
-      if (this.workingDays[3] == 1) {
+      if (this.workingDays[3] == 1 || this.providerWorkDay[3] == 1) {
         value.push("We");
       }
-      if (this.workingDays[4] == 1) {
+      if (this.workingDays[4] == 1 || this.providerWorkDay[4] == 1) {
         value.push("Th");
       }
-      if (this.workingDays[5] == 1) {
+      if (this.workingDays[5] == 1 || this.providerWorkDay[5] == 1) {
         value.push("Fr");
       }
-      if (this.workingDays[6] == 1) {
+      if (this.workingDays[6] == 1 || this.providerWorkDay[6] == 1) {
         value.push("Sa");
       }
+
+      
 
       return value;
     },
@@ -583,13 +599,27 @@ export default {
       moment().format();
       var currentTime = moment(new Date(), "hmm").format("HH:mm");
       var currentDay = moment(new Date(), "ddmmyy").format("D/M/YYYY");
-      var startTime = this.start;
+      var startTime ='';
+      var endTime = '';
+      var breakStartTime = this.providerBreakTime[0];
+      var breakEndTime = this.providerBreakTime[1];
+      if (this.selectedProvider != "") {
+         startTime = this.providerWorkTime[0];
+         endTime = this.providerWorkTime[1];
+      } else {
+         startTime = this.start;
+         endTime = this.end;
+      }
+      var breakStartTimeMoment = moment(breakStartTime, "HH:mm");
+      var breakEndTimeMoment = moment(breakEndTime, "HH:mm");
+
       var interval = this.gap;
+      var firstSession = [];
+      var secondSession = [];
       var times = [];
       var period = "m";
       var periodsInADay = moment.duration(1, "day").as(period);
       var startTimeMoment = moment(startTime, "HH:mm");
-      var endTime = this.end;
       var endTimeMoment = moment(endTime, "HH:mm");
 
       for (let i = 0; i <= periodsInADay; i += interval) {
@@ -597,36 +627,29 @@ export default {
 
         if (this.selectedDated.selectedDate == currentDay) {
           if (time.format("HH:mm") > currentTime && time <= endTimeMoment) {
-            times.push(time.format("HH:mm"));
+            if (time <= breakStartTimeMoment) {
+              firstSession.push(time.format("HH:mm"));
+            }
+            if (time >= breakEndTimeMoment) {
+              secondSession.push(time.format("HH:mm"));
+            }
+            times = firstSession.concat(secondSession);
           }
         } else {
           if (time <= endTimeMoment) {
-            times.push(time.format("HH:mm"));
+            if (time < breakStartTimeMoment) {
+              firstSession.push(time.format("HH:mm"));
+            }
+            if (time >= breakEndTimeMoment) {
+              secondSession.push(time.format("HH:mm"));
+            }
+            times = firstSession.concat(secondSession);
           }
         }
       }
 
       return times;
     },
-    // person(){
-
-    //     var hello = this.slot;
-    //     var personList = [];
-    //     for (let j = 0; j < this.booking.length; j++) {
-    //       var bookingStart = this.booking[j].selected_time;
-    //       var bookingDate = this.booking[j].selected_date;
-    //       if (bookingStart == this.selectedTime && bookingDate == this.selectedDated.selectedDate) {
-    //          hello = hello - this.booking[j].person;
-    //       }
-
-    //     for (let i = 1; i <= hello.lenth; i++) {
-    //         personList.push(i);
-
-    //     }
-
-    //   }
-    //   return personList;
-    // }
   },
   created() {
     //check form availble
@@ -644,6 +667,10 @@ export default {
     selectedService() {
       this.getSelectedService();
     },
+    selectedProvider() {
+      this.getProviderInfo();
+    },
+
     phoneNumber() {
       if (this.results.isValid == true) {
         this.checkTelInput = false;
@@ -770,10 +797,10 @@ export default {
 
     getBooking() {
       const params = new URLSearchParams();
-      params.append("read", "done");
+      params.append("getBooking", "done");
       params.append("selected_date", this.selectedDated.selectedDate);
       params.append("service_id", this.selectedService);
-
+      params.append("provider_id", this.selectedProvider);
       axios({
         method: "post",
         url: this.domain + "/booking/index.php",
@@ -823,7 +850,7 @@ export default {
     },
     createBooking() {
       const params = new URLSearchParams();
-      params.append("create", "done");
+      params.append("createBooking", "done");
       params.append("service_id", this.selectedService);
       params.append("selected_time", this.selectedTime);
       params.append("duration", this.serviceDuration);
@@ -832,6 +859,7 @@ export default {
       params.append("selected_date", this.selectedDated.selectedDate);
       params.append("person", this.selectedPerson);
       params.append("customer_id", this.customerID);
+      params.append("provider_id", this.selectedProvider);
 
       axios({
         method: "post",
@@ -936,12 +964,10 @@ export default {
             this.serviceDuration = JSON.parse(
               response.data.service[0].duration
             );
-            this.slot = JSON.parse(response.data.service[0].slot);
+            
             this.serviceName = response.data.service[0].title;
             this.serviceDescription = response.data.service[0].description;
-            this.providerID = JSON.parse(response.data.service[0].provider_id);
-
-            this.getBooking();
+            this.getAllProvider();
           } else {
             console.log("something went wrong");
           }
@@ -950,32 +976,39 @@ export default {
           console.log(error);
         });
     },
-    clear() {
-      this.selectedService = null;
-    },
+    // clear() {
+    //   this.selectedService = null;
+    //   this.selectedProvider = null;
+    // },
     whatsappMerchant() {
-      if(this.whatsappRedirect==1){
-         window.location.href =
-        "https://api.whatsapp.com/send?phone=" +
-        this.merchantPhone +
-        "&text=My%20Appointment%20ID:%20"+
-        this.bookingID +
-        "%0AName:%20" +this.firstname +"%20"+ this.lastname+
-        "%0ADate:%20" +this.selectedDated.selectedDate+
-        "%0ATime:%20" +this.selectedTime +
-        "%0ARemark:%20" +this.remark +
-        "%0A"+this.domain;
+      if (this.whatsappRedirect == 1) {
+        window.location.href =
+          "https://api.whatsapp.com/send?phone=" +
+          this.merchantPhone +
+          "&text=My%20Appointment%20ID:%20" +
+          this.bookingID +
+          "%0AName:%20" +
+          this.firstname +
+          "%20" +
+          this.lastname +
+          "%0ADate:%20" +
+          this.selectedDated.selectedDate +
+          "%0ATime:%20" +
+          this.selectedTime +
+          "%0ARemark:%20" +
+          this.remark +
+          "%0A" +
+          this.domain;
+      } else if (this.whatsappRedirect == 0) {
+        this.snackbar = true;
+        this.e6 = 1;
       }
-      else if(this.whatsappRedirect==0){
-         this.snackbar = true;
-         this.e6=1;
-      } 
     },
     getAllProvider() {
-      for (let i = 0; i < this.providerID.length; i++) {
+      this.allProvider = [];
       const params = new URLSearchParams();
       params.append("getAllProvider", "done");
-      params.append("provider_id", this.providerID[i]);
+      params.append("service_id", this.selectedService);
 
       axios({
         method: "post",
@@ -985,9 +1018,7 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.data.status == "1") {
-             
-             this.allProvider = response.data.provider;
-             console.log(this.allProvider);
+            this.allProvider = response.data.provider;
           } else {
             console.log("no provider found");
           }
@@ -995,9 +1026,18 @@ export default {
         .catch((error) => {
           console.log(error);
         });
-
+    },
+    getProviderInfo() {
+      for (var i = 0; i < this.allProvider.length; i++) {
+        if (this.allProvider[i].provider_id == this.selectedProvider) {
+          this.providerWorkDay = JSON.parse(this.allProvider[i].work_day);
+          this.providerWorkTime = JSON.parse(this.allProvider[i].work_time);
+          this.providerBreakTime = JSON.parse(this.allProvider[i].break_time);
+          this.slot = JSON.parse(this.allProvider[i].slot);
+          this.providerName = this.allProvider[i].name;
+        }
       }
-    }
+    },
   },
 };
 </script>

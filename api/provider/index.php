@@ -18,13 +18,20 @@ if (isset($_POST['read'])) {
     echo json_encode($response);
 
 }
-else if (isset($_POST['getAllProvider'])&& isset($_POST['provider_id']) ) {
-    $read     = $db->read($_POST['provider_id']);
+else if (isset($_POST['getAllProvider'])&& isset($_POST['service_id']) ) {
+    $read     = $db->getAllProvider($_POST['service_id']);
     $response['status']   = ($read ? '1' : '2');
     $response['provider'] = $read;
     echo json_encode($response);
 
 }
+// else if (isset($_POST['getProviderInfo'])&& isset($_POST['provider_id']) ) {
+//     $read     = $db->getProviderInfo($_POST['provider_id']);
+//     $response['status']   = ($read ? '1' : '2');
+//     $response['provider'] = $read;
+//     echo json_encode($response);
+
+// }
 /**
  * create
  * */

@@ -46,6 +46,29 @@ class booking_function
         return (sizeof($return_arr) > 0 ? $return_arr : false);
     }
 
+    public function getBooking($selected_date,$service_id,$provider_id)
+    {
+        $stmt = $this->conn->prepare("SELECT updated_at, created_at, status, customer_id, selected_date, person, duration, selected_time, service_id, booking_id
+        
+         FROM tb_booking WHERE soft_delete = '' AND selected_date= '$selected_date' AND service_id = $service_id AND provider_id = $provider_id" );
+        //error reporting
+        if (!$stmt) {
+            die('prepare() failed: ' . htmlspecialchars($this->conn->error));
+        }
+        $result = $stmt->execute();
+
+        if ($result) {
+            //set up bind result
+            $meta = $stmt->result_metadata();
+            while ($field = $meta->fetch_field()) {
+                $params[] = &$row[$field->name];
+            }
+            $return_arr = $this->structure->bindResult($stmt, $params, $row);
+        }
+
+        return (sizeof($return_arr) > 0 ? $return_arr : false);
+    }
+
     /**
      * create function
      * */
@@ -63,6 +86,22 @@ class booking_function
         $stmt->close();
         return ($result ? $last_id : false);
     }
+
+    public function createBooking($params)
+    {
+        $return_arr = array();
+        $stmt       = $this->conn->prepare('INSERT INTO tb_booking(service_id, selected_time, duration, service_title, service_description, selected_date, person, customer_id, provider_id, created_at ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        //error reporting
+        if (!$stmt) {
+            die('prepare() failed: ' . htmlspecialchars($this->conn->error));
+        }
+        //bind param
+        $result  = $this->structure->bindParam($stmt, $params);
+        $last_id = $stmt->insert_id;
+        $stmt->close();
+        return ($result ? $last_id : false);
+    }
+
 
     /**
      * update function
