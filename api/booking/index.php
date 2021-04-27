@@ -25,6 +25,22 @@ else if (isset($_POST['getBooking'])&&isset($_POST['selected_date'])&&isset($_PO
     echo json_encode($response);
 
 }
+
+else if (isset($_POST['findSpecificBranchBooking'])&&isset($_POST['branch_id'])) {
+    $read     = $db->findSpecificBranchBooking($_POST['branch_id']);
+    $response['status']   = ($read ? '1' : '2');
+    $response['booking'] = $read;
+    echo json_encode($response);
+
+}
+
+else if (isset($_POST['findAllBranchBooking'])&&isset($_POST['company_id'])) {
+    $read     = $db->findAllBranchBooking($_POST['company_id']);
+    $response['status']   = ($read ? '1' : '2');
+    $response['booking'] = $read;
+    echo json_encode($response);
+
+}
 /**
  * create
  * */
