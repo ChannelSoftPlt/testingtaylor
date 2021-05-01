@@ -18,6 +18,14 @@ if (isset($_POST['read']) && isset($_POST['company_id']) ) {
     echo json_encode($response);
 
 }
+
+else if (isset($_POST['getBranchHolidayWorkdayTime']) && isset($_POST['service_id']) ) {
+    $read     = $db->getBranchHolidayWorkdayTime($_POST['service_id']);
+    $response['status']   = ($read ? '1' : '2');
+    $response['branch'] = $read;
+    echo json_encode($response);
+
+}
 /**
  * create
  * */

@@ -72,7 +72,7 @@ class booking_function
     public function findSpecificBranchBooking($branch_id)
     {
         $stmt = $this->conn->prepare("SELECT DISTINCT tb_booking.updated_at, tb_booking.created_at, tb_booking.status, tb_booking.customer_id, tb_booking.selected_date, tb_booking.person, tb_booking.duration, 
-        tb_booking.selected_time, tb_booking.service_id, tb_booking.booking_id, tb_booking.provider_id, tb_booking.service_title, tb_booking.service_description, tb_customer.remark, tb_customer.name  FROM tb_booking JOIN tb_service 
+        tb_booking.selected_time, tb_booking.service_id, tb_booking.booking_id, tb_booking.provider_id, tb_booking.service_title, tb_booking.service_description, tb_customer.remark, tb_customer.name ,tb_customer.customer_id, tb_customer.contact, tb_customer.email  FROM tb_booking JOIN tb_service 
         ON tb_booking.service_id = tb_service.service_id JOIN tb_customer ON tb_booking.customer_id = tb_customer.customer_id WHERE tb_service.branch_id = $branch_id  AND tb_booking.soft_delete = '' AND tb_booking.status = 0 ORDER BY tb_booking.service_id " );
         //error reporting
         if (!$stmt) {
@@ -95,8 +95,8 @@ class booking_function
     public function findAllBranchBooking($company_id)
     {
         $stmt = $this->conn->prepare("SELECT DISTINCT tb_booking.customer_id, tb_booking.selected_date, tb_booking.person, tb_booking.duration, tb_booking.selected_time, tb_booking.service_id,
-        tb_booking.booking_id, tb_booking.provider_id, tb_booking.service_title, tb_booking.service_description, tb_branch.branch_id, tb_customer.remark,tb_customer.name  FROM tb_booking JOIN tb_service ON tb_booking.service_id = tb_service.service_id JOIN
-         tb_branch ON tb_service.branch_id= tb_branch.branch_id  JOIN tb_customer ON tb_booking.customer_id = tb_customer.customer_id  WHERE tb_branch.company_id = $company_id AND tb_booking.status = 0 ORDER BY tb_booking.service_id " );
+        tb_booking.booking_id, tb_booking.provider_id, tb_booking.service_title, tb_booking.service_description, tb_branch.branch_id, tb_customer.remark,tb_customer.name ,tb_customer.customer_id, tb_customer.contact, tb_customer.email  FROM tb_booking JOIN tb_service ON tb_booking.service_id = tb_service.service_id JOIN
+         tb_branch ON tb_service.branch_id = tb_branch.branch_id  JOIN tb_customer ON tb_booking.customer_id = tb_customer.customer_id  WHERE tb_branch.company_id = $company_id AND tb_booking.status = 0 ORDER BY tb_booking.service_id " );
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));

@@ -45,6 +45,29 @@ class branch_function
         return (sizeof($return_arr) > 0 ? $return_arr : false);
     }
 
+    public function getBranchHolidayWorkdayTime($service_id)
+    {
+        $stmt = $this->conn->prepare("SELECT DISTINCT tb_branch.branch_id, tb_branch.gap, tb_branch.working_day, tb_branch.working_time, tb_holiday.date
+        FROM tb_branch JOIN tb_holiday ON tb_branch.branch_id = tb_holiday.branch_id JOIN tb_service ON tb_service.branch_id = tb_branch.branch_id
+        WHERE tb_service.service_id = $service_id ");
+        //error reporting
+        if (!$stmt) {
+            die('prepare() failed: ' . htmlspecialchars($this->conn->error));
+        }
+        $result = $stmt->execute();
+
+        if ($result) {
+            //set up bind result
+            $meta = $stmt->result_metadata();
+            while ($field = $meta->fetch_field()) {
+                $params[] = &$row[$field->name];
+            }
+            $return_arr = $this->structure->bindResult($stmt, $params, $row);
+        }
+
+        return (sizeof($return_arr) > 0 ? $return_arr : false);
+    }
+
     /**
      * create function
      * */
