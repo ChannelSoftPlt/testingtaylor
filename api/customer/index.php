@@ -18,6 +18,24 @@ if (isset($_POST['read'])) {
     echo json_encode($response);
 
 }
+else if (isset($_POST['getAllCustomer'])&& isset($_POST['company_id'])) {
+
+        $read     = $db->getAllCustomer($_POST['company_id']);
+     
+    
+    $response['status']   = ($read ? '1' : '2');
+    $response['customer'] = $read;
+    echo json_encode($response);
+
+}
+else if (isset($_POST['searchCustomerByName'])&& isset($_POST['company_id'])&& isset($_POST['search_customer'])) {
+    
+        $read     = $db->searchCustomer($_POST['company_id'],$_POST['search_customer']);
+    $response['status']   = ($read ? '1' : '2');
+    $response['customer'] = $read;
+    echo json_encode($response);
+
+}
 /**
  * create
  * */
@@ -31,7 +49,8 @@ else if (isset($_POST['create']) && isset($_POST['email']) && isset($_POST['cont
  * update
  * */
 else if (isset($_POST['update']) && isset($_POST['email']) && isset($_POST['contact']) && isset($_POST['name']) && isset($_POST['customer_id'])) {
-    $update = $db->update(array($updated_at, $_POST['email'], $_POST['contact'], $_POST['name'], $_POST['customer_id']));
+    $update =  $db->update(array($_POST['name'],$_POST['contact'],$_POST['email'],$updated_at,$_POST['customer_id']));
+    
     $response['status'] = ($update ? '1' : '2');
     echo json_encode($response);
 }
@@ -39,8 +58,9 @@ else if (isset($_POST['update']) && isset($_POST['email']) && isset($_POST['cont
  * delete
  * */
 else if (isset($_POST['delete']) && isset($_POST['customer_id'])) {
-    $delete         = $db->delete(array($soft_delete, $_POST['customer_id']));
-    $response['status'] = ($delete ? '1' : '2');
+    $deleteCustomer = $db->deleteCustomer(array($soft_delete, $_POST['customer_id']));
+    $deleteBooking = $db->deleteBooking(array($soft_delete, $_POST['customer_id']));
+    $response['status'] = ($deleteCustomer && $deleteBooking  ? '1' : '2');
     echo json_encode($response);
 }
 /**

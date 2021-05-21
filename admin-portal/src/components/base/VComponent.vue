@@ -3,10 +3,10 @@
     <h1
       class="font-weight-light mb-2"
       style="color:#3c4858; font-size:24px"
-      v-text="`Recent ${heading}`"
+      v-text="`${heading}`"
     />
 
-    <span
+    <!-- <span
       class="font-weight-light"
       style="font-size: 16px; color: #3c4858"
     >
@@ -20,7 +20,7 @@
       >
         Appointment
       </a>
-    </span>
+    </span> -->
   </section>
 </template>
 

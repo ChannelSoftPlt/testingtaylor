@@ -2,12 +2,6 @@
   <v-container id="calendar" fluid tag="section">
     <base-v-component heading="Appointment" link="components/calendars" />
 
-    <!-- {{getSpecificBranchBooking}} -->
-    <!-- {{ today }} -->
-  {{selectedDate}}
-  {{timeSession}}
-  
-    
     <v-row>
       <v-col cols="12" md="10" class="mx-auto">
         <v-card>
@@ -36,8 +30,8 @@
                   >
                     <v-list-item value="all">All</v-list-item>
                     <v-list-item
-                      v-for="(item, i) in branchItem"
-                      :key="i"
+                      v-for="(item, index) in branchItem"
+                      :key="index"
                       :value="item.branch_id"
                     >
                       <v-list-item-content>
@@ -103,7 +97,8 @@
               v-model="focus"
               color="primary"
               :events="getSpecificBranchBooking"
-              :event-color="getEventColor"
+              :event-color="selectedEvent.color"
+              
               :type="type"
               @click:event="showEvent"
               @click:more="viewDay"
@@ -118,6 +113,7 @@
             >
               <!-- <v-card color="grey lighten-4" min-width="350px" flat> -->
                 <v-toolbar :color="selectedEvent.color" dark>
+                  
 
                   <v-dialog max-width="400">
                     
@@ -125,11 +121,17 @@
                       <v-btn icon v-bind="attrs" v-on="on" 
                       @click="
                       
-
+                      
                       getBranchHolidayWorkdayTime(),
                       findMaxPerson(),
                       selectedPerson=selectedEvent.person,
-                      selectedDate =selectedEvent.dateFormat
+                      selectedDate =selectedEvent.dateFormat,
+                      selectedTime =selectedEvent.time,
+                      selectedCustomerName = selectedEvent.customerName,
+                      selectedCustomerEmail = selectedEvent.email,
+                      selectedCustomerContact = selectedEvent.contact,
+                      selectedCustomerRemark = selectedEvent.remark
+                      
 
 
                       "
@@ -137,22 +139,11 @@
                       >
                     </template>
                     <template v-slot:default="dialog">
+                      
                       <v-card>
                         <v-toolbar dark>Booking</v-toolbar>
                         <v-card-text>
                           <v-row class="mt-2">
-                            <!-- <v-col cols="12">
-                              <v-select
-                                :items ="branchItem"
-                                v-model="selectedBranchToUpdate" 
-                                 item-text="name"
-                                 item-value="branch_id"
-                                label="Branch"
-                                prepend-icon="mdi-store"
-                                return-object
-                                
-                              ></v-select>
-                              </v-col> -->
                             <v-col cols="12" >
                               <v-text-field
                                 v-model="selectedPerson"
@@ -185,20 +176,9 @@
                                     v-on="on"
                                   ></v-text-field>
                                 </template>
-                                <!-- <v-date-picker
-                                  v-model="selectedEvent.date"
-                                  no-title
-                                  scrollable
-                                  :min="today"
-                                  :allowed-dates="getAllowedDates"
-                                
-                                  
-                                  
-                                >
-                                </v-date-picker> -->
                                 <FunctionalCalendar 
                                 v-model="selectedCalendarDate"
-                                :limits="{ min: today, max: '01/01/3000' }"
+                                :limits="{min: today, max: '01/01/3000'}"
                                 :disabledDates="branchHoliday"
                                 :disabled-day-names="weekdays"
                                 :hidden-elements="['leftAndRightDays']"
@@ -211,37 +191,36 @@
                             </v-col>
                             <v-col cols="12" sm="6" md="6">
                               <v-select
-                                
-                                v-model="selectedEvent.time"
-                                label="time"
+                                :items="timesPlusDuration"
+                                v-model="selectedTime"
                                 prepend-icon="mdi-clock"
                                 single-line
                               ></v-select>
                             </v-col>
                             <v-col cols="12">
                               <v-text-field
-                                v-model="selectedEvent.customerName"
+                                v-model="selectedCustomerName"
                                 label="Customer name "
                                 prepend-icon="mdi-account"
                               ></v-text-field>
                             </v-col>
                              <v-col cols="12">
                               <v-text-field
-                                v-model="selectedEvent.email"
+                                v-model="selectedCustomerEmail"
                                 label="Customer email "
                                 prepend-icon="mdi-account"
                               ></v-text-field>
                             </v-col>
                              <v-col cols="12">
                               <v-text-field
-                                v-model="selectedEvent.contact"
+                                v-model="selectedCustomerContact"
                                 label="Customer contact "
                                 prepend-icon="mdi-account"
                               ></v-text-field>
                             </v-col>
                             <v-col cols="12">
                               <v-textarea
-                                    v-model="selectedEvent.remark"
+                                    v-model="selectedCustomerRemark"
                                   label="Customer Remark"
                                   rows="5"
                                   prepend-icon="mdi-comment"
@@ -260,7 +239,7 @@
                           <v-btn
                             color="blue darken-1"
                             text
-                            @click="dialog.value = false"
+                            @click="updateAppointment(), dialog.value = false,selectedOpen=false"
                           >
                             Save
                           </v-btn>
@@ -327,7 +306,7 @@
 
                 <v-list-item-subtitle v-text="item.service_description"></v-list-item-subtitle>
                 <v-list-item-subtitle class="black--text" v-text="item.name"></v-list-item-subtitle>
-                <v-list-item-subtitle v-text="item.selected_date+' '+item.selected_time" class=""></v-list-item-subtitle>
+                <v-list-item-subtitle v-text="item.selected_date+' '+item.selected_time"></v-list-item-subtitle>
                 
               </v-list-item-content>
 
@@ -363,7 +342,13 @@
     </v-card>
       </v-col>
     </v-row>
-    <v-btn
+   
+      <v-dialog
+        transition="dialog-top-transition"
+        max-width="400"
+      >
+        <template v-slot:activator="{ on, attrs }">
+           <v-btn
         fab
         dark
         medium
@@ -371,9 +356,145 @@
         fixed
         bottom
         color="indigo"
+        v-bind="attrs" v-on="on"
       >
         <v-icon>mdi-plus</v-icon>
-      </v-btn> 
+      </v-btn>
+        </template>
+        <template v-slot:default="dialog">
+          <v-card>
+            <v-toolbar
+              color="indigo"
+              dark
+            >Add appointment</v-toolbar>
+            <v-card-text>
+                          <v-row class="mt-2">
+                            <v-col cols="12">
+                                    <!-- {{workingDays}}
+                                    {{branchWorkingTime}} 
+                                    {{gap}}
+                                    {{branchHoliday}}
+                                    {{weekdays}}
+                                    {{timeSession}} -->
+                              <v-select
+                                :items ="branchItem"
+                                v-model="selectBranch" 
+                                 item-text="name"
+                                 item-value="branch_id"
+                                label="Branch"
+                                prepend-icon="mdi-store"
+                                return-object
+                                @change="
+                                    getBranchWorkDayAndTimeForAdd(),
+                                    findMaxPersonForAdd()
+                                    "
+                              ></v-select>
+                              </v-col>
+                            <v-col cols="12" >
+                              <v-text-field
+                                v-model="selectPerson"
+                                 min=1
+                                :max="maxPerson"
+                                type="number"
+                                oninput="if(Number(this.value) > Number(this.max)) this.value = this.max;"
+                                label="Total Person"
+                                prepend-icon="mdi-account"
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="6">
+                              <v-menu
+                                ref="menu"
+                                v-model="menu"
+                                :close-on-content-click="false"
+                                :return-value.sync="date"
+                                transition="scale-transition"
+                                offset-y
+                                min-width="auto"
+                              >
+                                <template v-slot:activator="{ on, attrs }">
+                                  
+                                  <v-text-field
+                                    v-model="selectDate.selectedDate"
+                                    label="Choose your date" 
+                                    prepend-icon="mdi-calendar"
+                                    readonly
+                                    v-bind="attrs"
+                                    v-on="on"
+                                  ></v-text-field>
+                                </template>
+                                <FunctionalCalendar 
+                                v-model="selectDate"
+                                :limits="{min: today, max: '01/01/3000'}"
+                                :disabledDates="branchHoliday"
+                                :disabled-day-names="weekdays"
+                                :hidden-elements="['leftAndRightDays']"
+                                :is-date-picker="true"
+                                                          
+                                >
+                                
+                                </FunctionalCalendar>
+                              </v-menu>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="6">
+                              <v-select
+                                :items="timesPlusDuration"
+                                v-model="selectTime"
+                                label="Pick your time"
+                                prepend-icon="mdi-clock"
+                                single-line
+                              ></v-select>
+                            </v-col>
+                            <v-col cols="12">
+                              <v-text-field
+                                v-model="selectName"
+                                label="Customer name "
+                                prepend-icon="mdi-account"
+                              ></v-text-field>
+                            </v-col>
+                             <v-col cols="12">
+                              <v-text-field
+                                v-model="selectEmail"
+                                label="Customer email "
+                                prepend-icon="mdi-account"
+                              ></v-text-field>
+                            </v-col>
+                             <v-col cols="12">
+                              <v-text-field
+                                v-model="selectContact"
+                                label="Customer contact "
+                                prepend-icon="mdi-account"
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="12">
+                              <v-textarea
+                                    v-model="selectRemark"
+                                  label="Customer Remark"
+                                  rows="5"
+                                  prepend-icon="mdi-comment"
+                                ></v-textarea>
+                            </v-col>
+                          </v-row>
+                        </v-card-text>
+                        <v-card-actions class="justify-end">
+                          <v-btn
+                            color="blue darken-1"
+                            text
+                            @click="dialog.value = false, selectedOpen=false"
+                          >
+                            Close
+                          </v-btn>
+                          <v-btn
+                            color="blue darken-1"
+                            text
+                            @click="updateAppointment(), dialog.value = false,selectedOpen=false"
+                          >
+                            Save
+                          </v-btn>
+                        </v-card-actions>
+          </v-card>
+        </template>
+      </v-dialog> 
+      
   
   </v-container>
 
@@ -440,15 +561,6 @@ export default {
     selectedElement: null,
     selectedOpen: false,
     events: [],
-    colors: [
-      "blue",
-      "indigo",
-      "deep-purple",
-      "cyan",
-      "green",
-      "orange",
-      "grey darken-1",
-    ],
     company_id: "",
     branchItem: [],
     selectedBranch: "",
@@ -468,10 +580,24 @@ export default {
     selectedDate:'',
     weekBooking:[],
     selectedWeekBooking:'',
-    selectedCalendarDate:'',
+    selectedCalendarDate:{},
     branchWorkingTime:'',
     gap:'',
-
+    timesPlusDuration:[],
+    booking:[],
+    selectedTime:'',
+    selectedCustomerName: '',
+    selectedCustomerEmail: '',
+    selectedCustomerContact:'',
+    selectedCustomerRemark: '',
+    selectPerson:'',
+    selectBranch:'',
+    selectDate:{},
+    selectTime:'',
+    selectName:'',
+    selectEmail:'',
+    selectContact:'',
+    selectRemark:'',
   }),
 
   computed: {
@@ -499,10 +625,10 @@ export default {
         var changeDateFormat = moment(startDate).format("D/M/YYYY");
 
         booking.push({
-          name: this.specificBranchBooking[i].service_title,
+          name: JSON.stringify(this.specificBranchBooking[i].person) +' Person',
           start: start,
           end: end,
-          color: this.colors[this.rnd(0, this.colors.length - 1)],
+          color: this.specificBranchBooking[i].color,
           details: this.specificBranchBooking[i].service_description,
           person: this.specificBranchBooking[i].person,
           remark: this.specificBranchBooking[i].remark,
@@ -518,8 +644,9 @@ export default {
           dateFormat: changeDateFormat,
         
         });
+        
       }
-
+      this.getBookingToUpdate();
       return booking;
     },
     today() {
@@ -573,8 +700,7 @@ export default {
       var endTime = this.branchWorkingTime[1];
       var endTimeMoment = moment(endTime, "HH:mm");
 
-      for (let i = 0; i <= periodsInADay; i += interval) {
-
+      for (let i = 0; i <= periodsInADay; i++) {
         var time = startTimeMoment.add(i === 0 ? 0 : interval, period);
         if (this.selectedDate == currentDay) {
           if (time.format("HH:mm") > currentTime && time <= endTimeMoment) {
@@ -620,15 +746,28 @@ export default {
    
     selectedPerson() {
       this.getServiceToUpdate();
+      this.getBookingToUpdate();
+    
     },
+    selectedDate(){
+      this.getBookingToUpdate();
+
+    },
+    selectBranch(){
+ 
+      
+    },
+    selectPerson(){
+      
+    },
+    selectDate(){
+      
+    }
   },
   methods: {
     viewDay({ date }) {
       this.focus = date;
       this.type = "day";
-    },
-    getEventColor(event) {
-      return event.color;
     },
     setToday() {
       this.focus = "";
@@ -657,10 +796,6 @@ export default {
 
       nativeEvent.stopPropagation();
     },
-
-    rnd(a, b) {
-      return Math.floor((b - a + 1) * Math.random()) + a;
-    },
     getCompanyBranch() {
       const params = new URLSearchParams();
       params.append("read", "done");
@@ -684,10 +819,11 @@ export default {
         });
     },
     findSpecificBranchBooking() {
+      
       const params = new URLSearchParams();
       params.append("findSpecificBranchBooking", "done");
       params.append("branch_id", this.selectedBranch);
-
+     
       axios({
         method: "post",
         url: this.domain + "/booking/index.php",
@@ -696,12 +832,14 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.data.status == "1") {
+            
             this.specificBranchBooking = response.data.booking;
             this.getBranchName();
+            
           } else {
-            this.branchName = "all";
-
+            
             this.findAllBranchBooking();
+            this.branchName = "all";
           }
         })
         .catch((error) => {
@@ -731,6 +869,7 @@ export default {
           if (response.data.status == "1") {
             this.specificBranchBooking = response.data.booking;
             this.getThisWeekBooking();
+            
           } else {
             console.log("bad");
           }
@@ -757,7 +896,8 @@ export default {
              this.workingDays = JSON.parse(this.branchHolidayWorkdayTime.working_day);
              this.branchHoliday = JSON.parse(this.branchHolidayWorkdayTime.date);
              this.branchWorkingTime = JSON.parse(this.branchHolidayWorkdayTime.working_time);
-             this.gap = JSON.parse(this.branchHolidayWorkdayTime.gap)
+             this.gap = this.branchHolidayWorkdayTime.gap;
+             
              
           } else {
               console.log("no branch holiday, workingday and time found ");          }
@@ -799,6 +939,8 @@ export default {
       const params = new URLSearchParams();
       params.append("findMaxPerson", "done");
       params.append("branch_id", this.selectedEvent.branchID);
+      
+     
 
       axios({
         method: "post",
@@ -834,14 +976,301 @@ export default {
         // console.log(bookingDate);
         
          
-        if(moment(bookingDate).isBetween(currentDate,addWeek)){
+        if(moment(bookingDate).isBetween(currentDate,addWeek,undefined, '[]')){
            weekBooking.push(this.specificBranchBooking[i]);
         }
       }
       
       this.weekBooking = weekBooking;
 
-    }
+    },
+    getBookingToUpdate(){
+      const params = new URLSearchParams();
+      params.append("check", "done");
+      params.append("selected_date", this.selectedDate);
+      params.append("service_id", this.serviceID);
+      params.append("booking_id", this.selectedEvent.bookingID);
+
+      axios({
+        method: "post",
+        url: this.domain + "/booking/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+            this.booking = response.data.booking;
+            this.finalTime();
+             
+          } else {
+            console.log("no booking can be found in database");
+            this.booking = [];
+            this.finalTime(); 
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      
+    },
+    
+    finalTime(){
+      var moment = require("moment"); // require
+      moment().format();
+      var duration = this.serviceDuration;
+      this.timesPlusDuration=[];
+      var first = this.timeSession;
+      var period = "m";
+      // var second = [];
+      for (let i = 0; i < first.length; i++) {
+        var start = moment(first[i], "HH:mm");
+        var s = moment(first[i], "HH:mm");
+        var end = s.add(duration, period);
+        var slot = 0;
+        for (let j = 0; j < this.booking.length; j++) {
+          var bookingStart = moment(this.booking[j].selected_time, "HH:mm");
+          var bookings = moment(this.booking[j].selected_time, "HH:mm");
+          var bookingEnd = bookings.add(this.booking[j].duration, period);
+          
+          if (bookingStart >= start && bookingStart < end) {
+            slot += 1;
+            continue;
+            
+          }
+          if (bookingEnd > start && bookingEnd <= end) {
+            slot += 1;
+            continue;
+          }
+          if (bookingStart < start && bookingEnd > end) {
+            slot += 1;
+            continue;
+          }
+          
+        }
+        
+        if (slot < this.slot) {
+          this.timesPlusDuration.push(start.format("HH:mm"));
+      
+        }
+      }
+    },
+
+    updateAppointment(){
+      const params = new URLSearchParams();
+      params.append("update", "done");
+      params.append("booking_id", this.selectedEvent.bookingID);
+      params.append("person", this.selectedPerson);
+      params.append("selected_date", this.selectedDate);
+      params.append("selected_time", this.selectedTime);
+      params.append("customer_id", this.selectedEvent.customerID);
+      params.append("name", this.selectedCustomerName);
+      params.append("email", this.selectedCustomerEmail);
+      params.append("contact", this.selectedCustomerContact);
+      params.append("remark", this.selectedCustomerRemark);
+
+      axios({
+        method: "post",
+        url: this.domain + "/booking/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+            console.log("update successfully");
+            
+          } else {
+            console.log("Update Fail");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      
+    },
+    addCustomer(){
+      const params = new URLSearchParams();
+      params.append("create", "done");
+      params.append("name", this.name);
+      params.append("contact", this.contact);
+      params.append("email", this.email);
+      params.append("remark", this.remark);
+
+      axios({
+        method: "post",
+        url: this.domain + "/customer/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+            console.log("Add customer successfully");
+            this.customerID = response.data.customer;
+            this.createBooking();
+
+          } else {
+            console.log("Please check again your info");
+            
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+       
+    },
+
+    addAppointment(){
+      
+      const params = new URLSearchParams();
+      params.append("create", "done");
+      params.append("service_id", this.serviceID);
+      params.append("selected_time", this.selectTime);
+      params.append("duration", this.selectDuration);
+      params.append("selected_date", this.selectDate);
+      params.append("person", this.selectPerson);
+      params.append("customer_id", this.customerID);
+
+      axios({
+        method: "post",
+        url: this.domain + "/booking/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+            console.log("Booking successfully");
+            this.bookingID = response.data.booking;
+  
+
+          } else {
+            console.log("Booking failed");
+            
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+    },
+    findMaxPersonForAdd(){
+      const params = new URLSearchParams();
+      params.append("findMaxPerson", "done");
+      params.append("branch_id", this.selectBranch.branch_id);
+
+      axios({
+        method: "post",
+        url: this.domain + "/service/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+             this.maxPerson = response.data.service[0].seat;
+            
+          } else {
+            console.log("Booking failed");
+            
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      
+    },
+     getServiceToAdd() {
+      const params = new URLSearchParams();
+      params.append("read", "done");
+      params.append("branch_id", this.selectBranch.branchID);
+      params.append("seat", this.selectPerson);
+      axios({
+        method: "post",
+        url: this.domain + "/service/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+           
+           this.table = response.data.service[0];
+           this.serviceID = this.table.service_id;
+            this.serviceDuration = this.table.duration;
+            this.slot = this.table.slot;
+            
+          } else {
+            console.log("cannot read service that you type");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getBranchWorkDayAndTimeForAdd() {
+        
+      
+       for (var i = 0; i < this.branchItem.length; i++) {
+        if (this.branchItem[i].branch_id == this.selectBranch.branch_id) {
+             this.workingDays = JSON.parse(this.branchItem[i].working_day);
+             this.branchWorkingTime =JSON.parse(this.branchItem[i].working_time);
+             this.gap = JSON.parse(this.branchItem[i].gap);
+        }
+      }
+      this.getBranchHolidayForAdd();
+      
+
+      
+
+  
+    },
+    getBranchHolidayForAdd() {
+      const params = new URLSearchParams();
+      params.append("read", "done");
+      params.append("branch_id", this.selectBranch.branch_id);
+      axios({
+        method: "post",
+        url: this.domain + "/holiday/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+            this.branchHoliday = JSON.parse(response.data.holiday[0].date);
+   
+          } else {
+            console.log("no holiday");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getBookingForAdd() {
+      const params = new URLSearchParams();
+      params.append("read", "done");
+      params.append("selected_date", this.selectDate.selectedDate);
+      params.append("service_id", this.serviceID);
+
+      axios({
+        method: "post",
+        url: this.domain + "/booking/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+            this.booking = response.data.booking;
+            this.finalTime();
+             
+          } else {
+            console.log("no booking");
+            this.booking = [];
+            this.finalTime(); 
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
     
   },
 };

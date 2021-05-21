@@ -18,6 +18,12 @@ if (isset($_POST['read'])) {
     echo json_encode($response);
 
 }
+else if (isset($_POST['getAdmin']) && isset($_POST['company_id'])) {
+    $read     = $db->getAdmin($_POST['company_id']);
+    $response['status']   = ($read ? '1' : '2');
+    $response['user'] = $read;
+    echo json_encode($response);
+}
 /**
  * login
  */
@@ -31,34 +37,76 @@ else if (isset($_POST['login']) && isset($_POST['password']) && isset($_POST['em
 /**
  * register
  * */
-else if (isset($_POST['create']) && isset($_POST['name'])&& isset($_POST['email']) && isset($_POST['contact']) && isset($_POST['password'])) {
+else if (isset($_POST['create']) && isset($_POST['name'])&& isset($_POST['email']) && isset($_POST['contact']) && isset($_POST['password'])
+&& isset($_POST['company_name'])&& isset($_POST['industry'])&& isset($_POST['address'])) {
 
-    if ($db->isEmailExisted($_POST['email'])) {
+    $emailChecking = $db->isEmailExisted($_POST['email']);
+
+    if ($emailChecking) {
         $status = 'User Existed!';
-    } else {
+        
+    } 
+    else {
+        $role = 0;
+        $userStatus = 1;
         $hash = $db->hashSSHA($_POST['password']);
         $encrypted_password = $hash["password_encrypted"]; // encrypted password
         $salt = $hash["salt"]; // salt
-        $create = $db->create(array($_POST['name'], $_POST['contact'], $_POST['email'], $encrypted_password, $salt, $created_at ));
-        $status ='1';
+
+        $addCompany = $db->addCompany(array($_POST['company_name'],$_POST['address'],$_POST['industry'],$created_at));
+        
+        if($addCompany){
+            $addUser = $db->addUser(array($_POST['name'], $role, $_POST['contact'], $_POST['email'], $encrypted_password, $salt,$userStatus,
+                                         $addCompany,$created_at ));
+            if($addUser){
+               $status ='1';
+            }
+            else{
+                $status='4';
+            }
+        }
+        else{
+            $status ='Add Company Failed!';
+        }
+
     }
     $response['status'] = $status;
     echo json_encode($response);
 }
-// /**
-//  * create
-//  * */
-// else if (isset($_POST['create']) && isset($_POST['address']) && isset($_POST['salt']) && isset($_POST['password']) && isset($_POST['email']) && isset($_POST['contact']) && isset($_POST['role']) && isset($_POST['name'])) {
-//     $create = $db->create(array($created_at, $_POST['address'], $_POST['salt'], $_POST['password'], $_POST['email'], $_POST['contact'], $_POST['role'], $_POST['name']));
-//     $response['status'] = ($create ? '1' : '2');
-//     echo json_encode($response);
-// }
+
+/**
+ * add branch user
+ * */
+else if (isset($_POST['addBranchUser']) && isset($_POST['company_id'])&& isset($_POST['branch_id']) && isset($_POST['email']) && isset($_POST['password'])) {
+
+    $emailChecking = $db->isEmailExisted($_POST['email']);
+    if ($emailChecking) {
+        $status = '2';
+        
+    } 
+    else {
+        $role = 1;
+        $status = 1;
+        $hash = $db->hashSSHA($_POST['password']);
+        $encrypted_password = $hash["password_encrypted"]; // encrypted password
+        $salt = $hash["salt"]; // salt
+
+        $addBranchUser = $db->addBranchUser(array( $role, $_POST['email'], $encrypted_password, $salt, $status, $_POST['branch_id'], $_POST['company_id'],$created_at));
+        $response['status'] = ($addBranchUser ? '1' : '2');
+        echo json_encode($response);
+    }
+   
+}
 /**
  * update
  * */
-else if (isset($_POST['update']) && isset($_POST['address']) && isset($_POST['salt']) && isset($_POST['password']) && isset($_POST['email']) && isset($_POST['contact']) && isset($_POST['role']) && isset($_POST['name']) && isset($_POST['user_id'])) {
-    $update = $db->update(array($updated_at, $_POST['address'], $_POST['salt'], $_POST['password'], $_POST['email'], $_POST['contact'], $_POST['role'], $_POST['name'], $_POST['user_id']));
-    $response['status'] = ($update ? '1' : '2');
+else if (isset($_POST['update']) && isset($_POST['company_id']) && isset($_POST['name']) && isset($_POST['logo']) 
+        && isset($_POST['email']) && isset($_POST['contact']) && isset($_POST['industry']) && isset($_POST['address'])) {
+    $role = 0;
+    $updateCompany = $db->updateCompany(array($_POST['name'], $_POST['logo'],$_POST['address'], $_POST['industry'],$updated_at,  $_POST['company_id'] ));
+    $updateUser  = $db->updateUser(array($_POST['contact'],$_POST['email'],$updated_at,  $_POST['company_id'], $role));   
+    
+    $response['status'] = ($updateCompany&&$updateUser ? '1' : '2');
     echo json_encode($response);
 }
 /**

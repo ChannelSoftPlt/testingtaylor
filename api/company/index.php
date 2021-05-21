@@ -18,6 +18,14 @@ if (isset($_POST['read']) && isset($_POST['company_id'])) {
     echo json_encode($response);
 
 }
+else if (isset($_POST['upload_image']) && isset($_POST['image_name']) && isset($_POST['image'])) {
+
+    $upload_picture           = $db->upload_picture($_POST['image_name'], $_POST['image']);
+    $response['status']       = ($upload_picture ? '1' : '2');
+    $response['picture_name'] = $upload_picture;
+
+    echo json_encode($response);
+}
 /**
  * create
  * */
@@ -27,10 +35,10 @@ else if (isset($_POST['create']) && isset($_POST['color']) && isset($_POST['sign
     echo json_encode($response);
 }
 /**
- * update
+ * update color
  * */
-else if (isset($_POST['update']) && isset($_POST['color']) && isset($_POST['sign_by']) && isset($_POST['do_note']) && isset($_POST['industry']) && isset($_POST['registration_no']) && isset($_POST['logo']) && isset($_POST['name']) && isset($_POST['user_id']) && isset($_POST['company_id'])) {
-    $update = $db->update(array($updated_at, $_POST['color'], $_POST['sign_by'], $_POST['do_note'], $_POST['industry'], $_POST['registration_no'], $_POST['logo'], $_POST['name'], $_POST['user_id'], $_POST['company_id']));
+else if (isset($_POST['update']) && isset($_POST['color']) && isset($_POST['company_id'])) {
+    $update = $db->update(array($_POST['color'],$updated_at,$_POST['company_id']));
     $response['status'] = ($update ? '1' : '2');
     echo json_encode($response);
 }

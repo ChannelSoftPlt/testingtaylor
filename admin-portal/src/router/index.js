@@ -103,8 +103,8 @@ export default new Router({
         },
         {
           name: 'Wizard',
-          path: 'forms/wizard',
-          component: () => import('@/views/dashboard/forms/Wizard')
+          path: 'wizard',
+          component: () => import('@/views/dashboard/Wizard')
         },
         // Tables
         {

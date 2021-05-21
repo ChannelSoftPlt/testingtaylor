@@ -448,7 +448,7 @@ export default {
     selectedTime: true,
     selectedBranch: "",
     selectedPerson: "",
-    selectedDated: "",
+    selectedDated: {},
     remarkRules: [(v) => v.length <= 200 || "Max 30  characters"],
     firstnameRules: [(v) => !!v || "Firstname is required"],
     lastnameRules: [(v) => !!v || "Lastname is required"],

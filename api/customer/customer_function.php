@@ -44,6 +44,54 @@ class customer_function
         return (sizeof($return_arr) > 0 ? $return_arr : false);
     }
 
+    public function getAllCustomer($company_id)
+    {   
+        $stmt = $this->conn->prepare("SELECT DISTINCT tb_customer.customer_id, tb_customer.name, tb_customer.contact, tb_customer.email, tb_customer.remark
+        FROM tb_customer JOIN tb_booking ON tb_booking.customer_id = tb_customer.customer_id JOIN tb_service ON tb_booking.service_id = tb_service.service_id
+        JOIN tb_branch ON tb_service.branch_id = tb_branch.branch_id WHERE tb_customer.soft_delete = '' AND tb_branch.company_id = $company_id");
+        
+        //error reporting
+        if (!$stmt) {
+            die('prepare() failed: ' . htmlspecialchars($this->conn->error));
+        }
+        $result = $stmt->execute();
+
+        if ($result) {
+            //set up bind result
+            $meta = $stmt->result_metadata();
+            while ($field = $meta->fetch_field()) {
+                $params[] = &$row[$field->name];
+            }
+            $return_arr = $this->structure->bindResult($stmt, $params, $row);
+        }
+
+        return (sizeof($return_arr) > 0 ? $return_arr : false);
+    }
+    public function searchCustomer($company_id,$search_customer)
+    {   
+        $stmt = $this->conn->prepare("SELECT DISTINCT tb_customer.customer_id, tb_customer.name, tb_customer.contact, tb_customer.email, tb_customer.remark
+            FROM tb_customer JOIN tb_booking ON tb_booking.customer_id = tb_customer.customer_id JOIN tb_service ON tb_booking.service_id = tb_service.service_id
+            JOIN tb_branch ON tb_service.branch_id = tb_branch.branch_id WHERE tb_customer.soft_delete = '' AND tb_branch.company_id = $company_id 
+            AND tb_customer.name LIKE '%".$search_customer."%'");
+        
+        //error reporting
+        if (!$stmt) {
+            die('prepare() failed: ' . htmlspecialchars($this->conn->error));
+        }
+        $result = $stmt->execute();
+
+        if ($result) {
+            //set up bind result
+            $meta = $stmt->result_metadata();
+            while ($field = $meta->fetch_field()) {
+                $params[] = &$row[$field->name];
+            }
+            $return_arr = $this->structure->bindResult($stmt, $params, $row);
+        }
+
+        return (sizeof($return_arr) > 0 ? $return_arr : false);
+    }
+
     /**
      * create function
      * */
@@ -68,7 +116,7 @@ class customer_function
      * */
     public function update($params)
     {
-        $stmt = $this->conn->prepare('UPDATE tb_customer SET updated_at = ?, email = ?, contact = ?, name = ? WHERE customer_id = ?');
+        $stmt = $this->conn->prepare('UPDATE tb_customer SET name = ?, contact = ? , email = ?, updated_at = ?   WHERE customer_id = ?');
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
@@ -80,9 +128,19 @@ class customer_function
     /**
      * delete function
      * */
-    public function delete($params)
+    public function deleteCustomer($params)
     {
         $stmt = $this->conn->prepare('UPDATE tb_customer SET soft_delete = ? WHERE customer_id = ?');
+        //error reporting
+        if (!$stmt) {
+            die('prepare() failed: ' . htmlspecialchars($this->conn->error));
+        }
+        //bind param
+        return $this->structure->bindParam($stmt, $params);
+    }
+    public function deleteBooking($params)
+    {
+        $stmt = $this->conn->prepare('UPDATE tb_booking SET soft_delete = ? WHERE customer_id = ?');
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));

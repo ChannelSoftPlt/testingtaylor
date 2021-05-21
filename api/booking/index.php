@@ -18,6 +18,13 @@ if (isset($_POST['read'])&&isset($_POST['selected_date'])&&isset($_POST['service
     echo json_encode($response);
 
 }
+else if (isset($_POST['check'])&&isset($_POST['selected_date'])&&isset($_POST['service_id'])&&isset($_POST['booking_id'])) {
+    $read     = $db->check($_POST['selected_date'],$_POST['service_id'],$_POST['booking_id']);
+    $response['status']   = ($read ? '1' : '2');
+    $response['booking'] = $read;
+    echo json_encode($response);
+
+}
 else if (isset($_POST['getBooking'])&&isset($_POST['selected_date'])&&isset($_POST['service_id'])&&isset($_POST['provider_id'])) {
     $read     = $db->getBooking($_POST['selected_date'],$_POST['service_id'],$_POST['provider_id']);
     $response['status']   = ($read ? '1' : '2');
@@ -36,6 +43,13 @@ else if (isset($_POST['findSpecificBranchBooking'])&&isset($_POST['branch_id']))
 
 else if (isset($_POST['findAllBranchBooking'])&&isset($_POST['company_id'])) {
     $read     = $db->findAllBranchBooking($_POST['company_id']);
+    $response['status']   = ($read ? '1' : '2');
+    $response['booking'] = $read;
+    echo json_encode($response);
+
+}
+else if (isset($_POST['getCustomerAppointment'])&&isset($_POST['customer_id'])) {
+    $read     = $db->getCustomerAppointment($_POST['customer_id']);
     $response['status']   = ($read ? '1' : '2');
     $response['booking'] = $read;
     echo json_encode($response);
@@ -65,9 +79,11 @@ else if (isset($_POST['createBooking'])&& isset($_POST['person']) && isset($_POS
 /**
  * update
  * */
-else if (isset($_POST['update']) && isset($_POST['status']) && isset($_POST['customer_id']) && isset($_POST['selected_date']) && isset($_POST['duration']) && isset($_POST['selected_time']) && isset($_POST['service_id']) && isset($_POST['booking_id'])) {
-    $update = $db->update(array($updated_at, $_POST['status'], $_POST['customer_id'], $_POST['selected_date'], $_POST['duration'], $_POST['selected_time'], $_POST['service_id'], $_POST['booking_id']));
-    $response['status'] = ($update ? '1' : '2');
+else if (isset($_POST['update']) && isset($_POST['booking_id']) && isset($_POST['person']) && isset($_POST['selected_date']) 
+&& isset($_POST['selected_time']) && isset($_POST['customer_id']) && isset($_POST['contact']) && isset($_POST['email']) && isset($_POST['remark']) && isset($_POST['name'])) {
+    $updateBooking = $db->updateBooking(array($_POST['selected_time'],$_POST['selected_date'], $_POST['person'], $updated_at, $_POST['booking_id']));
+    $updateCustomer = $db->updateCustomer(array($_POST['name'],$_POST['contact'],$_POST['email'],$_POST['remark'], $updated_at,$_POST['customer_id']));
+    $response['status'] = ($updateBooking && $updateCustomer ? '1' : '2');
     echo json_encode($response);
 }
 /**

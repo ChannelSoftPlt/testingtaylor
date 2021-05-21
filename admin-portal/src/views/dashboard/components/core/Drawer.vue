@@ -90,64 +90,28 @@
         {
           icon: 'mdi-view-dashboard',
           title: 'Dashboard',
-          to: '/Dashboard'
+          to: 'dashboard/Dashboard'
         },
         {
-          group: '/pages',
           icon: 'mdi-image',
           title: 'Service',
-          children: [
-
-            {
-              title: 'login',
-              to: 'login'
-            },
-            {
-              title: 'register',
-              to: 'pricing'
-            },
-            {
-              title: 'lock',
-              to: 'lock'
-            },
-            {
-              title: 'user',
-              to: 'user'
-            },
-            {
-              title: 'error',
-              to: '404'
-            }
-          ]
+          to: 'Calendar'
         },
         {
-          to: '/dashboard/forms/Wizard',
+          to: 'Wizard',
           icon: 'mdi-clipboard-outline',
           title: 'Branch',
         },
         {
-          group: '/tables',
+  
           icon: 'mdi-grid',
           title: 'Setting',
-          children: [
-            {
-              title: 'rtables',
-              to: 'regular-tables'
-            },
-            {
-              title: 'etables',
-              to: 'extended-tables'
-            },
-            {
-              title: 'dtables',
-              to: 'data-tables'
-            }
-          ]
+          to:'Charts'
         },
         {
           icon: 'mdi-widgets',
           title: 'Customer',
-          to: 'dashboard/widgets'
+          to: 'widgets'
         },
         {
           icon: 'mdi-chart-timeline-variant',

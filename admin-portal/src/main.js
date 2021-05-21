@@ -24,6 +24,8 @@ Vue.use(vueEventCalendar, {locale: 'en'})
 
 Vue.use(VueTelInputVuetify, {
   vuetify,
+  placeholder: " ",
+  label: " ",
 });
 
 Vue.config.productionTip = false;
