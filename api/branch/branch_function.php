@@ -45,11 +45,33 @@ class branch_function
         return (sizeof($return_arr) > 0 ? $return_arr : false);
     }
 
+    public function get($company_id)
+    {
+        $stmt = $this->conn->prepare("SELECT soft_delete, updated_at, created_at, user_id, working_time, working_day, redirect, auto_approve, phone_number, address, gap, name, company_id, branch_id 
+        ,status FROM tb_branch WHERE status = 1 AND  soft_delete = '' AND company_id = '". $company_id ."' ");
+        //error reporting
+        if (!$stmt) {
+            die('prepare() failed: ' . htmlspecialchars($this->conn->error));
+        }
+        $result = $stmt->execute();
+
+        if ($result) {
+            //set up bind result
+            $meta = $stmt->result_metadata();
+            while ($field = $meta->fetch_field()) {
+                $params[] = &$row[$field->name];
+            }
+            $return_arr = $this->structure->bindResult($stmt, $params, $row);
+        }
+
+        return (sizeof($return_arr) > 0 ? $return_arr : false);
+    }
+
     public function getBranchHolidayWorkdayTime($service_id)
     {
         $stmt = $this->conn->prepare("SELECT DISTINCT tb_branch.branch_id, tb_branch.gap, tb_branch.working_day, tb_branch.working_time, tb_holiday.date
-        FROM tb_branch JOIN tb_holiday ON tb_branch.branch_id = tb_holiday.branch_id JOIN tb_service ON tb_service.branch_id = tb_branch.branch_id
-        WHERE tb_service.service_id = $service_id ");
+        FROM tb_branch JOIN tb_holiday ON tb_branch.branch_id = tb_holiday.branch_id JOIN tb_branch_link ON tb_branch.branch_id = tb_branch_link.branch_id
+        WHERE tb_branch_link.service_id = $service_id  ");
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
@@ -71,8 +93,9 @@ class branch_function
     public function getHolidayDayTime($company_id)
     {
         $stmt = $this->conn->prepare("SELECT DISTINCT tb_branch.name, tb_branch.branch_id, tb_branch.gap, tb_branch.working_day, tb_branch.working_time, tb_holiday.date
-        FROM tb_branch JOIN tb_holiday ON tb_branch.branch_id = tb_holiday.branch_id JOIN tb_service ON tb_service.branch_id = tb_branch.branch_id
-        WHERE tb_branch.company_id = $company_id ");
+        FROM tb_branch JOIN tb_holiday ON tb_branch.branch_id = tb_holiday.branch_id JOIN tb_branch_link ON tb_branch_link.branch_id = tb_branch.branch_id
+        WHERE tb_branch.company_id = $company_id
+ ");
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));

@@ -11,8 +11,8 @@ $created_at = $updated_at = $soft_delete = (new DateTime('NOW', new DateTimeZone
 /**
  * read
  */
-if (isset($_POST['read'])) {
-    $read     = $db->read();
+if (isset($_POST['read']) && isset($_POST['branch_id'])) {
+    $read     = $db->read($_POST['branch_id']);
     $response['status']   = ($read ? '1' : '2');
     $response['user'] = $read;
     echo json_encode($response);
@@ -29,6 +29,7 @@ else if (isset($_POST['getAdmin']) && isset($_POST['company_id'])) {
  */
 else if (isset($_POST['login']) && isset($_POST['password']) && isset($_POST['email'])) {
     $read = $db->login($_POST['email'], $_POST['password']);
+    // print_r($_POST['email'].$_POST['password']);
     $response['status'] = ($read ? '1' : '2');
     $response['user'] = $read;
     echo json_encode($response);
@@ -77,7 +78,7 @@ else if (isset($_POST['create']) && isset($_POST['name'])&& isset($_POST['email'
 /**
  * add branch user
  * */
-else if (isset($_POST['addBranchUser']) && isset($_POST['company_id'])&& isset($_POST['branch_id']) && isset($_POST['email']) && isset($_POST['password'])) {
+else if (isset($_POST['addBranchUser']) && isset($_POST['company_id'])&& isset($_POST['branch_id']) && isset($_POST['email']) && isset($_POST['password']) && isset($_POST['status'])) {
 
     $emailChecking = $db->isEmailExisted($_POST['email']);
     if ($emailChecking) {
@@ -86,12 +87,11 @@ else if (isset($_POST['addBranchUser']) && isset($_POST['company_id'])&& isset($
     } 
     else {
         $role = 1;
-        $status = 1;
         $hash = $db->hashSSHA($_POST['password']);
         $encrypted_password = $hash["password_encrypted"]; // encrypted password
         $salt = $hash["salt"]; // salt
 
-        $addBranchUser = $db->addBranchUser(array( $role, $_POST['email'], $encrypted_password, $salt, $status, $_POST['branch_id'], $_POST['company_id'],$created_at));
+        $addBranchUser = $db->addBranchUser(array( $role, $_POST['email'], $encrypted_password, $salt, $_POST['status'], $_POST['branch_id'], $_POST['company_id'],$created_at));
         $response['status'] = ($addBranchUser ? '1' : '2');
         echo json_encode($response);
     }
@@ -107,6 +107,18 @@ else if (isset($_POST['update']) && isset($_POST['company_id']) && isset($_POST[
     $updateUser  = $db->updateUser(array($_POST['contact'],$_POST['email'],$updated_at,  $_POST['company_id'], $role));   
     
     $response['status'] = ($updateCompany&&$updateUser ? '1' : '2');
+    echo json_encode($response);
+}
+/**
+ * update branch user
+ * */
+else if (isset($_POST['updateBranchUser']) && isset($_POST['branch_id']) && isset($_POST['email']) && isset($_POST['password']) && isset($_POST['status'])) {
+    
+    $hash = $db->hashSSHA($_POST['password']);
+    $encrypted_password = $hash["password_encrypted"]; // encrypted password 
+    $salt = $hash["salt"]; // salt
+    $updateBranchUser = $db->updateBranchUser(array($_POST['email'], $encrypted_password, $salt ,$_POST['status'], $updated_at, $_POST['branch_id']));
+    $response['status'] = ($updateBranchUser ? '1' : '2');
     echo json_encode($response);
 }
 /**

@@ -11,7 +11,6 @@
               <v-text-field
                 v-model="searchBranch"
                 label="Search..."
-                
               ></v-text-field>
             </v-col>
             <!-- <v-col cols="3">
@@ -21,17 +20,12 @@
       </v-col> -->
           </v-row>
           <v-list two-line class="overflow">
-            <v-list-item-group
-              v-model="selected"
-              active-class="pink--text"
-             
-            >
+            <v-list-item-group v-model="selected" active-class="pink--text">
               <template>
                 <v-list-item
                   v-for="(item, index) in branchItem"
                   :key="index"
                   :value="item.branch_id"
-                  
                 >
                   <template>
                     <!-- <v-list-item-avatar>
@@ -50,9 +44,9 @@
         </v-card>
       </v-col>
       <v-col cols="12" md="10">
-        <v-row class="ml-3" >
-          <v-col class="text-center"> 
-          <h2>Branch Details</h2>
+        <v-row class="ml-3">
+          <v-col class="text-center">
+            <h2>Branch Details</h2>
           </v-col>
         </v-row>
 
@@ -62,20 +56,20 @@
               <v-col cols="12" md="4">
                 <span class="ml-4">Name</span>
                 <v-subheader>
-                  Your branch name that appear on customer booking list</v-subheader
+                  Your branch name that appear on customer booking
+                  list</v-subheader
                 >
               </v-col>
               <v-col cols="12" md="8" class="px-7">
                 <v-text-field
-              v-model="branchName"
-              placeholder="e.g Tea Garden Taman bukit indah"
-             
-              clearable
-            ></v-text-field>
+                  v-model="branchName"
+                  placeholder="e.g Tea Garden Taman bukit indah"
+                  clearable
+                ></v-text-field>
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" md="4" >
+              <v-col cols="12" md="4">
                 <span class="ml-4">Address</span>
                 <v-subheader>
                   Your branch location that will show to customer</v-subheader
@@ -83,24 +77,25 @@
               </v-col>
               <v-col cols="12" md="8" class="px-7">
                 <v-textarea
-              v-model="branchAddress"
-              placeholder="e.g No 21, Jalan Nusa Bestari 2/3 Taman Nusa Bestari Johor Bahru, Johor"
-            ></v-textarea>
+                  v-model="branchAddress"
+                  placeholder="e.g No 21, Jalan Nusa Bestari 2/3 Taman Nusa Bestari Johor Bahru, Johor"
+                ></v-textarea>
               </v-col>
             </v-row>
-             <v-row>
+            <v-row>
               <v-col cols="12" md="4">
                 <span class="ml-4">Phone</span>
                 <v-subheader>
-                  Branch number that user can contact with branch directly</v-subheader
+                  Branch number that user can contact with branch
+                  directly</v-subheader
                 >
               </v-col>
               <v-col cols="12" md="8" class="px-7">
-             <v-text-field
-              v-model="branchPhone"
-              placeholder="e.g +60167148105"
-              clearable
-            ></v-text-field>
+                <v-text-field
+                  v-model="branchPhone"
+                  placeholder="e.g +60167148105"
+                  clearable
+                ></v-text-field>
               </v-col>
             </v-row>
 
@@ -112,33 +107,28 @@
                 >
               </v-col>
               <v-col cols="12" md="8" class="px-7">
-             <v-text-field
-              v-model="email"
-              
-              clearable
-            ></v-text-field>
+                <v-text-field v-model="email" clearable></v-text-field>
               </v-col>
             </v-row>
 
-              <v-row>
-                <v-col cols="12" md="4">
-                  <span class="ml-4">Password</span>
-                  <v-subheader
-                    >This password will be used when you login to this
-                    portal</v-subheader
-                  >
-                </v-col>
-                <v-col cols="12" md="8" class="px-7">
-                  <v-text-field
-                    v-model="password"
-                    :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                    :type="showPassword ? 'text' : 'password'"
-                    @click:append="showPassword = !showPassword"
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-            
-        
+            <v-row>
+              <v-col cols="12" md="4">
+                <span class="ml-4">Password</span>
+                <v-subheader
+                  >This password will be used when you login to this
+                  portal</v-subheader
+                >
+              </v-col>
+              <v-col cols="12" md="8" class="px-7">
+                <v-text-field
+                  v-model="password"
+                  :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                  :type="showPassword ? 'text' : 'password'"
+                  @click:append="showPassword = !showPassword"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+
             <v-row>
               <v-col cols="12" md="4">
                 <span class="ml-4">Time gap</span>
@@ -211,7 +201,7 @@
                   <!-- <v-col cols="2">
                    <v-subheader>to</v-subheader>
                   </v-col> -->
-                   
+
                   <v-col cols="6">
                     <v-menu
                       ref="menu2"
@@ -244,6 +234,53 @@
                 </v-row>
               </v-col>
             </v-row>
+            <v-row>
+              <v-col cols="12" md="4">
+                <span class="ml-4">Holiday</span>
+                <v-subheader
+                  >Setting the holiday for the branch and this will show to
+                  customer</v-subheader
+                >
+              </v-col>
+              <v-col cols="12" md="7" class="px-7">
+                <v-menu
+                  ref="menu3"
+                  v-model="holidayMenu"
+                  :close-on-content-click="false"
+                  :return-value.sync="dates"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-combobox
+                      v-model="showHoliday"
+                      item-text="date"
+                      multiple
+                      chips
+                      small-chips
+                      prepend-icon="mdi-calendar"
+                      readonly
+                      v-bind="attrs"
+                      v-on="on"
+                      return
+                      object
+                    ></v-combobox>
+                  </template>
+                  <FunctionalCalendar
+                    v-model="holiday"
+                    :limits="{ min: today, max: '01/01/3000' }"
+                    :hidden-elements="['leftAndRightDays']"
+                    :is-multiple-date-picker="true"
+                    v-on:choseDay="
+                      (showHoliday = holiday.selectedDates),
+                        getFields(holiday.selectedDates, 'date')
+                    "
+                  >
+                  </FunctionalCalendar>
+                </v-menu>
+              </v-col>
+            </v-row>
 
             <v-row>
               <v-col cols="12" md="4">
@@ -254,15 +291,15 @@
                 >
               </v-col>
               <v-col cols="12" md="1" class="px-7">
-                <v-switch v-model="branchRedirect" ></v-switch>
+                <v-switch v-model="branchRedirect"></v-switch>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" md="4">
                 <span class="ml-4">Auto Approve</span>
                 <v-subheader
-                  >Allow to approve customer booking automatically </v-subheader
-                >
+                  >Allow to approve customer booking automatically
+                </v-subheader>
               </v-col>
               <v-col cols="12" md="1" class="px-7">
                 <v-switch v-model="branchAutoApprove"></v-switch>
@@ -272,21 +309,42 @@
               <v-col cols="12" md="4">
                 <span class="ml-4">Status</span>
                 <v-subheader
-                  >Represent the branch status show on customer selection when branch is active  </v-subheader
-                >
+                  >Represent the branch status show on customer selection when
+                  branch is active
+                </v-subheader>
               </v-col>
               <v-col cols="12" md="1" class="px-7">
                 <v-switch v-model="branchStatus"></v-switch>
               </v-col>
             </v-row>
+            <v-row>
+              <v-col cols="12" md="4">
+                <span class="ml-4">Branch login</span>
+                <v-subheader
+                  >Allow branch to login to the portal
+                </v-subheader>
+              </v-col>
+              <v-col cols="12" md="1" class="px-7">
+                <v-switch v-model="userStatus"></v-switch>
+              </v-col>
+            </v-row>
+
           </v-col>
         </v-row>
-        
+
         <v-row class="text-center mr-n7">
           <v-col>
-            <v-btn color="blue darken-1" @click="addBranchToCompany()"> Add </v-btn>
-            <v-btn color="success" @click="updateBranch()"> Save </v-btn>
-            <v-btn color="error" @click.stop="confirmDeleteDialog = true">
+            <v-btn color="blue darken-1" @click="addBranchToCompany()" v-if="!selected">
+              Add
+            </v-btn>
+            <v-btn color="success" @click="updateBranch()" v-if="selected">
+              Save
+            </v-btn>
+            <v-btn
+              color="error"
+              @click.stop="confirmDeleteDialog = true"
+              v-if="selected"
+            >
               Delete
             </v-btn>
             <v-dialog v-model="confirmDeleteDialog" max-width="290">
@@ -295,7 +353,9 @@
 
                 <v-card-text>
                   <span class="font-weight-medium"
-                    >The selected branch and it's information will be delete</span>
+                    >The selected branch and it's information will be
+                    delete</span
+                  >
                 </v-card-text>
 
                 <v-card-actions>
@@ -308,11 +368,7 @@
                     cancel
                   </v-btn>
 
-                  <v-btn
-                    color="green darken-1"
-                    text
-                    @click="deleteBranch()"
-                  >
+                  <v-btn color="green darken-1" text @click="deleteBranch()">
                     Agree
                   </v-btn>
                   <v-spacer></v-spacer>
@@ -320,7 +376,7 @@
               </v-card>
             </v-dialog>
 
-             <v-snackbar v-model="snackbar" :timeout="timeout">
+            <v-snackbar v-model="snackbar" :timeout="timeout">
               {{ text }}
 
               <template v-slot:action="{ attrs }">
@@ -337,7 +393,6 @@
             </v-snackbar>
           </v-col>
         </v-row>
-       
       </v-col>
     </v-row>
   </v-container>
@@ -346,12 +401,14 @@
 <script>
 import { BASEURL } from "@/api/baseurl";
 import axios from "axios";
+import { FunctionalCalendar } from "vue-functional-calendar";
 
 export default {
-  
   name: "DashboardFormsWizard",
-  
 
+  components: {
+    FunctionalCalendar,
+  },
   data: () => ({
     domain: BASEURL,
     startTime: null,
@@ -367,37 +424,41 @@ export default {
       "Friday",
       "Saturday",
     ],
-    branchItem:'',
-    selected:'',
-    branchName:'',
-    branchAddress:'',
-    branchPhone:'',
-    branchGap:15,
-    branchWorkingDay:'',
-    branchWorkingTime:'',
-    branchStartTime:'',
-    branchEndTime:'',
-    branchRedirect:0,
-    branchAutoApprove:0,
-    searchBranch:'',
-    time:'',
-    realWorkingDay:[],
-    confirmDeleteDialog:false,
+    branchItem: "",
+    selected: "",
+    branchName: "",
+    branchAddress: "",
+    branchPhone: "",
+    branchGap: 15,
+    branchWorkingDay: "",
+    branchWorkingTime: "",
+    branchStartTime: "",
+    branchEndTime: "",
+    branchRedirect: 0,
+    branchAutoApprove: 0,
+    searchBranch: "",
+    time: "",
+    realWorkingDay: [],
+    confirmDeleteDialog: false,
     timeout: 2000,
     snackbar: false,
     text: "",
     showPassword: false,
-    email:'',
-    password:'',
-    branchStatus:'',
-    addBranchId:'',
-    
-
-    
-
+    email: "",
+    password: "",
+    branchStatus: "",
+    addBranchId: "",
+    dates: "",
+    holidayMenu: "",
+    holiday: {
+      selectedDates: [],
+    },
+    showHoliday: [],
+    realHoliday: [],
+    selectedHoliday: {},
+    userStatus:"",
   }),
-  created(){
-    
+  created() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
 
@@ -406,95 +467,101 @@ export default {
       this.company_id = id;
       this.getCompanyBranch();
     }
-
   },
-  watch:{
-    selected(){
+  watch: {
+    selected() {
       this.getBranchDetail();
-      
     },
     searchBranch() {
       this.searchBranchByName();
     },
-    branchRedirect(){
+    branchRedirect() {
       this.changeRedirectFormat();
     },
-    branchAutoApprove(){
+    branchAutoApprove() {
       this.changeAutoApproveFormat();
     },
-    branchStatus(){
+    branchStatus() {
       this.changeStatusFormat();
-    }
-
-
-
+    },
+    userStatus(){
+      this.changeUserStatus();
+    },
+    holiday() {},
   },
   computed: {
-      workingDayCheck(){
-         var value = [];
+    workingDayCheck() {
+      var value = [];
 
-          if (this.branchWorkingDay[0] == 0) {
-            value.push("Sunday");
-          }
-          if (this.branchWorkingDay[1] == 0) {
-            value.push("Monday");
-          }
-          if (this.branchWorkingDay[2] == 0) {
-            value.push("Tuesday");
-          }
-          if (this.branchWorkingDay[3] == 0) {
-            value.push("Wednesday");
-          }
-          if (this.branchWorkingDay[4] == 0) {
-            value.push("Thursday");
-          }
-          if (this.branchWorkingDay[5] == 0) {
-            value.push("Friday");
-          }
-          if (this.branchWorkingDay[6] == 0) {
-            value.push("Saturday");
-          }
+      if (this.branchWorkingDay[0] == 0) {
+        value.push("Sunday");
+      }
+      if (this.branchWorkingDay[1] == 0) {
+        value.push("Monday");
+      }
+      if (this.branchWorkingDay[2] == 0) {
+        value.push("Tuesday");
+      }
+      if (this.branchWorkingDay[3] == 0) {
+        value.push("Wednesday");
+      }
+      if (this.branchWorkingDay[4] == 0) {
+        value.push("Thursday");
+      }
+      if (this.branchWorkingDay[5] == 0) {
+        value.push("Friday");
+      }
+      if (this.branchWorkingDay[6] == 0) {
+        value.push("Saturday");
+      }
 
-          return value;
+      return value;
     },
-    saveWorkingDay(){
-      var day = [0,0,0,0,0,0,0];
+    saveWorkingDay() {
+      var day = [0, 0, 0, 0, 0, 0, 0];
 
-      if(!this.realWorkingDay.includes("Sunday")){
-        day[0]=1;
+      if (!this.realWorkingDay.includes("Sunday")) {
+        day[0] = 1;
       }
-      if(!this.realWorkingDay.includes("Monday")){
-        day[1]=1;
+      if (!this.realWorkingDay.includes("Monday")) {
+        day[1] = 1;
       }
-      if(!this.realWorkingDay.includes("Tuesday")){
-        day[2]=1;
+      if (!this.realWorkingDay.includes("Tuesday")) {
+        day[2] = 1;
       }
-      if(!this.realWorkingDay.includes("Wednesday")){
-        day[3]=1;
+      if (!this.realWorkingDay.includes("Wednesday")) {
+        day[3] = 1;
       }
-      if(!this.realWorkingDay.includes("Thursday")){
-        day[4]=1;
+      if (!this.realWorkingDay.includes("Thursday")) {
+        day[4] = 1;
       }
-      if(!this.realWorkingDay.includes("Friday")){
-        day[5]=1;
+      if (!this.realWorkingDay.includes("Friday")) {
+        day[5] = 1;
       }
-      if(!this.realWorkingDay.includes("Saturday")){
-        day[6]=1;
+      if (!this.realWorkingDay.includes("Saturday")) {
+        day[6] = 1;
       }
-  
+
       return day;
     },
-    saveWorkingTime(){
-      var time=[];
-      
-      time.push('"'+this.branchStartTime+'"');
-      time.push('"'+this.branchEndTime+'"');
-      
+    saveWorkingTime() {
+      var time = [];
+
+      time.push('"' + this.branchStartTime + '"');
+      time.push('"' + this.branchEndTime + '"');
+
       return time;
-
-    }
-  
-
+    },
+    today() {
+      var d = new Date();
+      var datestring =
+        ("0" + d.getDate()).slice(-2) +
+        "/" +
+        ("0" + (d.getMonth() + 1)).slice(-2) +
+        "/" +
+        d.getFullYear();
+      return datestring;
+    },
   },
 
   methods: {
@@ -512,7 +579,6 @@ export default {
           console.log(response);
           if (response.data.status == "1") {
             this.branchItem = response.data.branch;
-            
           } else {
             console.log("no branch find");
           }
@@ -521,20 +587,24 @@ export default {
           console.log(error);
         });
     },
-    getBranchDetail(){
-         this.branchName = '';
-         this.branchAddress = '';
-         this.branchPhone = '';
-         this.branchGap = 15;
-         this.branchWorkingTime = '';
-         this.branchStartTime = '';
-         this.branchEndTime = '';
-         this.branchWorkingDay = '';
-         this.realWorkingDay='';
-         this.branchRedirect =0;
-         this.branchAutoApprove =0;
-         this.branchStatus=0;
-      
+    getBranchDetail() {
+      this.branchName = "";
+      this.branchAddress = "";
+      this.branchPhone = "";
+      this.branchGap = 15;
+      this.branchWorkingTime = "";
+      this.branchStartTime = "";
+      this.branchEndTime = "";
+      this.branchWorkingDay = "";
+      this.realWorkingDay = "";
+      this.branchRedirect = 0;
+      this.branchAutoApprove = 0;
+      this.branchStatus = 0;
+      this.showHoliday =[];
+      this.holiday.selectedDates =[];
+      this.email ='';
+      this.password ='';
+
       for (var i = 0; i < this.branchItem.length; i++) {
         if (this.branchItem[i].branch_id == this.selected) {
           this.branchName = this.branchItem[i].name;
@@ -547,22 +617,24 @@ export default {
           this.branchWorkingDay = JSON.parse(this.branchItem[i].working_day);
           this.realWorkingDay = this.workingDayCheck;
           this.branchRedirect = this.branchItem[i].redirect;
-          this.branchAutoApprove =this.branchItem[i].auto_approve;
+          this.branchAutoApprove = this.branchItem[i].auto_approve;
           this.branchStatus = this.branchItem[i].status;
+          this.getBranchHoliday();
+          this.getBranchUser();
         }
-
-      } 
+      }
+     
       
     },
-    addBranchToCompany(){
+    addBranchToCompany() {
       const params = new URLSearchParams();
       params.append("create", "done");
       params.append("company_id", this.company_id);
       params.append("name", this.branchName);
       params.append("address", this.branchAddress);
       params.append("gap", this.branchGap);
-      params.append("working_day", '['+this.saveWorkingDay +']');
-      params.append("working_time", '['+this.saveWorkingTime +']');
+      params.append("working_day", "[" + this.saveWorkingDay + "]");
+      params.append("working_time", "[" + this.saveWorkingTime + "]");
       params.append("redirect", this.branchRedirect);
       params.append("phone_number", this.branchPhone);
       params.append("auto_approve", this.branchAutoApprove);
@@ -578,6 +650,7 @@ export default {
           if (response.data.status == "1") {
             this.addBranchId = response.data.branch;
             this.addBranchUser();
+            this.addBranchHoliday();
             this.snackbar = true;
             this.text = "Successfully add branch";
             this.getCompanyBranch();
@@ -590,31 +663,35 @@ export default {
           console.log(error);
         });
     },
-    changeRedirectFormat(){
-      if(this.branchRedirect==true){
-        this.branchRedirect=1;
-      }
-      else{
-        this.branchRedirect=0;
-      }
-    },
-    changeAutoApproveFormat(){
-        if(this.branchAutoApprove==true){
-        this.branchAutoApprove=1;
-      }
-      else{
-        this.branchAutoApprove=0;
+    changeRedirectFormat() {
+      if (this.branchRedirect == true) {
+        this.branchRedirect = 1;
+      } else {
+        this.branchRedirect = 0;
       }
     },
-    changeStatusFormat(){
-        if(this.branchStatus==true){
-        this.branchStatus=1;
-      }
-      else{
-        this.branchStatus=0;
+    changeAutoApproveFormat() {
+      if (this.branchAutoApprove == true) {
+        this.branchAutoApprove = 1;
+      } else {
+        this.branchAutoApprove = 0;
       }
     },
-    deleteBranch(){
+    changeStatusFormat() {
+      if (this.branchStatus == true) {
+        this.branchStatus = 1;
+      } else {
+        this.branchStatus = 0;
+      }
+    },
+    changeUserStatus() {
+      if (this.userStatus == true) {
+        this.userStatus = 1;
+      } else {
+        this.userStatus = 0;
+      }
+    },
+    deleteBranch() {
       const params = new URLSearchParams();
       params.append("delete", "done");
       params.append("branch_id", this.selected);
@@ -635,22 +712,21 @@ export default {
             this.confirmDeleteDialog = false;
             this.snackbar = true;
             this.text = "Something Went Wrong! Delete failed ";
-            
           }
         })
         .catch((error) => {
           console.log(error);
         });
     },
-     updateBranch(){
+    updateBranch() {
       const params = new URLSearchParams();
       params.append("update", "done");
       params.append("branch_id", this.selected);
       params.append("name", this.branchName);
       params.append("address", this.branchAddress);
       params.append("gap", this.branchGap);
-      params.append("working_day", '['+this.saveWorkingDay +']');
-      params.append("working_time", '['+this.saveWorkingTime +']');
+      params.append("working_day", "[" + this.saveWorkingDay + "]");
+      params.append("working_time", "[" + this.saveWorkingTime + "]");
       params.append("redirect", this.branchRedirect);
       params.append("phone_number", this.branchPhone);
       params.append("auto_approve", this.branchAutoApprove);
@@ -664,15 +740,14 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.data.status == "1") {
-            this.confirmDeleteDialog = false;
+            this.updateBranchHoliday();
+            this.updateBranchUser();
             this.snackbar = true;
             this.text = "Update Branch Successful";
             this.getCompanyBranch();
           } else {
-            this.confirmDeleteDialog = false;
             this.snackbar = true;
             this.text = "Something Went Wrong! Update failed ";
-            
           }
         })
         .catch((error) => {
@@ -702,13 +777,14 @@ export default {
           console.log(error);
         });
     },
-    addBranchUser(){
+    addBranchUser() {
       const params = new URLSearchParams();
       params.append("addBranchUser", "done");
       params.append("company_id", this.company_id);
       params.append("branch_id", this.addBranchId);
       params.append("email", this.email);
       params.append("password", this.password);
+      params.append("status", this.userStatus);
 
       axios({
         method: "post",
@@ -718,7 +794,7 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.data.status == "1") {
-            console.log("branch user is successfully add")
+            console.log("branch user is successfully add");
           } else {
             console.log("no branch user is add");
           }
@@ -726,9 +802,152 @@ export default {
         .catch((error) => {
           console.log(error);
         });
-      
-    }
+    },
+    addBranchHoliday() {
+      const params = new URLSearchParams();
+      params.append("create", "done");
+      params.append("branch_id", this.addBranchId);
+      params.append("date", "[" + this.realHoliday + "]");
 
+      axios({
+        method: "post",
+        url: this.domain + "/holiday/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+            console.log("Branch Holiday is successfully add");
+          } else {
+            console.log("branch holiday add fail");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getBranchHoliday() {
+      const params = new URLSearchParams();
+      params.append("read", "done");
+      params.append("branch_id", this.selected);
+
+      axios({
+        method: "post",
+        url: this.domain + "/holiday/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+            
+              this.showHoliday = JSON.parse(response.data.holiday[0].date);
+              for (let i = 0; i < this.showHoliday.length; i++) {
+                this.holiday.selectedDates.push({
+                  date: this.showHoliday[i],
+                  dateTime: false,
+                  hour: "00",
+                  minute: "00",
+                });
+              }
+              this.holiday.selectedDate = false;
+              this.holiday.selectedDateTime = false;
+              this.holiday.selectedHour = "00";
+              this.holiday.selectedMinute = "00";
+              this.holiday.selectedDatesItem = "";
+              this.holiday.dateRange = { start: "", end: "" };
+            
+          } else {
+            console.log("no branch holiday can get");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    updateBranchHoliday() {
+      const params = new URLSearchParams();
+      params.append("update", "done");
+      params.append("branch_id", this.selected);
+      params.append("date", "[" + this.realHoliday + "]");
+
+      axios({
+        method: "post",
+        url: this.domain + "/holiday/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+            console.log("Branch Holiday is successfully update");
+          } else {
+            console.log("branch holiday update fail");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    getBranchUser() {
+      const params = new URLSearchParams();
+      params.append("read", "done");
+      params.append("branch_id", this.selected);
+
+      axios({
+        method: "post",
+        url: this.domain + "/user/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+            this.email = response.data.user[0].email;
+            this.userStatus = response.data.user[0].status;
+            
+          } else {
+            console.log("no branch user email can get");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    updateBranchUser(){
+      const params = new URLSearchParams();
+      params.append("updateBranchUser", "done");
+      params.append("branch_id", this.selected);
+      params.append("email", this.email);
+      params.append("password", this.password);
+      params.append("status", this.userStatus);
+
+      axios({
+        method: "post",
+        url: this.domain + "/user/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+            console.log("update branch user successfully")
+            
+          } else {
+            console.log("no branch user is updated");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      
+    },
+
+    getFields(input, field) {
+      var output = [];
+      for (var i = 0; i < input.length; ++i)
+        output.push('"' + input[i][field] + '"');
+      // return output;
+      this.realHoliday = output;
+    },
   },
 };
 </script>

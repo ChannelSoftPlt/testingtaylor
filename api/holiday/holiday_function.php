@@ -51,7 +51,7 @@ class holiday_function
     public function create($params)
     {
         $return_arr = array();
-        $stmt       = $this->conn->prepare('INSERT INTO tb_holiday(created_at, date, branch_id) VALUES (?, ?, ?)');
+        $stmt       = $this->conn->prepare('INSERT INTO tb_holiday(branch_id, date, created_at ) VALUES (?, ?, ?)');
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
@@ -65,7 +65,7 @@ class holiday_function
      * */
     public function update($params)
     {
-        $stmt = $this->conn->prepare('UPDATE tb_holiday SET updated_at = ?, date = ?, branch_id = ? WHERE holiday_id = ?');
+        $stmt = $this->conn->prepare('UPDATE tb_holiday SET date = ?, updated_at = ?  WHERE branch_id = ?');
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));

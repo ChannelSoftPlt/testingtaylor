@@ -685,7 +685,7 @@ export default {
     },
     getBranchName() {
       const params = new URLSearchParams();
-      params.append("read", "done");
+      params.append("get", "done");
       params.append("company_id", this.company_id);
 
       axios({

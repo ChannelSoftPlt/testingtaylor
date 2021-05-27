@@ -58,8 +58,10 @@
               color="secondary"
               label="Password..."
               prepend-icon="mdi-lock-outline"
-              type="password"
               v-model="password"
+              :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+              :type="showPassword ? 'text' : 'password'"
+             @click:append="showPassword = !showPassword"
             />
             <div class="text-center grey--text body-2 font-weight-light mb-4">
               No account yet? <a href="/pages/register">Register</a> now 
@@ -113,6 +115,7 @@ import axios from "axios";
       alertBox:false,
       errorText:'',
       companyID:'',
+      showPassword: false,
 
     }),
     computed: {
@@ -146,13 +149,10 @@ import axios from "axios";
           console.log(response);
           if (response.data.status == "1") {
              
-             
              this.companyID = response.data.user.company_id;
               console.log(this.companyID);
-
               window.location.href = "/dashboard/?id="+this.companyID;
 
-            
             
           } 
           else {

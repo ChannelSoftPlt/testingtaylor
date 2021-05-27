@@ -47,8 +47,8 @@ class customer_function
     public function getAllCustomer($company_id)
     {   
         $stmt = $this->conn->prepare("SELECT DISTINCT tb_customer.customer_id, tb_customer.name, tb_customer.contact, tb_customer.email, tb_customer.remark
-        FROM tb_customer JOIN tb_booking ON tb_booking.customer_id = tb_customer.customer_id JOIN tb_service ON tb_booking.service_id = tb_service.service_id
-        JOIN tb_branch ON tb_service.branch_id = tb_branch.branch_id WHERE tb_customer.soft_delete = '' AND tb_branch.company_id = $company_id");
+        FROM tb_customer JOIN tb_booking ON tb_booking.customer_id = tb_customer.customer_id JOIN tb_branch_link ON tb_booking.service_id = tb_branch_link.service_id
+        JOIN tb_branch ON tb_branch_link.branch_id = tb_branch.branch_id WHERE tb_customer.soft_delete = '' AND tb_branch.company_id = $company_id");
         
         //error reporting
         if (!$stmt) {
@@ -70,9 +70,9 @@ class customer_function
     public function searchCustomer($company_id,$search_customer)
     {   
         $stmt = $this->conn->prepare("SELECT DISTINCT tb_customer.customer_id, tb_customer.name, tb_customer.contact, tb_customer.email, tb_customer.remark
-            FROM tb_customer JOIN tb_booking ON tb_booking.customer_id = tb_customer.customer_id JOIN tb_service ON tb_booking.service_id = tb_service.service_id
-            JOIN tb_branch ON tb_service.branch_id = tb_branch.branch_id WHERE tb_customer.soft_delete = '' AND tb_branch.company_id = $company_id 
-            AND tb_customer.name LIKE '%".$search_customer."%'");
+        FROM tb_customer JOIN tb_booking ON tb_booking.customer_id = tb_customer.customer_id JOIN tb_branch_link ON tb_booking.service_id = tb_branch_link.service_id
+        JOIN tb_branch ON tb_branch_link.branch_id = tb_branch.branch_id WHERE tb_customer.soft_delete = '' AND tb_branch.company_id = $company_id
+        AND tb_customer.name LIKE '%".$search_customer."%'");
         
         //error reporting
         if (!$stmt) {

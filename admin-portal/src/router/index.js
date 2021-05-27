@@ -85,45 +85,13 @@ export default new Router({
           path: 'components/typography',
           component: () => import('@/views/dashboard/component/Typography')
         },
-        // Forms
+        // dashboard page
         {
-          name: 'Regular Forms',
-          path: 'forms/regular',
-          component: () => import('@/views/dashboard/forms/RegularForms')
-        },
-        {
-          name: 'Extended Forms',
-          path: 'forms/extended',
-          component: () => import('@/views/dashboard/forms/ExtendedForms')
-        },
-        {
-          name: 'Validation Forms',
-          path: 'forms/validation',
-          component: () => import('@/views/dashboard/forms/ValidationForms')
-        },
-        {
-          name: 'Wizard',
+          name: 'Branch',
           path: 'wizard',
           component: () => import('@/views/dashboard/Wizard')
         },
-        // Tables
-        {
-          name: 'Regular Tables',
-          path: 'tables/regular-tables',
-          component: () => import('@/views/dashboard/tables/RegularTables')
-        },
-        {
-          name: 'Extended Tables',
-          path: 'tables/extended-tables',
-          component: () => import('@/views/dashboard/tables/ExtendedTables')
-        },
-        {
-          name: 'Data Tabels',
-          path: 'tables/data-tables',
-          component: () => import('@/views/dashboard/tables/DataTables')
-        },
-        // Maps
-        // Root level
+      
         {
           name: 'Widgets',
           path: 'widgets',
@@ -138,6 +106,11 @@ export default new Router({
           name: 'Calendar',
           path: 'calendar',
           component: () => import('@/views/dashboard/Calendar')
+        },
+        {
+          name: 'Provider',
+          path: 'provider',
+          component: () => import('@/views/dashboard/provider')
         }
       ]
     },

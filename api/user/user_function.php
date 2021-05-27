@@ -23,9 +23,10 @@ class user_function
     /**
      * read function
      * */
-    public function read()
+    public function read($branch_id)
     {
-        $stmt = $this->conn->prepare("SELECT soft_delete, updated_at, created_at, address, salt, password, email, contact, role, name, user_id FROM tb_user WHERE soft_delete = '' ");
+        $stmt = $this->conn->prepare("SELECT soft_delete, updated_at, created_at, address, salt, status, password, email, contact, role, name, user_id 
+        FROM tb_user WHERE soft_delete = '' AND branch_id = $branch_id AND role = 1 ");
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
@@ -62,7 +63,7 @@ class user_function
     {   
         
         $detail = array();
-        $stmt = $this->conn->prepare("SELECT salt, password, email, company_id FROM tb_user WHERE status= 1 and soft_delete = '' AND email ='$email'  ");
+        $stmt = $this->conn->prepare("SELECT salt, password, email, company_id FROM tb_user WHERE status= 1 AND role=0 AND soft_delete = '' AND email ='$email'  ");
         //error reportin
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
@@ -70,13 +71,12 @@ class user_function
         $result = $stmt->execute();
         if ($result) {
       
-            $stmt->bind_result($salt, $password, $email, $company_id);
+            $stmt->bind_result($salt, $epassword, $email, $company_id);
             while ($stmt->fetch()) {
-                $key = $salt;
-                $code = $password;
-                $hash = $this->checkhashSSHA($key, $code);
-
-                if ($code == $hash) {
+                
+                $hash = $this->checkhashSSHA($salt, $password);
+               
+                if ($epassword == $hash) {
                     $detail = array("company_id" =>$company_id);
                 }
             }
@@ -89,6 +89,9 @@ class user_function
                 
             }
         }
+      else{
+          return false;
+      }
     }
 
     /**
@@ -168,33 +171,6 @@ class user_function
         return $this->structure->bindParam($stmt, $params);
     }
 
-    // public function login($email, $password)
-    // {
-    //     $detail = array();
-    //     $stmt = $this->conn->prepare("SELECT salt, password, email, name, role, user_id, contact, address 
-    //     FROM tb_user WHERE status=1  AND email = '".$email."'AND password='".$password."'");
-    //     //error reporting
-    //     if (!$stmt) {
-    //         die('prepare() failed: ' . htmlspecialchars($this->conn->error));
-    //     }
-
-    //     $result = $stmt->execute();
-
-    //     if ($result) {
-    //         //set up bind result
-    //         $meta = $stmt->result_metadata();
-    //         while ($field = $meta->fetch_field()) {
-    //             $params[] = &$row[$field->name];
-    //         }
-    //         $return_arr = $this->structure->bindResult($stmt, $params, $row);
-    //     }
-
-    //     return (sizeof($return_arr) > 0 ? $return_arr : false);
-        
-    // }
-
-
-    
     public function getAdmin($company_id)
     {
         $stmt = $this->conn->prepare("SELECT address, salt, password, email, contact, role, name, user_id, company_id 
@@ -216,6 +192,28 @@ class user_function
 
         return (sizeof($return_arr) > 0 ? $return_arr : false);
     }
+    
+    // public function getAdmin($company_id)
+    // {
+    //     $stmt = $this->conn->prepare("SELECT address, salt, password, email, contact, role, name, user_id, company_id 
+    //                                 FROM tb_user WHERE soft_delete = '' AND role = 0 AND company_id = $company_id");
+    //     //error reporting
+    //     if (!$stmt) {
+    //         die('prepare() failed: ' . htmlspecialchars($this->conn->error));
+    //     }
+    //     $result = $stmt->execute();
+
+    //     if ($result) {
+    //         //set up bind result
+    //         $meta = $stmt->result_metadata();
+    //         while ($field = $meta->fetch_field()) {
+    //             $params[] = &$row[$field->name];
+    //         }
+    //         $return_arr = $this->structure->bindResult($stmt, $params, $row);
+    //     }
+
+    //     return (sizeof($return_arr) > 0 ? $return_arr : false);
+    // }
     
 
     /**
@@ -244,7 +242,19 @@ class user_function
         //bind param
         return $this->structure->bindParam($stmt, $params);
     }
-
+     /**
+     * update branch user
+     * */
+    public function updateBranchUser($params)
+    {
+        $stmt = $this->conn->prepare('UPDATE tb_user SET  email = ?, password = ?, salt = ?, status =? , updated_at = ?  WHERE branch_id = ?');
+        //error reporting
+        if (!$stmt) {
+            die('prepare() failed: ' . htmlspecialchars($this->conn->error));
+        }
+        //bind param
+        return $this->structure->bindParam($stmt, $params);
+    }
 
 
     /**

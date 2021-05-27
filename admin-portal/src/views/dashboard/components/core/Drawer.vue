@@ -116,7 +116,7 @@
         {
           icon: 'mdi-chart-timeline-variant',
           title: 'Provider',
-          to: 'dashboard/charts'
+          to: 'provider'
         },
       ]
     }),

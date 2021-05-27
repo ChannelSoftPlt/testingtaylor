@@ -25,8 +25,9 @@ class service_function
      * */
     public function read($branch_id,$seat)
     {
-        $stmt = $this->conn->prepare("SELECT updated_at, created_at, status, slot, duration, price, description, seat, title, branch_id, service_id
-         FROM tb_service WHERE branch_id = $branch_id AND seat >= $seat AND slot != 0 ORDER BY seat ASC LIMIT 1");
+        $stmt = $this->conn->prepare("SELECT tb_service.* FROM `tb_service` JOIN tb_branch_link ON tb_branch_link.service_id = tb_service.service_id
+         WHERE tb_branch_link.branch_id =  $branch_id AND tb_service.soft_delete='' AND tb_service.seat >= $seat AND tb_service.slot != 0 ORDER BY tb_service.seat ASC LIMIT 1
+        ");
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
@@ -48,8 +49,9 @@ class service_function
 
     public function findMaxPerson($branch_id)
     {
-        $stmt = $this->conn->prepare("SELECT seat, branch_id, service_id
-         FROM tb_service WHERE branch_id = $branch_id AND slot!= 0 ORDER BY seat DESC LIMIT 1");
+        $stmt = $this->conn->prepare("SELECT tb_service.* 
+        FROM tb_service JOIN tb_branch_link ON tb_branch_link.service_id = tb_service.service_id WHERE tb_branch_link.branch_id = $branch_id 
+        AND tb_service.soft_delete='' AND tb_service.slot!= 0 ORDER BY tb_service.seat DESC LIMIT 1");
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
@@ -70,8 +72,8 @@ class service_function
 
     public function findAllService($branch_id)
     {
-        $stmt = $this->conn->prepare("SELECT updated_at, created_at, provider_id, status, slot, duration, price, description, seat, title, branch_id, service_id
-        FROM tb_service WHERE branch_id = $branch_id");
+        $stmt = $this->conn->prepare("SELECT tb_service.*
+        FROM tb_service JOIN tb_branch_link ON tb_service.service_id = tb_branch_link.service_id WHERE tb_branch_link.branch_id = $branch_id AND tb_service.soft_delete='' ");
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));

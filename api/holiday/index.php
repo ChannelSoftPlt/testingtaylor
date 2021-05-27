@@ -22,15 +22,15 @@ if (isset($_POST['read'])&&isset($_POST['branch_id'])) {
  * create
  * */
 else if (isset($_POST['create']) && isset($_POST['date']) && isset($_POST['branch_id'])) {
-    $create = $db->create(array($created_at, $_POST['date'], $_POST['branch_id']));
+    $create = $db->create(array( $_POST['branch_id'],$_POST['date'],$created_at));
     $response['status'] = ($create ? '1' : '2');
     echo json_encode($response);
 }
 /**
  * update
  * */
-else if (isset($_POST['update']) && isset($_POST['date']) && isset($_POST['branch_id']) && isset($_POST['holiday_id'])) {
-    $update = $db->update(array($updated_at, $_POST['date'], $_POST['branch_id'], $_POST['holiday_id']));
+else if (isset($_POST['update']) && isset($_POST['date']) && isset($_POST['branch_id'])) {
+    $update = $db->update(array($_POST['date'],$updated_at, $_POST['branch_id']));
     $response['status'] = ($update ? '1' : '2');
     echo json_encode($response);
 }
