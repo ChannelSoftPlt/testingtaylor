@@ -2,7 +2,6 @@
   <v-container id="calendar" fluid tag="section">
     <v-row>
       <v-col cols="12" md="2">
-      
         <v-row class="ml-3">
           <h2>Service</h2>
         </v-row>
@@ -226,7 +225,7 @@
           <v-col>
             <v-btn
               color="blue darken-1"
-         
+             
               v-if="!selectedService"
             >
               Add
@@ -330,8 +329,7 @@ export default {
     timeout: 2000,
     providerItem: [],
     branchItem: [],
-    addServiceID:'',
-    
+    addServiceID: "",
   }),
   created() {
     const queryString = window.location.search;
@@ -349,25 +347,25 @@ export default {
     serviceStatus() {
       this.changeStatusFormat();
     },
-    selectedProvider(){
+    selectedProvider() {
       // this.assignProviderAndBranchToService();
     },
   },
   computed: {
-    getAllProviderID(){
-      var array =[];
+    getAllProviderID() {
+      var array = [];
       for (let i = 0; i < this.providerItem.length; i++) {
         array.push(this.providerItem[i].provider_id);
       }
-      return array
+      return array;
     },
 
-    getAllBranchID(){
-      var array=[]; 
+    getAllBranchID() {
+      var array = [];
       for (let i = 0; i < this.branchItem.length; i++) {
-           array.push(this.branchItem[i].branch_id);
+        array.push(this.branchItem[i].branch_id);
       }
-      return array
+      return array;
     },
     selectAllProvider() {
       return this.selectedProvider.length === this.getAllProviderID.length;
@@ -395,7 +393,6 @@ export default {
 
   methods: {
     toggleForProvider() {
-
       this.$nextTick(() => {
         if (this.selectAllProvider) {
           this.selectedProvider = [];
@@ -507,7 +504,8 @@ export default {
           console.log(response);
           if (response.data.status == "1") {
             this.addServiceID = response.data.service;
-            console.log("service add successfully")
+            console.log("service add successfully");
+            this.assignProviderToService();
           } else {
             console.log("add service fail");
           }
@@ -517,33 +515,31 @@ export default {
         });
     },
 
-    assignProviderToService(){
+    assignProviderToService() {
       for (let i = 0; i < this.selectedProvider.length; i++) {
-          const params = new URLSearchParams();
-          params.append("create", "done");
-          params.append("provider_id", this.selectedProvider[i]);
-          params.append("service_id", this.addServiceID);
+        const params = new URLSearchParams();
+        params.append("create", "done");
+        params.append("provider_id", this.selectedProvider[i]);
+        params.append("service_id", this.addServiceID);
 
-          axios({
-            method: "post",
-            url: this.domain + "/tb_link/index.php",
-            data: params,
+        axios({
+          method: "post",
+          url: this.domain + "/tb_link/index.php",
+          data: params,
+        })
+          .then((response) => {
+            console.log(response);
+            if (response.data.status == "1") {
+              console.log("assign provider successfully");
+            } else {
+              console.log("assign provider fail");
+            }
           })
-            .then((response) => {
-              console.log(response);
-              if (response.data.status == "1") {
-                this.addServiceID = response.data.service;
-                console.log("service add successfully")
-              } else {
-                console.log("add service fail");
-              }
-            })
-            .catch((error) => {
-              console.log(error);
-            });   
+          .catch((error) => {
+            console.log(error);
+          });
       }
     },
-
   },
 };
 </script>

@@ -1,6 +1,6 @@
 <?php
 include '../structure/structure.php';
-class tb_link_function
+class tb_branch_link_function
 {
     private $conn;
     private $structure;
@@ -25,7 +25,7 @@ class tb_link_function
      * */
     public function read()
     {
-        $stmt = $this->conn->prepare("SELECT soft_delete, updated_at, created_at, service_id, provider_id, link_id FROM tb_link WHERE soft_delete = '' ");
+        $stmt = $this->conn->prepare("SELECT soft_delete, updated_at, created_at, branch_id, service_id, branch_link_id FROM tb_branch_link WHERE soft_delete = '' ");
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
@@ -50,7 +50,7 @@ class tb_link_function
     public function create($params)
     {
         $return_arr = array();
-        $stmt       = $this->conn->prepare('INSERT INTO tb_link(provider_id, service_id, created_at ) VALUES (?, ?, ?)');
+        $stmt       = $this->conn->prepare('INSERT INTO tb_branch_link(created_at, branch_id, service_id) VALUES (?, ?, ?)');
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
@@ -64,7 +64,7 @@ class tb_link_function
      * */
     public function update($params)
     {
-        $stmt = $this->conn->prepare('UPDATE tb_link SET updated_at = ?, service_id = ?, provider_id = ? WHERE link_id = ?');
+        $stmt = $this->conn->prepare('UPDATE tb_branch_link SET updated_at = ?, branch_id = ?, service_id = ? WHERE branch_link_id = ?');
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
@@ -78,7 +78,7 @@ class tb_link_function
      * */
     public function delete($params)
     {
-        $stmt = $this->conn->prepare('UPDATE tb_link SET soft_delete = ? WHERE link_id = ?');
+        $stmt = $this->conn->prepare('UPDATE tb_branch_link SET soft_delete = ? WHERE branch_link_id = ?');
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
