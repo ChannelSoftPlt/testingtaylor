@@ -45,6 +45,29 @@ class service_function
 
         return (sizeof($return_arr) > 0 ? $return_arr : false);
     }
+    
+    public function getService($company_id)
+    {
+        $stmt = $this->conn->prepare("SELECT tb_service.* FROM tb_service JOIN tb_branch_link ON tb_branch_link.service_id = tb_service.service_id JOIN 
+                                    tb_branch ON tb_branch.branch_id = tb_branch_link.branch_id WHERE tb_service.soft_delete=''
+                                    AND tb_branch.company_id = $company_id  ORDER BY tb_service.service_id ASC");
+        //error reporting
+        if (!$stmt) {
+            die('prepare() failed: ' . htmlspecialchars($this->conn->error));
+        }
+        $result = $stmt->execute();
+
+        if ($result) {
+            //set up bind result
+            $meta = $stmt->result_metadata();
+            while ($field = $meta->fetch_field()) {
+                $params[] = &$row[$field->name];
+            }
+            $return_arr = $this->structure->bindResult($stmt, $params, $row);
+        }
+
+        return (sizeof($return_arr) > 0 ? $return_arr : false);
+    }
 
 
     public function findMaxPerson($branch_id)
@@ -119,13 +142,18 @@ class service_function
     public function create($params)
     {
         $return_arr = array();
-        $stmt       = $this->conn->prepare('INSERT INTO tb_service(created_at, status, slot, duration, price, description, title, branch_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+        $stmt       = $this->conn->prepare('INSERT INTO tb_service(title, description, seat, duration, slot, status, color, created_at ) 
+                                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
         }
+
         //bind param
-        return $this->structure->bindParam($stmt, $params);
+        $result  = $this->structure->bindParam($stmt, $params);
+        $last_id = $stmt->insert_id;
+        $stmt->close();
+        return ($result ? $last_id : false);
     }
 
     /**

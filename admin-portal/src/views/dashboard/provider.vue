@@ -2,8 +2,7 @@
   <v-container id="provider" fluid>
     <v-row>
       <v-col cols="12" md="2">
-        <!-- {{providerBranch.branch_id}} -->
- 
+
         <v-row class="ml-3">
           <h2>Provider</h2>
         </v-row>
@@ -131,7 +130,7 @@
                   attach
                   dense
                   item-text="name"
-                  return-object
+                  item-value="branch_id"
                 ></v-select>
               </v-col>
             </v-row>
@@ -193,10 +192,6 @@
                       ></v-time-picker>
                     </v-menu>
                   </v-col>
-                  <!-- <v-col cols="2">
-                   <v-subheader>to</v-subheader>
-                  </v-col> -->
-
                   <v-col cols="6">
                     <v-menu
                       ref="menu2"
@@ -268,10 +263,6 @@
                       ></v-time-picker>
                     </v-menu>
                   </v-col>
-                  <!-- <v-col cols="2">
-                   <v-subheader>to</v-subheader>
-                  </v-col> -->
-
                   <v-col cols="6">
                     <v-menu
                       ref="menu4"
@@ -346,7 +337,7 @@
             </v-btn>
             <v-btn
               color="success"
-              @click="updateBranch()"
+              @click="updateProvider()"
               v-if="selectedProvider"
             >
               Save
@@ -364,7 +355,7 @@
 
                 <v-card-text>
                   <span class="font-weight-medium"
-                    >The selected branch and it's information will be
+                    >The selected provider and it's information will be
                     delete</span
                   >
                 </v-card-text>
@@ -379,7 +370,7 @@
                     cancel
                   </v-btn>
 
-                  <v-btn color="green darken-1" text @click="deleteBranch()">
+                  <v-btn color="green darken-1" text @click="deleteProvider()">
                     Agree
                   </v-btn>
                   <v-spacer></v-spacer>
@@ -429,7 +420,7 @@ export default {
     providerStartBreakTime: "",
     providerEndBreakTime: "",
     providerSlot: "",
-    providerStatus: "",
+    providerStatus: '',
     startWorkingMenu: null,
     endWorkingMenu: null,
     startBreakMenu: null,
@@ -452,6 +443,7 @@ export default {
     text: "",
     confirmDeleteDialog: false,
     branchItem: [],
+    providerWorking:"",
   }),
   created() {
     const queryString = window.location.search;
@@ -468,36 +460,39 @@ export default {
     providerStatus() {
       this.changeStatusFormat();
     },
+    selectedProvider(){
+      this.getProviderDetail();
+    }
   },
   computed: {
-    // workingDayCheck() {
-    //   var value = [];
+    workingDayCheck() {
+      var value = [];
 
-    //   if (this.branchWorkingDay[0] == 0) {
-    //     value.push("Sunday");
-    //   }
-    //   if (this.branchWorkingDay[1] == 0) {
-    //     value.push("Monday");
-    //   }
-    //   if (this.branchWorkingDay[2] == 0) {
-    //     value.push("Tuesday");
-    //   }
-    //   if (this.branchWorkingDay[3] == 0) {
-    //     value.push("Wednesday");
-    //   }
-    //   if (this.branchWorkingDay[4] == 0) {
-    //     value.push("Thursday");
-    //   }
-    //   if (this.branchWorkingDay[5] == 0) {
-    //     value.push("Friday");
-    //   }
-    //   if (this.branchWorkingDay[6] == 0) {
-    //     value.push("Saturday");
-    //   }
+      if (this.providerWorking[0] == 0) {
+        value.push("Sunday");
+      }
+      if (this.providerWorking[1] == 0) {
+        value.push("Monday");
+      }
+      if (this.providerWorking[2] == 0) {
+        value.push("Tuesday");
+      }
+      if (this.providerWorking[3] == 0) {
+        value.push("Wednesday");
+      }
+      if (this.providerWorking[4] == 0) {
+        value.push("Thursday");
+      }
+      if (this.providerWorking[5] == 0) {
+        value.push("Friday");
+      }
+      if (this.providerWorking[6] == 0) {
+        value.push("Saturday");
+      }
 
-    //   return value;
-    // },
-     realWorkingDay() {
+      return value;
+    },
+    realWorkingDay() {
       var day = [0, 0, 0, 0, 0, 0, 0];
 
       if (!this.providerWorkingDay.includes("Sunday")) {
@@ -524,7 +519,7 @@ export default {
 
       return day;
     },
-    realWorkingTime(){
+    realWorkingTime() {
       var time = [];
 
       time.push('"' + this.providerStartWorkingTime + '"');
@@ -532,23 +527,22 @@ export default {
 
       return time;
     },
-    realBreakTime(){
+    realBreakTime() {
       var time = [];
 
       time.push('"' + this.providerStartBreakTime + '"');
       time.push('"' + this.providerEndBreakTime + '"');
 
       return time;
-    }
-
+    },
   },
 
   methods: {
     changeStatusFormat() {
       if (this.providerStatus == true) {
-        this.providerStatus = 0;
-      } else {
         this.providerStatus = 1;
+      } else {
+        this.providerStatus = 0;
       }
     },
     getCompanyBranch() {
@@ -595,21 +589,60 @@ export default {
           console.log(error);
         });
     },
+
+    getProviderDetail() {
+      this.providerName = "";
+      this.providerRole = "";
+      this.providerPhone = "";
+      this.providerEmail = "";
+      this.providerBranch = "";
+      this.providerWorkingTime = "";
+      this.providerStartWorkingTime = "";
+      this.providerEndWorkingTime = "";
+      this.providerWorking = "";
+      this.providerWorkingDay ="";
+      this.providerSlot='';
+      this.providerStatus = 0;
+      this.providerBreakTime = "";
+      this.providerStartBreakTime = '';
+      this.providerEndBreakTime = '';
+ 
+      for (var i = 0; i < this.providerItem.length; i++) {
+        if (this.providerItem[i].provider_id == this.selectedProvider) {
+          this.providerName  = this.providerItem[i].name;
+          this.providerRole = this.providerItem[i].staff_description;
+          this.providerPhone = this.providerItem[i].phone;
+          this.providerEmail = this.providerItem[i].email;
+          this.providerBranch = this.providerItem[i].branch_id;
+          this.providerWorkingTime = JSON.parse(this.providerItem[i].work_time);
+          this.providerStartWorkingTime = this.providerWorkingTime[0];
+          this.providerEndWorkingTime = this.providerWorkingTime[1];
+          this.providerWorking = JSON.parse(this.providerItem[i].work_day);
+          this.providerWorkingDay = this.workingDayCheck;
+          this.providerSlot = this.providerItem[i].slot;
+          this.providerStatus = this.providerItem[i].status;
+          this.providerBreakTime = JSON.parse(this.providerItem[i].break_time);
+          this.providerStartBreakTime = this.providerBreakTime[0];
+          this.providerEndBreakTime = this.providerBreakTime[1];
+        }
+      }
+     
+      
+    },
     addProvider() {
       const params = new URLSearchParams();
       params.append("create", "done");
-      params.append("branch_id", this.providerBranch.branch_id);
+      params.append("branch_id", this.providerBranch);
       params.append("name", this.providerName);
       params.append("staff_description", this.providerRole);
       params.append("phone", this.providerPhone);
       params.append("email", this.providerEmail);
-      params.append("work_day", this.realWorkingDay);
-      params.append("work_time", this.realWorkingTime);
+      params.append("work_day", "[" + this.realWorkingDay + "]");
+      params.append("work_time", "[" + this.realWorkingTime + "]");
       params.append("slot", this.providerSlot);
       params.append("status", this.providerStatus);
-      params.append("break_time", this.realBreakTime);
-      
-    
+      params.append("break_time", "[" + this.realBreakTime + "]");
+
       axios({
         method: "post",
         url: this.domain + "/provider/index.php",
@@ -618,9 +651,75 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.data.status == "1") {
-            console.log("add provider success");
+            
+            this.snackbar = true;
+            this.text = "Provider add successfully";
+            this.getProviderByCompany();
           } else {
-            console.log("no provider find");
+              this.snackbar = true;
+              this.text = "Add Provider failed! Something went wrong";
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    updateProvider(){
+        const params = new URLSearchParams();
+        params.append("update", "done");
+        params.append("provider_id", this.selectedProvider);
+        params.append("branch_id", this.providerBranch);
+        params.append("name", this.providerName);
+        params.append("staff_description", this.providerRole);
+        params.append("phone", this.providerPhone);
+        params.append("email", this.providerEmail);
+        params.append("work_day", "[" + this.realWorkingDay + "]");
+        params.append("work_time", "[" + this.realWorkingTime + "]");
+        params.append("slot", this.providerSlot);
+        params.append("status", this.providerStatus);
+        params.append("break_time", "[" + this.realBreakTime + "]");
+
+        axios({
+          method: "post",
+          url: this.domain + "/provider/index.php",
+          data: params,
+        })
+          .then((response) => {
+            console.log(response);
+            if (response.data.status == "1") {
+              
+              this.snackbar = true;
+              this.text = "Provider Update successfully";
+              this.getProviderByCompany();
+            } else {
+              this.snackbar = true;
+              this.text = "Update failed! Something went wrong";
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    },
+    deleteProvider() {
+      const params = new URLSearchParams();
+      params.append("delete", "done");
+      params.append("provider_id", this.selectedProvider);
+      axios({
+        method: "post",
+        url: this.domain + "/provider/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+            this.confirmDeleteDialog = false;
+            this.snackbar = true;
+            this.text = "Provider delete successfully";
+            this.getProviderByCompany();
+          } else {
+              this.confirmDeleteDialog = false;
+              this.snackbar = true;
+              this.text = "Delete Provider failed! Something went wrong";
           }
         })
         .catch((error) => {

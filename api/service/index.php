@@ -40,12 +40,21 @@ else if (isset($_POST['getSelectedService']) && isset($_POST['service_id'])) {
     echo json_encode($response);
 
 }
+else if (isset($_POST['getService']) && isset($_POST['company_id'])) {
+    $read     = $db->getService($_POST['company_id']);
+    $response['status']   = ($read ? '1' : '2');
+    $response['service'] = $read;
+    echo json_encode($response);
+
+}
 /**
  * create
  * */
-else if (isset($_POST['create']) && isset($_POST['status']) && isset($_POST['slot']) && isset($_POST['duration']) && isset($_POST['price']) && isset($_POST['description']) && isset($_POST['title']) && isset($_POST['branch_id'])) {
-    $create = $db->create(array($created_at, $_POST['status'], $_POST['slot'], $_POST['duration'], $_POST['price'], $_POST['description'], $_POST['title'], $_POST['branch_id']));
+else if (isset($_POST['create']) && isset($_POST['color']) && isset($_POST['status']) && isset($_POST['slot']) && isset($_POST['duration']) && isset($_POST['seat'])
+         && isset($_POST['description']) && isset($_POST['title'])) {
+    $create = $db->create(array($_POST['title'], $_POST['description'], $_POST['seat'], $_POST['duration'], $_POST['slot'], $_POST['status'], $_POST['color'], $created_at));
     $response['status'] = ($create ? '1' : '2');
+    $response['service'] = $create;
     echo json_encode($response);
 }
 /**

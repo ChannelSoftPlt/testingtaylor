@@ -49,7 +49,8 @@ class provider_function
     {
         $stmt = $this->conn->prepare("SELECT tb_provider.break_time, tb_provider.slot, tb_provider.work_time, tb_provider.work_day, tb_provider.email,
          tb_provider.phone, tb_provider.staff_description, tb_provider.name, tb_provider.provider_id FROM
-          tb_provider JOIN tb_link ON tb_provider.provider_id = tb_link.provider_id WHERE tb_link.service_id = '" . $service_id . "' ORDER BY tb_provider.provider_id ");
+          tb_provider JOIN tb_link ON tb_provider.provider_id = tb_link.provider_id WHERE tb_link.service_id = '" . $service_id . "' AND tb_provider.status = 1
+           ORDER BY tb_provider.provider_id ");
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
@@ -91,8 +92,9 @@ class provider_function
     public function getProviderByCompany($company_id)
     {
         $stmt = $this->conn->prepare("SELECT tb_provider.break_time, tb_provider.slot, tb_provider.work_time, tb_provider.work_day, tb_provider.email,
-         tb_provider.phone, tb_provider.staff_description, tb_provider.name, tb_provider.provider_id, tb_provider.branch_id FROM
-          tb_provider JOIN tb_branch ON tb_provider.branch_id = tb_branch.branch_id WHERE tb_branch.company_id = $company_id  ORDER BY tb_provider.provider_id ");
+         tb_provider.phone, tb_provider.status, tb_provider.staff_description, tb_provider.name, tb_provider.provider_id, tb_provider.branch_id FROM
+         tb_provider JOIN tb_branch ON tb_provider.branch_id = tb_branch.branch_id WHERE tb_branch.company_id = $company_id AND tb_provider.soft_delete ='' 
+         ORDER BY tb_provider.provider_id ");
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
@@ -132,7 +134,8 @@ class provider_function
      * */
     public function update($params)
     {
-        $stmt = $this->conn->prepare('UPDATE tb_provider SET break_time = ?, slot = ?, work_time = ?, work_day = ?, email = ?, phone = ?, staff_description = ?, name = ? WHERE provider_id = ?');
+        $stmt = $this->conn->prepare('UPDATE tb_provider SET branch_id = ?, name = ?, staff_description = ?, phone = ?, 
+                                        email = ?, work_day = ?, work_time = ?, slot = ? , status = ?, break_time = ? , updated_at = ?  WHERE provider_id = ?');
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));
@@ -146,7 +149,7 @@ class provider_function
      * */
     public function delete($params)
     {
-        $stmt = $this->conn->prepare('UPDATE tb_provider SET  WHERE provider_id = ?');
+        $stmt = $this->conn->prepare('UPDATE tb_provider SET soft_delete = ? WHERE provider_id = ?');
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));

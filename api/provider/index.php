@@ -53,8 +53,11 @@ else if (isset($_POST['create']) && isset($_POST['break_time']) && isset($_POST[
 /**
  * update
  * */
-else if (isset($_POST['update']) && isset($_POST['break_time']) && isset($_POST['slot']) && isset($_POST['work_time']) && isset($_POST['work_day']) && isset($_POST['email']) && isset($_POST['phone']) && isset($_POST['staff_description']) && isset($_POST['name']) && isset($_POST['provider_id'])) {
-    $update = $db->update(array($updated_at, $_POST['break_time'], $_POST['slot'], $_POST['work_time'], $_POST['work_day'], $_POST['email'], $_POST['phone'], $_POST['staff_description'], $_POST['name'], $_POST['provider_id']));
+else if (isset($_POST['update']) && isset($_POST['break_time']) && isset($_POST['status']) && isset($_POST['slot']) && isset($_POST['work_time'])
+        && isset($_POST['work_day']) && isset($_POST['email']) && isset($_POST['phone']) && isset($_POST['staff_description']) 
+        && isset($_POST['name']) && isset($_POST['branch_id']) && isset($_POST['provider_id'])) {
+    $update = $db->update(array($_POST['branch_id'], $_POST['name'], $_POST['staff_description'], $_POST['phone'], $_POST['email'], $_POST['work_day'],
+                              $_POST['work_time'], $_POST['slot'], $_POST['status'], $_POST['break_time'], $updated_at, $_POST['provider_id']));
     $response['status'] = ($update ? '1' : '2');
     echo json_encode($response);
 }

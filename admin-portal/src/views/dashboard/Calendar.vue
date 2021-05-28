@@ -2,39 +2,35 @@
   <v-container id="calendar" fluid tag="section">
     <v-row>
       <v-col cols="12" md="2">
+      
         <v-row class="ml-3">
           <h2>Service</h2>
         </v-row>
-        <v-card height="800px">
+        <v-card height="1000px">
           <v-row class="mx-1 mr-2">
             <v-col cols="12">
               <v-text-field
-                v-model="searchBranch"
+                v-model="searchService"
                 label="Search..."
               ></v-text-field>
             </v-col>
-            <!-- <v-col cols="3">
-        <v-btn outlined  color="grey" small>
-        <v-icon>mdi-plus</v-icon>
-        </v-btn>   
-      </v-col> -->
           </v-row>
           <v-list two-line class="overflow">
-            <v-list-item-group v-model="selected" active-class="pink--text">
+            <v-list-item-group
+              v-model="selectedService"
+              active-class="pink--text"
+            >
               <template>
                 <v-list-item
-                  v-for="(item, index) in branchItem"
+                  v-for="(item, index) in serviceItem"
                   :key="index"
-                  :value="item.branch_id"
+                  :value="item.service_id"
                 >
                   <template>
-                    <!-- <v-list-item-avatar>
-                      <v-avatar color="#2196F3" size="56" class="white--text">
-                        {{ item.name[0] }}
-                      </v-avatar>
-                    </v-list-item-avatar> -->
                     <v-list-item-content>
-                      <v-list-item-title v-text="item.name"></v-list-item-title>
+                      <v-list-item-title
+                        v-text="item.title"
+                      ></v-list-item-title>
                     </v-list-item-content>
                   </template>
                 </v-list-item>
@@ -59,7 +55,7 @@
               </v-col>
               <v-col cols="12" md="8" class="px-7">
                 <v-text-field
-                  v-model="branchName"
+                  v-model="serviceName"
                   placeholder="e.g Hair Wash"
                   clearable
                 ></v-text-field>
@@ -74,7 +70,7 @@
               </v-col>
               <v-col cols="12" md="8" class="px-7">
                 <v-textarea
-                  v-model="branchAddress"
+                  v-model="serviceDescription"
                   placeholder="e.g Our hair wash is using the best shampoo and high professional technology"
                 ></v-textarea>
               </v-col>
@@ -87,7 +83,7 @@
               </v-col>
               <v-col cols="12" md="2" class="px-7">
                 <v-text-field
-                  v-model="branchGap"
+                  v-model="serviceSeat"
                   suffix="Person"
                 ></v-text-field>
               </v-col>
@@ -101,7 +97,10 @@
                 >
               </v-col>
               <v-col cols="12" md="2" class="px-7">
-                <v-text-field v-model="branchGap" suffix="min"></v-text-field>
+                <v-text-field
+                  v-model="serviceDuration"
+                  suffix="min"
+                ></v-text-field>
               </v-col>
             </v-row>
 
@@ -114,11 +113,14 @@
                 </v-subheader>
               </v-col>
               <v-col cols="12" md="2" class="px-7">
-                <v-text-field v-model="branchGap" suffix="Times"></v-text-field>
+                <v-text-field
+                  v-model="serviceSlot"
+                  suffix="Times"
+                ></v-text-field>
               </v-col>
             </v-row>
 
-            <!-- <v-row>
+            <v-row>
               <v-col cols="12" md="4">
                 <span class="ml-4">Provider</span>
                 <v-subheader
@@ -126,16 +128,23 @@
                 >
               </v-col>
               <v-col cols="12" md="7" class="px-7">
-                <v-select v-model="selectedFruits" :items="fruits" multiple chips>
+                <v-select
+                  v-model="selectedProvider"
+                  :items="providerItem"
+                  item-text="name"
+                  item-value="provider_id"
+                  multiple
+                  chips
+                >
                   <template v-slot:prepend-item>
-                    <v-list-item ripple @click="toggle">
+                    <v-list-item ripple @click="toggleForProvider">
                       <v-list-item-action>
                         <v-icon
                           :color="
-                            selectedFruits.length > 0 ? 'indigo darken-4' : ''
+                            selectedProvider.length > 0 ? 'indigo darken-4' : ''
                           "
                         >
-                          {{ icon }}
+                          {{ iconForProvider }}
                         </v-icon>
                       </v-list-item-action>
                       <v-list-item-content>
@@ -146,7 +155,44 @@
                   </template>
                 </v-select>
               </v-col>
-            </v-row> -->
+            </v-row>
+            <v-row>
+              <v-col cols="12" md="4">
+                <span class="ml-4">Branch</span>
+                <v-subheader
+                  >Branch that provide this service to customer</v-subheader
+                >
+              </v-col>
+              <v-col cols="12" md="7" class="px-7">
+                <v-select
+                  v-model="selectedBranch"
+                  :items="branchItem"
+                  item-text="name"
+                  item-value="branch_id"
+                  multiple
+                  chips
+                >
+                  <template v-slot:prepend-item>
+                    <v-list-item ripple @click="toggleForBranch">
+                      <v-list-item-action>
+                        <v-icon
+                          :color="
+                            selectedBranch.length > 0 ? 'indigo darken-4' : ''
+                          "
+                        >
+                          {{ iconForBranch }}
+                        </v-icon>
+                      </v-list-item-action>
+                      <v-list-item-content>
+                        <v-list-item-title> Select All </v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-divider class="mt-2"></v-divider>
+                  </template>
+                </v-select>
+              </v-col>
+            </v-row>
+
             <v-row>
               <v-col cols="12" md="4">
                 <span class="ml-4">status</span>
@@ -155,19 +201,22 @@
                 >
               </v-col>
               <v-col cols="12" md="1" class="px-7">
-                <v-switch v-model="branchRedirect" ></v-switch>
+                <v-switch v-model="serviceStatus"></v-switch>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" md="4">
                 <span class="ml-4">Color</span>
                 <v-subheader
-                  >This color set will show on the calendar  
+                  >This color set will show on the calendar
                 </v-subheader>
               </v-col>
               <v-col cols="12" md="1" class="px-7">
-                <v-swatches v-model="color" swatches="text-advanced"></v-swatches>
-
+                <v-swatches
+                  v-model="serviceColor"
+                  show-fallback
+                  swatches="text-advanced"
+                ></v-swatches>
               </v-col>
             </v-row>
           </v-col>
@@ -175,11 +224,25 @@
 
         <v-row class="text-center mr-n7">
           <v-col>
-            <v-btn color="blue darken-1" @click="addBranchToCompany()">
+            <v-btn
+              color="blue darken-1"
+         
+              v-if="!selectedService"
+            >
               Add
             </v-btn>
-            <v-btn color="success" @click="updateBranch()"> Save </v-btn>
-            <v-btn color="error" @click.stop="confirmDeleteDialog = true">
+            <v-btn
+              color="success"
+              @click="updateBranch()"
+              v-if="selectedService"
+            >
+              Save
+            </v-btn>
+            <v-btn
+              color="error"
+              @click.stop="confirmDeleteDialog = true"
+              v-if="selectedService"
+            >
               Delete
             </v-btn>
             <v-dialog v-model="confirmDeleteDialog" max-width="290">
@@ -234,80 +297,255 @@
 </template>
 
 <script>
-// Components
-import VSwatches from 'vue-swatches'
-import 'vue-swatches/dist/vue-swatches.css'
+import { BASEURL } from "@/api/baseurl";
+import axios from "axios";
+import VSwatches from "vue-swatches";
+import "vue-swatches/dist/vue-swatches.css";
 
 export default {
   name: "DashboardCalendar",
 
   components: {
-     VSwatches 
+    VSwatches,
   },
 
   data: () => ({
-    fruits: [
-        'Apples',
-        'Apricots',
-        'Avocado',
-        'Bananas',
-        'Blueberries',
-        'Blackberries',
-        'Boysenberries',  
-      ],
-      selectedFruits: [],
-      color: '#1CA085',
-  }),
-  created(){
+    domain: BASEURL,
+    company_id: "",
+    serviceItem: "",
+    searchService: "",
+    selectedService: "",
+    serviceName: "",
+    serviceDescription: "",
+    serviceSeat: 0,
+    serviceDuration: "",
+    serviceSlot: "",
+    selectedProvider: "",
+    selectedBranch: "",
+    serviceStatus: "",
+    serviceColor: "",
+    snackbar: false,
+    confirmDeleteDialog: false,
+    text: "",
+    timeout: 2000,
+    providerItem: [],
+    branchItem: [],
+    addServiceID:'',
     
+  }),
+  created() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
 
-
-  },
-  watch:{
-
-    branchRedirect(){
-      this.changeRedirectFormat();
-  
-
+    if (urlParams.has("id")) {
+      const id = urlParams.get("id");
+      this.company_id = id;
+      this.getServiceByCompany();
+      this.getCompanyBranch();
+      this.getProviderByCompany();
     }
-
+  },
+  watch: {
+    serviceStatus() {
+      this.changeStatusFormat();
+    },
+    selectedProvider(){
+      // this.assignProviderAndBranchToService();
+    },
   },
   computed: {
-      likesAllFruit () {
-        return this.selectedFruits.length === this.fruits.length
-      },
-      likesSomeFruit () {
-        return this.selectedFruits.length > 0 && !this.likesAllFruit
-      },
-      icon () {
-        if (this.likesAllFruit) return 'mdi-close-box'
-        if (this.likesSomeFruit) return 'mdi-minus-box'
-        return 'mdi-checkbox-blank-outline'
-      },
+    getAllProviderID(){
+      var array =[];
+      for (let i = 0; i < this.providerItem.length; i++) {
+        array.push(this.providerItem[i].provider_id);
+      }
+      return array
     },
 
-    methods: {
-      toggle () {
-        this.$nextTick(() => {
-          if (this.likesAllFruit) {
-            this.selectedFruits = []
+    getAllBranchID(){
+      var array=[]; 
+      for (let i = 0; i < this.branchItem.length; i++) {
+           array.push(this.branchItem[i].branch_id);
+      }
+      return array
+    },
+    selectAllProvider() {
+      return this.selectedProvider.length === this.getAllProviderID.length;
+    },
+    selectSomeProvider() {
+      return this.selectedProvider.length > 0 && !this.selectAllProvider;
+    },
+    iconForProvider() {
+      if (this.selectAllProvider) return "mdi-close-box";
+      if (this.selectSomeProvider) return "mdi-minus-box";
+      return "mdi-checkbox-blank-outline";
+    },
+    selectAllBranch() {
+      return this.selectedBranch.length === this.getAllBranchID.length;
+    },
+    selectSomeBranch() {
+      return this.selectedBranch.length > 0 && !this.selectAllBranch;
+    },
+    iconForBranch() {
+      if (this.selectAllBranch) return "mdi-close-box";
+      if (this.selectSomeBranch) return "mdi-minus-box";
+      return "mdi-checkbox-blank-outline";
+    },
+  },
+
+  methods: {
+    toggleForProvider() {
+
+      this.$nextTick(() => {
+        if (this.selectAllProvider) {
+          this.selectedProvider = [];
+        } else {
+          this.selectedProvider = this.getAllProviderID.slice();
+        }
+      });
+    },
+    toggleForBranch() {
+      this.$nextTick(() => {
+        if (this.selectAllBranch) {
+          this.selectedBranch = [];
+        } else {
+          this.selectedBranch = this.getAllBranchID.slice();
+        }
+      });
+    },
+    changeStatusFormat() {
+      if (this.serviceStatus == true) {
+        this.serviceStatus = 1;
+      } else {
+        this.serviceStatus = 0;
+      }
+    },
+    getCompanyBranch() {
+      const params = new URLSearchParams();
+      params.append("read", "done");
+      params.append("company_id", this.company_id);
+
+      axios({
+        method: "post",
+        url: this.domain + "/branch/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+            this.branchItem = response.data.branch;
           } else {
-            this.selectedFruits = this.fruits.slice()
+            console.log("no branch find");
           }
         })
-      },
-      changeRedirectFormat(){
-      if(this.branchRedirect==true){
-        this.branchRedirect=1;
-      }
-      else{
-        this.branchRedirect=0;
-      }
-    },
+        .catch((error) => {
+          console.log(error);
+        });
     },
 
+    getProviderByCompany() {
+      const params = new URLSearchParams();
+      params.append("getProviderByCompany", "done");
+      params.append("company_id", this.company_id);
 
-}
+      axios({
+        method: "post",
+        url: this.domain + "/provider/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+            this.providerItem = response.data.provider;
+          } else {
+            console.log("no provider find");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getServiceByCompany() {
+      const params = new URLSearchParams();
+      params.append("getService", "done");
+      params.append("company_id", this.company_id);
+
+      axios({
+        method: "post",
+        url: this.domain + "/service/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+            this.serviceItem = response.data.service;
+          } else {
+            console.log("no provider find");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    addService() {
+      const params = new URLSearchParams();
+      params.append("create", "done");
+      params.append("title", this.serviceName);
+      params.append("description", this.serviceDescription);
+      params.append("seat", this.serviceSeat);
+      params.append("duration", this.serviceDuration);
+      params.append("slot", this.serviceSlot);
+      params.append("status", this.serviceStatus);
+      params.append("color", this.serviceColor);
+
+      axios({
+        method: "post",
+        url: this.domain + "/service/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+            this.addServiceID = response.data.service;
+            console.log("service add successfully")
+          } else {
+            console.log("add service fail");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    assignProviderToService(){
+      for (let i = 0; i < this.selectedProvider.length; i++) {
+          const params = new URLSearchParams();
+          params.append("create", "done");
+          params.append("provider_id", this.selectedProvider[i]);
+          params.append("service_id", this.addServiceID);
+
+          axios({
+            method: "post",
+            url: this.domain + "/tb_link/index.php",
+            data: params,
+          })
+            .then((response) => {
+              console.log(response);
+              if (response.data.status == "1") {
+                this.addServiceID = response.data.service;
+                console.log("service add successfully")
+              } else {
+                console.log("add service fail");
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            });   
+      }
+    },
+
+  },
+};
 </script>
 
 <style lang="sass">
