@@ -50,7 +50,7 @@ class tb_branch_link_function
     public function create($params)
     {
         $return_arr = array();
-        $stmt       = $this->conn->prepare('INSERT INTO tb_branch_link(created_at, branch_id, service_id) VALUES (?, ?, ?)');
+        $stmt       = $this->conn->prepare('INSERT INTO tb_branch_link(service_id, branch_id, created_at) VALUES (?, ?, ?)');
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));

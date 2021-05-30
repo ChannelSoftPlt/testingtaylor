@@ -22,7 +22,7 @@ if (isset($_POST['read'])) {
  * create
  * */
 else if (isset($_POST['create']) && isset($_POST['branch_id']) && isset($_POST['service_id'])) {
-    $create = $db->create(array($created_at, $_POST['branch_id'], $_POST['service_id']));
+    $create = $db->create(array($_POST['service_id'], $_POST['branch_id'], $created_at));
     $response['status'] = ($create ? '1' : '2');
     echo json_encode($response);
 }

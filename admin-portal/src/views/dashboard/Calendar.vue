@@ -225,7 +225,7 @@
           <v-col>
             <v-btn
               color="blue darken-1"
-             
+              @click="addService()"
               v-if="!selectedService"
             >
               Add
@@ -506,6 +506,7 @@ export default {
             this.addServiceID = response.data.service;
             console.log("service add successfully");
             this.assignProviderToService();
+            this.assignBranchToService();
           } else {
             console.log("add service fail");
           }
@@ -533,6 +534,32 @@ export default {
               console.log("assign provider successfully");
             } else {
               console.log("assign provider fail");
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    },
+
+    assignBranchToService() {
+      for (let i = 0; i < this.selectedBranch.length; i++) {
+        const params = new URLSearchParams();
+        params.append("create", "done");
+        params.append("branch_id", this.selectedBranch[i]);
+        params.append("service_id", this.addServiceID);
+
+        axios({
+          method: "post",
+          url: this.domain + "/tb_branch_link/index.php",
+          data: params,
+        })
+          .then((response) => {
+            console.log(response);
+            if (response.data.status == "1") {
+              console.log("assign branch successfully");
+            } else {
+              console.log("assign branch fail");
             }
           })
           .catch((error) => {
