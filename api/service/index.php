@@ -60,8 +60,10 @@ else if (isset($_POST['create']) && isset($_POST['color']) && isset($_POST['stat
 /**
  * update
  * */
-else if (isset($_POST['update']) && isset($_POST['status']) && isset($_POST['slot']) && isset($_POST['duration']) && isset($_POST['price']) && isset($_POST['description']) && isset($_POST['title']) && isset($_POST['branch_id']) && isset($_POST['service_id'])) {
-    $update = $db->update(array($updated_at, $_POST['status'], $_POST['slot'], $_POST['duration'], $_POST['price'], $_POST['description'], $_POST['title'], $_POST['branch_id'], $_POST['service_id']));
+else if (isset($_POST['update']) && isset($_POST['color'])  && isset($_POST['status']) && isset($_POST['slot']) && isset($_POST['duration']) && isset($_POST['seat'])
+         && isset($_POST['description']) && isset($_POST['title']) && isset($_POST['service_id'])) {
+    $update = $db->update(array( $_POST['title'], $_POST['description'], $_POST['seat'], $_POST['duration'],
+                                 $_POST['slot'], $_POST['status'], $_POST['color'] , $updated_at , $_POST['service_id']));
     $response['status'] = ($update ? '1' : '2');
     echo json_encode($response);
 }

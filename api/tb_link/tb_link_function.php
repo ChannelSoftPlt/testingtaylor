@@ -44,6 +44,32 @@ class tb_link_function
         return (sizeof($return_arr) > 0 ? $return_arr : false);
     }
 
+     /**
+     * getServiceProvider function 
+     * */
+    public function getServiceProvider($service_id)
+    {
+        $stmt = $this->conn->prepare("SELECT soft_delete, updated_at, created_at, service_id, provider_id, link_id FROM tb_link WHERE soft_delete = '' 
+                                     AND service_id = $service_id ");
+        //error reporting
+        if (!$stmt) {
+            die('prepare() failed: ' . htmlspecialchars($this->conn->error));
+        }
+        $result = $stmt->execute();
+
+        if ($result) {
+            //set up bind result
+            $meta = $stmt->result_metadata();
+            while ($field = $meta->fetch_field()) {
+                $params[] = &$row[$field->name];
+            }
+            $return_arr = $this->structure->bindResult($stmt, $params, $row);
+        }
+
+        return (sizeof($return_arr) > 0 ? $return_arr : false);
+    }
+
+
     /**
      * create function
      * */

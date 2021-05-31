@@ -5,7 +5,7 @@
         <v-row class="ml-3">
           <h2>Service</h2>
         </v-row>
-        <v-card height="1000px">
+        <v-card height="900px">
           <v-row class="mx-1 mr-2">
             <v-col cols="12">
               <v-text-field
@@ -121,42 +121,6 @@
 
             <v-row>
               <v-col cols="12" md="4">
-                <span class="ml-4">Provider</span>
-                <v-subheader
-                  >Provider that provide this service to customer</v-subheader
-                >
-              </v-col>
-              <v-col cols="12" md="7" class="px-7">
-                <v-select
-                  v-model="selectedProvider"
-                  :items="providerItem"
-                  item-text="name"
-                  item-value="provider_id"
-                  multiple
-                  chips
-                >
-                  <template v-slot:prepend-item>
-                    <v-list-item ripple @click="toggleForProvider">
-                      <v-list-item-action>
-                        <v-icon
-                          :color="
-                            selectedProvider.length > 0 ? 'indigo darken-4' : ''
-                          "
-                        >
-                          {{ iconForProvider }}
-                        </v-icon>
-                      </v-list-item-action>
-                      <v-list-item-content>
-                        <v-list-item-title> Select All </v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-divider class="mt-2"></v-divider>
-                  </template>
-                </v-select>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" md="4">
                 <span class="ml-4">Branch</span>
                 <v-subheader
                   >Branch that provide this service to customer</v-subheader
@@ -180,6 +144,43 @@
                           "
                         >
                           {{ iconForBranch }}
+                        </v-icon>
+                      </v-list-item-action>
+                      <v-list-item-content>
+                        <v-list-item-title> Select All </v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-divider class="mt-2"></v-divider>
+                  </template>
+                </v-select>
+              </v-col>
+            </v-row>
+
+            <v-row v-if="selectedBranch != ''">
+              <v-col cols="12" md="4">
+                <span class="ml-4">Provider</span>
+                <v-subheader
+                  >Provider that provide this service to customer</v-subheader
+                >
+              </v-col>
+              <v-col cols="12" md="7" class="px-7">
+                <v-select
+                  v-model="selectedProvider"
+                  :items="getProviderItem"
+                  item-text="name"
+                  item-value="provider_id"
+                  multiple
+                  chips
+                >
+                  <template v-slot:prepend-item>
+                    <v-list-item ripple @click="toggleForProvider">
+                      <v-list-item-action>
+                        <v-icon
+                          :color="
+                            selectedProvider.length > 0 ? 'indigo darken-4' : ''
+                          "
+                        >
+                          {{ iconForProvider }}
                         </v-icon>
                       </v-list-item-action>
                       <v-list-item-content>
@@ -232,7 +233,7 @@
             </v-btn>
             <v-btn
               color="success"
-              @click="updateBranch()"
+              @click="editService()"
               v-if="selectedService"
             >
               Save
@@ -250,7 +251,7 @@
 
                 <v-card-text>
                   <span class="font-weight-medium"
-                    >The selected branch and it's information will be
+                    >The selected service and it's information will be
                     delete</span
                   >
                 </v-card-text>
@@ -330,6 +331,8 @@ export default {
     providerItem: [],
     branchItem: [],
     addServiceID: "",
+    serviceBranch: [],
+    serviceProvider: [],
   }),
   created() {
     const queryString = window.location.search;
@@ -347,15 +350,26 @@ export default {
     serviceStatus() {
       this.changeStatusFormat();
     },
-    selectedProvider() {
-      // this.assignProviderAndBranchToService();
+    selectedService() {
+      this.getServiceDetail();
     },
   },
   computed: {
-    getAllProviderID() {
+    getProviderItem() {
       var array = [];
       for (let i = 0; i < this.providerItem.length; i++) {
-        array.push(this.providerItem[i].provider_id);
+        for (let y = 0; y < this.selectedBranch.length; y++) {
+          if (this.selectedBranch[y] == this.providerItem[i].branch_id) {
+            array.push(this.providerItem[i]);
+          }
+        }
+      }
+      return array;
+    },
+    getAllProviderID() {
+      var array = [];
+      for (let i = 0; i < this.getProviderItem.length; i++) {
+        array.push(this.getProviderItem[i].provider_id);
       }
       return array;
     },
@@ -504,9 +518,11 @@ export default {
           console.log(response);
           if (response.data.status == "1") {
             this.addServiceID = response.data.service;
-            console.log("service add successfully");
             this.assignProviderToService();
             this.assignBranchToService();
+            this.snackbar = true;
+            this.text = "Service Add Successfully";
+            this.getServiceByCompany();
           } else {
             console.log("add service fail");
           }
@@ -567,16 +583,180 @@ export default {
           });
       }
     },
+
+    getServiceDetail() {
+      this.serviceName = "";
+      this.serviceDescription = "";
+      this.serviceSeat = "";
+      this.serviceDuration = "";
+      this.serviceSlot = "";
+      this.selectedBranch = "";
+      this.selectedProvider = "";
+      this.serviceStatus = "";
+      this.serviceColor = "";
+
+      for (var i = 0; i < this.serviceItem.length; i++) {
+        if (this.serviceItem[i].service_id == this.selectedService) {
+          this.serviceName = this.serviceItem[i].title;
+          this.serviceDescription = this.serviceItem[i].description;
+          this.serviceSeat = this.serviceItem[i].seat;
+          this.serviceDuration = this.serviceItem[i].duration;
+          this.serviceSlot = this.serviceItem[i].slot;
+          this.serviceStatus = this.serviceItem[i].status;
+          this.serviceColor = this.serviceItem[i].color;
+          this.getServiceBranch();
+          this.getServiceProvider();
+        }
+      }
+    },
+    getServiceBranch() {
+      const params = new URLSearchParams();
+      params.append("getServiceBranch", "done");
+      params.append("service_id", this.selectedService);
+
+      axios({
+        method: "post",
+        url: this.domain + "/tb_branch_link/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+            this.serviceBranch = response.data.tb_branch_link;
+            var array = [];
+            for (let i = 0; i < this.serviceBranch.length; i++) {
+              array.push(this.serviceBranch[i].branch_id);
+            }
+            this.selectedBranch = array;
+          } else {
+            console.log("No branch can get from the service");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getServiceProvider() {
+      const params = new URLSearchParams();
+      params.append("getServiceProvider", "done");
+      params.append("service_id", this.selectedService);
+
+      axios({
+        method: "post",
+        url: this.domain + "/tb_link/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+            this.serviceProvider = response.data.tb_link;
+            var array = [];
+            for (let i = 0; i < this.serviceProvider.length; i++) {
+              array.push(this.serviceProvider[i].provider_id);
+            }
+            this.selectedProvider = array;
+          } else {
+            console.log("No provider can get from the service");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    editService(){
+      const params = new URLSearchParams();
+      params.append("update", "done");
+      params.append("service_id", this.selectedService);
+      params.append("title", this.serviceName);
+      params.append("description", this.serviceDescription);
+      params.append("seat", this.serviceSeat);
+      params.append("duration", this.serviceDuration);
+      params.append("slot", this.serviceSlot);
+      params.append("status", this.serviceStatus);
+      params.append("color", this.serviceColor);
+ 
+
+      axios({
+        method: "post",
+        url: this.domain + "/service/index.php",
+        data: params,
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.data.status == "1") {
+            this.snackbar = true;
+            this.text = "Editd service successfully"
+            this.editServiceBranch();
+            this.getServiceByCompany();
+            
+          } else {
+            console.log("edit service failed");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    editServiceBranch(){
+       this.deleteOriServiceBranch();
+       for (let i = 0; i < this.selectedBranch.length; i++) {
+        const params = new URLSearchParams();
+        params.append("create", "done");
+        params.append("branch_id", this.selectedBranch[i]);
+        params.append("service_id", this.selectedService);
+
+        axios({
+          method: "post",
+          url: this.domain + "/tb_branch_link/index.php",
+          data: params,
+        })
+          .then((response) => {
+            console.log(response);
+            if (response.data.status == "1") {
+              console.log("edit Service Branch Successfully");
+            } else {
+              console.log("edit Service Branch fail");
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    },
+    deleteOriServiceBranch(){
+        const params = new URLSearchParams();
+        params.append("delete", "done");
+        params.append("service_id", this.selectedService);
+
+        axios({
+          method: "post",
+          url: this.domain + "/tb_branch_link/index.php",
+          data: params,
+        })
+          .then((response) => {
+            console.log(response);
+            if (response.data.status == "1") {
+              console.log("delete original service branch successfully");
+            } else {
+              console.log("delete original service branch failed");
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    }
   },
 };
 </script>
 
-<style lang="sass">
-#calendar
-  .v-calendar-weekly__day:last-child,
-  .v-calendar-weekly__head-weekday:last-child
-    border-right: none
+<style>
+.v-card {
+  display: flex !important;
+  flex-direction: column;
+}
 
-    .v-calendar-weekly__week:last-child .v-calendar-weekly__day
-      border-bottom: none
+.overflow {
+  flex-grow: 100;
+  overflow: auto;
+}
 </style>

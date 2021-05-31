@@ -203,8 +203,7 @@
                               >Edit appointment</v-toolbar
                             >
                             <v-card-text>
-                              {{selectedAppointment}}
-                              {{booking}}
+
                               <v-row class="mt-2">
                                 <v-col cols="12">
                                   <v-select

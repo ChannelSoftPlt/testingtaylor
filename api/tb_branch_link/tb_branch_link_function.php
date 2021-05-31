@@ -45,6 +45,32 @@ class tb_branch_link_function
     }
 
     /**
+     * getServiceBranch function
+     * */
+    public function getServiceBranch($service_id)
+    {
+        $stmt = $this->conn->prepare("SELECT soft_delete, updated_at, created_at, branch_id, service_id, branch_link_id FROM tb_branch_link WHERE soft_delete = '' 
+                                     AND service_id = $service_id");
+        //error reporting
+        if (!$stmt) {
+            die('prepare() failed: ' . htmlspecialchars($this->conn->error));
+        }
+        $result = $stmt->execute();
+
+        if ($result) {
+            //set up bind result
+            $meta = $stmt->result_metadata();
+            while ($field = $meta->fetch_field()) {
+                $params[] = &$row[$field->name];
+            }
+            $return_arr = $this->structure->bindResult($stmt, $params, $row);
+        }
+
+        return (sizeof($return_arr) > 0 ? $return_arr : false);
+    }
+
+
+    /**
      * create function
      * */
     public function create($params)
@@ -78,7 +104,7 @@ class tb_branch_link_function
      * */
     public function delete($params)
     {
-        $stmt = $this->conn->prepare('UPDATE tb_branch_link SET soft_delete = ? WHERE branch_link_id = ?');
+        $stmt = $this->conn->prepare('UPDATE tb_branch_link SET soft_delete = ? WHERE service_id = ?');
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));

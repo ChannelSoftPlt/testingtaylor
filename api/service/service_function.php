@@ -48,7 +48,7 @@ class service_function
     
     public function getService($company_id)
     {
-        $stmt = $this->conn->prepare("SELECT tb_service.* FROM tb_service JOIN tb_branch_link ON tb_branch_link.service_id = tb_service.service_id JOIN 
+        $stmt = $this->conn->prepare("SELECT DISTINCT tb_service.* FROM tb_service JOIN tb_branch_link ON tb_branch_link.service_id = tb_service.service_id JOIN 
                                     tb_branch ON tb_branch.branch_id = tb_branch_link.branch_id WHERE tb_service.soft_delete=''
                                     AND tb_branch.company_id = $company_id  ORDER BY tb_service.service_id ASC");
         //error reporting
@@ -161,7 +161,8 @@ class service_function
      * */
     public function update($params)
     {
-        $stmt = $this->conn->prepare('UPDATE tb_service SET updated_at = ?, status = ?, slot = ?, duration = ?, price = ?, description = ?, title = ?, branch_id = ? WHERE service_id = ?');
+        $stmt = $this->conn->prepare('UPDATE tb_service SET title = ?, description = ?, seat = ?, duration = ?, slot = ?, status = ?, color = ?, created_at = ? 
+                                     WHERE service_id = ?');
         //error reporting
         if (!$stmt) {
             die('prepare() failed: ' . htmlspecialchars($this->conn->error));

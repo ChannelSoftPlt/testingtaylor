@@ -19,6 +19,16 @@ if (isset($_POST['read'])) {
 
 }
 /**
+ * getServiceBranch
+ */
+else if (isset($_POST['getServiceBranch']) && isset($_POST['service_id'])) {
+    $read     = $db->getServiceBranch($_POST['service_id']);
+    $response['status']   = ($read ? '1' : '2');
+    $response['tb_branch_link'] = $read;
+    echo json_encode($response);
+
+}
+/**
  * create
  * */
 else if (isset($_POST['create']) && isset($_POST['branch_id']) && isset($_POST['service_id'])) {
@@ -37,8 +47,8 @@ else if (isset($_POST['update']) && isset($_POST['branch_id']) && isset($_POST['
 /**
  * delete
  * */
-else if (isset($_POST['delete']) && isset($_POST['branch_link_id'])) {
-    $delete         = $db->delete(array($soft_delete, $_POST['branch_link_id']));
+else if (isset($_POST['delete']) && isset($_POST['service_id'])) {
+    $delete         = $db->delete(array($soft_delete, $_POST['service_id']));
     $response['status'] = ($delete ? '1' : '2');
     echo json_encode($response);
 }

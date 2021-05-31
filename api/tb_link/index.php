@@ -19,6 +19,16 @@ if (isset($_POST['read'])) {
 
 }
 /**
+ * getServiceProvider
+ */
+else if (isset($_POST['getServiceProvider']) && isset($_POST['service_id'])) {
+    $read     = $db->getServiceProvider($_POST['service_id']);
+    $response['status']   = ($read ? '1' : '2');
+    $response['tb_link'] = $read;
+    echo json_encode($response);
+
+}
+/**
  * create
  * */
 else if (isset($_POST['create']) && isset($_POST['service_id']) && isset($_POST['provider_id'])) {
